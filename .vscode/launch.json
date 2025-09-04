@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Tasker.API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Tasker.API",
+            "program": "${workspaceFolder}/Tasker.API/bin/Debug/net9.0/Tasker.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Tasker.API",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Run Tasker.UI",
+            "type": "dotnet",
+            "request": "launch",
+            "preLaunchTask": "Build Tasker.UI",
+            "projectPath": "${workspaceFolder}/Tasker.UI/Tasker.UI.csproj",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Run Both (API & UI)",
+            "configurations": [
+                "Run Tasker.API",
+                "Run Tasker.UI"
+            ]
+        }
+    ]
+}

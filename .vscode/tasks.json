@@ -1,0 +1,28 @@
+{
+    // Run Tasker.API and Tasker.UI concurrently
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Tasker.API",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "Tasker.API/Tasker.API.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Build Tasker.UI",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "Tasker.UI/Tasker.UI.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        }
+    ]
+}
