@@ -19,9 +19,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<IdentityContext>(options =>
-    options.UseSqlite("Data Source=identity.db"));
+    options.UseSqlite("Data Source=./identity.db"));
 
-builder.Services.AddIdentity<UserModel, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
@@ -50,12 +50,6 @@ builder.Services.AddControllers(); // Если API
 
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
 
