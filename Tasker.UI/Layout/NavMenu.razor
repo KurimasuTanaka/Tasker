@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@using Tasker.UI.Services
-@inject AuthService AuthService
+@using Tasker.UI.Auth
+
+@inject IAuthService _authService
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -43,6 +44,6 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    async Task Logout() => await AuthService.Logout();
+    async Task Logout() => await _authService.Logout();
 
 }

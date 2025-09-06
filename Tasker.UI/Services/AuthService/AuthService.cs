@@ -1,47 +1,47 @@
 using System;
 using System.Net.Http.Json;
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace Tasker.UI.Services;
+namespace Tasker.UI.Auth;
 
-public class AuthService
+public class AuthService : IAuthService
 {
-    private readonly HttpClient _http;
+    private readonly HttpClient _httpClient;
     private readonly AuthenticationStateProvider _authStateProvider;
-    private readonly ILocalStorageService _localStorage;
+    private readonly IMemoryCache _memoryCache;
 
-    public AuthService(HttpClient http, AuthenticationStateProvider authStateProvider, ILocalStorageService localStorage)
+    public AuthService(HttpClient http, AuthenticationStateProvider authStateProvider, IMemoryCache memoryCache)
     {
-        _http = http;
+        _httpClient = http;
         _authStateProvider = authStateProvider;
-        _localStorage = localStorage;
+        _memoryCache = memoryCache;
     }
 
     public async Task<string> Register(RegisterModel model)
     {
-        var response = await _http.PostAsJsonAsync("api/auth/register", model);
+        var response = await _httpClient.PostAsJsonAsync("api/auth/register", model);
         return await response.Content.ReadAsStringAsync();
     }
 
     public async Task<bool> Login(LoginModel model)
     {
-        var response = await _http.PostAsJsonAsync("api/auth/login", model);
+        var response = await _httpClient.PostAsJsonAsync("api/auth/login", model);
         if (!response.IsSuccessStatusCode) return false;
 
         var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
         var token = result?.Token;
         if (string.IsNullOrWhiteSpace(token)) return false;
-        await _localStorage.SetItemAsync("authToken", token);
-        ((CustomAuthStateProvider)_authStateProvider).NotifyUserAuthentication(token);
+        _memoryCache.Set("authToken", token);
+        await (_authStateProvider as CustomAuthStateProvider)!.NotifyUserAuthentication(token);
 
         return true;
     }
 
     public async Task Logout()
     {
-        await _localStorage.RemoveItemAsync("authToken");
-        ((CustomAuthStateProvider)_authStateProvider).NotifyUserLogout();
+        _memoryCache.Remove("authToken");
+        await (_authStateProvider as CustomAuthStateProvider)!.NotifyUserLogout();
     }
 }
 

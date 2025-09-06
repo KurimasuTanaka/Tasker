@@ -1,35 +1,33 @@
 using System;
 using System.Security.Claims;
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace Tasker.UI.Services;
+namespace Tasker.UI.Auth;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
-    private readonly ILocalStorageService _localStorage;
+    private readonly IMemoryCache _memoryCache;
     private readonly HttpClient _httpClient;
 
-    public CustomAuthStateProvider(ILocalStorageService localStorage, HttpClient httpClient)
+    public CustomAuthStateProvider(IMemoryCache memoryCache, HttpClient httpClient)
     {
-        _localStorage = localStorage;
+        _memoryCache = memoryCache;
         _httpClient = httpClient;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await _localStorage.GetItemAsync<string>("authToken");
+        var token = _memoryCache.Get<string>("authToken");
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())); // Аноним
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
 
-        // Добавь токен в HttpClient для всех запросов
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-        // Парсим claims из JWT
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
         var identity = new ClaimsIdentity(jwtToken.Claims, "jwtAuthType");
@@ -40,13 +38,13 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public async Task NotifyUserAuthentication(string token)
     {
-        await _localStorage.SetItemAsync("authToken", token);
+        _memoryCache.Set("authToken", token);
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public async Task NotifyUserLogout()
     {
-        await _localStorage.RemoveItemAsync("authToken");
+        _memoryCache.Remove("authToken");
         _httpClient.DefaultRequestHeaders.Authorization = null;
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
