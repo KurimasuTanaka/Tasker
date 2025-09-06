@@ -23,7 +23,7 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Read operations
-    public async Task<UserParticipation?> GetAsync(object id)
+    public async Task<UserParticipation?> GetAsync(long id)
     {
         var userParticipationModel = await _context.UserParticipations.FindAsync(id);
         if(userParticipationModel == null) return null; 
@@ -45,7 +45,7 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(long id)
     {
         var entity = await GetAsync(id);
         if (entity == null) return false;

@@ -23,7 +23,7 @@ public class GroupRepository : IGroupRepository
     }
 
     // Read operations
-    public async Task<Group?> GetAsync(object id)
+    public async Task<Group?> GetAsync(long id)
     {
         var groupModel = await _context.Groups.FindAsync(id);
         if (groupModel == null) return null; 
@@ -45,7 +45,7 @@ public class GroupRepository : IGroupRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(long id)
     {
         var entity = await GetAsync(id);
         if (entity == null) return false;
@@ -53,5 +53,13 @@ public class GroupRepository : IGroupRepository
         _context.Groups.Remove(entity);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<Group>> GetAllAsync(string userId)
+    {
+        return await _context.UserParticipations.Include(up => up.Group)
+            .Where(up => up.User.UserIdentity == userId)
+            .Select(up => new Group(up.Group!))
+            .ToListAsync();
     }
 }

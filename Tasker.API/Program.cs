@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Tasker.DataAccess;
 using Tasker.Database;
 
 
@@ -44,9 +45,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddDataAccess();
+
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers(); // Если API
+builder.Services.AddControllers(); 
 
 
 var app = builder.Build();

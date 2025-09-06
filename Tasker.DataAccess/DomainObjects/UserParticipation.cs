@@ -13,4 +13,7 @@ public class UserParticipation : UserParticipationModel
         this.Group = model.Group;
     }
 
+    public UserParticipation()
+    {
+    }
 }

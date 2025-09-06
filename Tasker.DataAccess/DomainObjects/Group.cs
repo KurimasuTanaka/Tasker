@@ -12,4 +12,7 @@ public class Group : GroupModel
         this.Name = model.Name;
         this.Participants = model.Participants;
     }
+    public Group()
+    {
+    }
 }

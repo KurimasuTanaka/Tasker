@@ -23,7 +23,7 @@ public class NotificationRepository : INotificationRepository
     }
 
     // Read operations
-    public async Task<Notification?> GetAsync(object id)
+    public async Task<Notification?> GetAsync(long id)
     {
         var notificationModel = await _context.Notifications.FindAsync(id);
         if (notificationModel == null) return null;
@@ -44,7 +44,7 @@ public class NotificationRepository : INotificationRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(long id)
     {
         var entity = await GetAsync(id);
         if (entity == null) return false;

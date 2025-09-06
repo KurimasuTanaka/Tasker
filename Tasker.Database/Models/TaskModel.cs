@@ -6,7 +6,7 @@ namespace Tasker.Database;
 public class TaskModel
 {
     [Key]
-    public int TaskId { get; set; }
+    public long TaskId { get; set; }
     public string Title { get; set; } = String.Empty;
     public string Description { get; set; } = String.Empty;
     public DateTime CreatedDate { get; set; }

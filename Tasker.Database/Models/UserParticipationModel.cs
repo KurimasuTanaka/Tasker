@@ -9,5 +9,6 @@ public class UserParticipationModel
     public long UserParticipationId { get; set; }
     public string Role { get; set; } = String.Empty;
     public UserModel User { get; set; } = null!;
+    public string UserId { get; set; } = String.Empty;
     public GroupModel Group { get; set; } = null!;
 }

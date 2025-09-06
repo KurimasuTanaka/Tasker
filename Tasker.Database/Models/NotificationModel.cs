@@ -6,7 +6,7 @@ namespace Tasker.Database;
 public class NotificationModel
 {
     [Key]
-    public int NotificationId { get; set; }
+    public long NotificationId { get; set; }
     public string Title { get; set; } = String.Empty;
     public string Message { get; set; } = String.Empty;
     public DateTime CreatedDate { get; set; }

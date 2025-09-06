@@ -22,7 +22,7 @@ public class UserRepository : IUserRepository
     }
 
     // Read operations
-    public async Task<User?> GetAsync(object id)
+    public async Task<User?> GetAsync(string id)
     {
         var userModel = await _context.Users.FindAsync(id);
         if (userModel == null) return null; 
@@ -44,7 +44,7 @@ public class UserRepository : IUserRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(string id)
     {
         var entity = await GetAsync(id);
         if (entity == null) return false;

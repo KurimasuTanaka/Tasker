@@ -21,7 +21,7 @@ public class TaskRepository : ITaskRepository
     }
 
     // Read operations
-    public async Task<Task?> GetAsync(object id)
+    public async Task<Task?> GetAsync(long id)
     {
         var taskModel = await _context.Tasks.FindAsync(id);
         if (taskModel == null) return null; 
@@ -42,7 +42,7 @@ public class TaskRepository : ITaskRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(long id)
     {
         var entity = await GetAsync(id);
         if (entity == null) return false;
