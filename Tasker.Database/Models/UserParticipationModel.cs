@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Tasker.API.DB;
+namespace Tasker.Database;
 
 public class UserParticipationModel
 {

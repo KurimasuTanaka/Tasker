@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tasker.API.DB;
+namespace Tasker.Database;
 
 public class IdentityContext : IdentityDbContext<UserModel>
 {

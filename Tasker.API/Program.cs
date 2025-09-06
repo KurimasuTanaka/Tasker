@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Tasker.API.DB;
-using Tasker.API.DomainObjects;
+using Tasker.Database;
 
 
 var builder = WebApplication.CreateBuilder(args);

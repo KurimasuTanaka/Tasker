@@ -20,4 +20,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Tasker.DataAccess\Tasker.DataAccess.csproj" />
+    <ProjectReference Include="..\Tasker.Database\Tasker.Database.csproj" />
+  </ItemGroup>
+
 </Project>

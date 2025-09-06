@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Tasker.API.DB;
-using Tasker.API.DomainObjects;
+using Tasker.Database;
+using Tasker.DataAccess;
 
 namespace Tasker.API.Controllers
 {

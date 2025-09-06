@@ -1,7 +1,7 @@
 using System;
-using Tasker.API.DB;
+using Tasker.Database;
 
-namespace Tasker.API.DomainObjects;
+namespace Tasker.DataAccess;
 
 public class Notification : NotificationModel
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Tasker.API.DB;
+namespace Tasker.Database;
 
 public class TaskModel
 {
