@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Tasker.API.DB;
+using Tasker.API.DomainObjects;
 
 namespace Tasker.API.Controllers
 {
@@ -12,10 +14,10 @@ namespace Tasker.API.Controllers
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<UserModel> _userManager;
+    private readonly SignInManager<UserModel> _signInManager;
 
-    public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    public AuthController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -24,7 +26,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        var user = new UserModel { UserName = model.Email, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)
             return Ok("User created");
