@@ -1,22 +1,43 @@
 using System;
-using System.Text.RegularExpressions;
+using System.Net.Http.Json;
+using Tasker.DataAccess;
 
 namespace Tasker.UI.Services;
 
 public class GroupsManager : IGroupsManager
 {
-    public Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<GroupsManager> _logger;
+
+    public GroupsManager(HttpClient httpClient, ILogger<GroupsManager> logger)
     {
-        throw new NotImplementedException();
+        _httpClient = httpClient;
+        _logger = logger;
     }
 
-    public Task DeleteGroup(Guid groupId, CancellationToken cancellationToken = default)
+    public async Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var group = new Group { Name = groupName };
+        var response = await _httpClient.PostAsJsonAsync("api/groups", group, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
     }
 
-    public Task<List<Group>> GetAllGroups(CancellationToken cancellationToken = default)
+    public async Task DeleteGroup(long groupId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var response = await _httpClient.DeleteAsync($"api/groups/{groupId}", cancellationToken);
+        response.EnsureSuccessStatusCode();
     }
+
+    public async Task<List<Group>> GetAllGroups(CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync("api/groups", cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var groups = await response.Content.ReadFromJsonAsync<List<Group>>(cancellationToken: cancellationToken);
+        return groups ?? new List<Group>();
+    }
+
+
 }

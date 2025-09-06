@@ -2,6 +2,7 @@ using System;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Caching.Memory;
+using Tasker.DataAccess.Auth;
 
 namespace Tasker.UI.Auth;
 
@@ -45,8 +46,6 @@ public class AuthService : IAuthService
     }
 }
 
-public class RegisterModel { public string Email { get; set; } public string Password { get; set; } }
-public class LoginModel { public string Email { get; set; } public string Password { get; set; } }
 public class TokenResponse { public string Token { get; set; } }
 
 

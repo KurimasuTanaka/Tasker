@@ -3,11 +3,11 @@ using Tasker.Database;
 
 namespace Tasker.DataAccess;
 
-public class Task : TaskModel
+public class Assignment : AssignmentModel
 {
-	public Task(TaskModel model)
+	public Assignment(AssignmentModel model)
 	{
-		this.TaskId = model.TaskId;
+		this.AssignmentId = model.AssignmentId;
 		this.Title = model.Title;
 		this.Description = model.Description;
 		this.CreatedDate = model.CreatedDate;

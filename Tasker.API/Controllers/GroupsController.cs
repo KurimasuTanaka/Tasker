@@ -11,12 +11,14 @@ namespace Tasker.API.Controllers
     public class GroupsController : ControllerBase
     {
         private readonly IGroupRepository _groupRepository;
+        private readonly IUserParticipationRepository _userRepository;
 
         private readonly UserManager<IdentityUser> _userManager;
 
-        public GroupsController(IGroupRepository groupRepository, UserManager<IdentityUser> userManager)
+        public GroupsController(IGroupRepository groupRepository, IUserParticipationRepository userRepository, UserManager<IdentityUser> userManager)
         {
             _groupRepository = groupRepository;
+            _userRepository = userRepository;
             _userManager = userManager;
         }
 
@@ -39,12 +41,13 @@ namespace Tasker.API.Controllers
             if (userId == null) return BadRequest("Invalid user");
 
 
+
             Group newGroup = new Group();
             newGroup.Name = group.Name;
             newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role = "Admin" });
 
 
-            var createdGroup = await _groupRepository.AddAsync(group);
+            var createdGroup = await _groupRepository.AddAsync(newGroup);
             return CreatedAtAction(nameof(GetAllGroups), createdGroup);
         }
     }

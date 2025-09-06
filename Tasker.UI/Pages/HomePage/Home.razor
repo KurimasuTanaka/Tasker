@@ -3,7 +3,11 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>Home</PageTitle>
 
- @(userName)
+@(userName)
+
+<AuthorizeView>
+    <GroupList />
+</AuthorizeView>
 
 @code {
     private string userName = "Guest";
@@ -18,4 +22,4 @@
             userName = user.Identity.Name ?? "User";
         }
     }
-} 
+}

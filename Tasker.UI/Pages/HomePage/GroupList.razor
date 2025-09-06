@@ -1,5 +1,29 @@
-﻿@* @inject IGroupsManager _groupsManager *@
+﻿@using Tasker.DataAccess
+@using Tasker.UI.Services
+@inject IGroupsManager _groupsManager 
+
+<button class="btn btn-primary" @onclick="CreateGroup">Create Group</button>
+
+
+@foreach (var group in _groups)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">@group.Name</h5>
+        </div>
+    </div>
+}
 
 @code {
+    private List<Group> _groups = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        _groups = await _groupsManager.GetAllGroups();
+    }
+    private async Task CreateGroup(MouseEventArgs args)
+    {
+        await _groupsManager.CreateGroup("New Group" + (_groups.Count + 1).ToString());
+        StateHasChanged();
+    }
 }

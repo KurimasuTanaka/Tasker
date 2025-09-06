@@ -7,62 +7,67 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Tasker.Database;
 using Tasker.DataAccess;
+using Tasker.DataAccess.Auth;
+using Tasker.DataAccess.Repositories;
 
 namespace Tasker.API.Controllers
 {
-[Route("api/auth/")]
-[ApiController]
-public class AuthController : ControllerBase
-{
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
-
-    public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    [Route("api/auth/")]
+    [ApiController]
+    public class AuthController : ControllerBase
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IUserRepository _userRepository;
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel model)
-    {
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-        var result = await _userManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
-            return Ok("User created");
-        return BadRequest(result.Errors);
-    }
+        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _userRepository = userRepository;
+        }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginModel model)
-    {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null) return BadRequest("Invalid login");
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        {
+            var user = new IdentityUser { UserName = model.Email, Email = model.Email, Id = Guid.NewGuid().ToString() };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                await _userRepository.AddAsync(new User { UserIdentity = user.Id });
+                return Ok("User created");
+            }
+            return BadRequest(result.Errors);
+        }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-        if (!result.Succeeded) return BadRequest("Invalid password");
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return BadRequest("Invalid login");
 
-        // Генерация JWT
-        var claims = new List<Claim>
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+            if (!result.Succeeded) return BadRequest("Invalid password");
+
+            // Генерация JWT
+            var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
-            // Добавь роли: new Claim(ClaimTypes.Role, "Admin") если нужно
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: "yourapp.com",
-            audience: "yourapp.com",
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(30), // Срок 30 мин
-            signingCredentials: creds);
+            var token = new JwtSecurityToken(
+                issuer: "yourapp.com",
+                audience: "yourapp.com",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30), // Срок 30 мин
+                signingCredentials: creds);
 
-        return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+        }
     }
 }
-
-public class RegisterModel { public string Email { get; set; } public string Password { get; set; } }
-public class LoginModel { public string Email { get; set; } public string Password { get; set; } }}

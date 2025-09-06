@@ -10,7 +10,7 @@ public static class DataAccessServiceCollectionExtension
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
-        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IAssignmentRepository, AssignmentRepository>();
         services.AddScoped<IUserParticipationRepository, UserParticipationRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
 

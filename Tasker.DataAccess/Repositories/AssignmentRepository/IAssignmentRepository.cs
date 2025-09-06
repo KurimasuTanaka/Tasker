@@ -2,6 +2,6 @@ using Tasker.DataAccess;
 
 namespace Tasker.DataAccess.Repositories;
 
-public interface ITaskRepository : IRepository<Task, long>
+public interface IAssignmentRepository : IRepository<Assignment, long>
 {
 }

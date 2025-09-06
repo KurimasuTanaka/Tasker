@@ -5,6 +5,8 @@ namespace Tasker.DataAccess;
 
 public class User : UserModel
 {
+    public User() { }
+
     public User(UserModel model)
     {
         this.FirstName = model.FirstName;
