@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Tasker.UI.Services
+@inject AuthService AuthService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Tasker.UI</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -24,6 +28,9 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <button @onclick="Logout">Logout</button>
+        </div>
     </nav>
 </div>
 
@@ -36,4 +43,6 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+    async Task Logout() => await AuthService.Logout();
+
 }
