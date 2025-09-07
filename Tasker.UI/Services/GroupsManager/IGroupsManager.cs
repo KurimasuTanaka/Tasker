@@ -9,4 +9,5 @@ public interface IGroupsManager
     Task DeleteGroup(long groupId, CancellationToken cancellationToken = default);
     Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default);
     Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default);
+    Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default);
 }

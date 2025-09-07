@@ -11,14 +11,14 @@ namespace Tasker.API.Controllers
     public class GroupsController : ControllerBase
     {
         private readonly IGroupRepository _groupRepository;
-        private readonly IUserParticipationRepository _userRepository;
+        private readonly IUserParticipationRepository _userParticipationRepository;
 
         private readonly UserManager<IdentityUser> _userManager;
 
-        public GroupsController(IGroupRepository groupRepository, IUserParticipationRepository userRepository, UserManager<IdentityUser> userManager)
+        public GroupsController(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository, UserManager<IdentityUser> userManager)
         {
             _groupRepository = groupRepository;
-            _userRepository = userRepository;
+            _userParticipationRepository = userParticipationRepository;
             _userManager = userManager;
         }
 
@@ -58,6 +58,18 @@ namespace Tasker.API.Controllers
             if (group == null) return NotFound();
 
             return Ok(group);
+        }
+
+        [HttpPost("{groupId:long}/members")]
+        public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId, CancellationToken cancellationToken)
+        {
+            await _userParticipationRepository.AddAsync(new UserParticipation
+            {
+                GroupId = groupId,
+                UserId = userId,
+                Role = "Member"
+            });
+            return Ok();
         }
     }
 }

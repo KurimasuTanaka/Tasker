@@ -11,4 +11,5 @@ public class UserParticipationModel
     public UserModel User { get; set; } = null!;
     public string UserId { get; set; } = String.Empty;
     public GroupModel Group { get; set; } = null!;
+    public long GroupId { get; set; }
 }

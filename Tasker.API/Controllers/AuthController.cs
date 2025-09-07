@@ -17,14 +17,16 @@ namespace Tasker.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IUserRepository _userRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository)
+        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userRepository = userRepository;
+            _roleManager = roleManager;
         }
 
         [HttpPost("register")]
@@ -49,13 +51,25 @@ namespace Tasker.API.Controllers
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded) return BadRequest("Invalid password");
 
-            // Генерация JWT
+
+            var dbUser = await _userRepository.GetAsync(user.Id);
+
+            if (dbUser == null) return BadRequest("User not found in database");
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Role, "User") // Default role
+            };
+
+            foreach (var participation in dbUser.Participations)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, $"{participation.GroupId}:{participation.Role}"));
+            }
+
+            
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

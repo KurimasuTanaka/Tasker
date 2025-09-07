@@ -25,7 +25,7 @@ public class GroupRepository : IGroupRepository
     // Read operations
     public async Task<Group?> GetAsync(long id)
     {
-        var groupModel = await _context.Groups.FindAsync(id);
+        var groupModel = await _context.Groups.Include(g => g.Participants).FirstOrDefaultAsync(g => g.GroupId == id);
         if (groupModel == null) return null; 
         else return new Group(groupModel);
     }
@@ -57,7 +57,7 @@ public class GroupRepository : IGroupRepository
 
     public async Task<IEnumerable<Group>> GetAllAsync(string userId)
     {
-        return await _context.UserParticipations.Include(up => up.Group)
+        return await _context.UserParticipations.Include(up => up.Group).ThenInclude(up => up.Participants)
             .Where(up => up.User.UserIdentity == userId)
             .Select(up => new Group(up.Group!))
             .ToListAsync();

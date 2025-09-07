@@ -1,19 +1,43 @@
 ﻿@page "/group/{GroupId:long}"
 @using Tasker.DataAccess
 @using Tasker.UI.Services
+@using Microsoft.AspNetCore.Components.Authorization
 
 @inject IGroupsManager _groupsManager
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 <h3>@group?.Name</h3>
+
+<AuthorizeView Roles="@($"{GroupId}:Admin")">
+    <Authorized>
+        <InputText @bind-Value="newUserId" class="form-control" />
+        <button class="btn btn-secondary" @onclick="AddMember">Add member</button>
+    </Authorized>
+</AuthorizeView>
+
+@foreach (var member in group?.Participants)
+{
+    <div>@member.UserId</div>
+}
 
 @code {
     [Parameter]
     public long GroupId { get; set; } 
-
-    private Group group; 
+    private Group group = new(); 
+    private string newUserId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        var user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(user.IsInRole($"{GroupId}:Member") || user.IsInRole($"{GroupId}:Admin"))
+        {
+            int f = 3;
+        }
         group = await _groupsManager.GetGroupById(GroupId);
+    }
+
+    protected async Task AddMember()
+    {
+        await _groupsManager.AddMember(GroupId, newUserId);
     }
 }

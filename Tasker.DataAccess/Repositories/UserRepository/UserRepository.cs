@@ -24,7 +24,7 @@ public class UserRepository : IUserRepository
     // Read operations
     public async Task<User?> GetAsync(string id)
     {
-        var userModel = await _context.Users.FindAsync(id);
+        var userModel = await _context.Users.Include(u => u.Participations).FirstOrDefaultAsync(u => u.UserIdentity == id);
         if (userModel == null) return null; 
         else return new User(userModel);
     }

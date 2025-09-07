@@ -10,6 +10,8 @@ public class UserParticipation : UserParticipationModel
         this.UserParticipationId = model.UserParticipationId;
         this.Role = model.Role;
         this.User = model.User;
+        this.UserId = model.UserId;
+        this.GroupId = model.GroupId;
         this.Group = model.Group;
     }
 

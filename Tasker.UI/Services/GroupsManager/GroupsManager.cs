@@ -15,6 +15,12 @@ public class GroupsManager : IGroupsManager
         _logger = logger;
     }
 
+    public async Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/members", userId, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
     {
         var group = new Group { Name = groupName };
