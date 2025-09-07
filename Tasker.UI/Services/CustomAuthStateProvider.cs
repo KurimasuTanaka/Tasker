@@ -3,23 +3,24 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.JSInterop;
 
 namespace Tasker.UI.Auth;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
-    private readonly IMemoryCache _memoryCache;
+    private readonly ISessionStorageService _sessionStorageService;
     private readonly HttpClient _httpClient;
 
-    public CustomAuthStateProvider(IMemoryCache memoryCache, HttpClient httpClient)
+    public CustomAuthStateProvider(ISessionStorageService sessionStorageService, HttpClient httpClient)
     {
-        _memoryCache = memoryCache;
+        _sessionStorageService = sessionStorageService;
         _httpClient = httpClient;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = _memoryCache.Get<string>("authToken");
+        var token = await _sessionStorageService.GetItemAsync<string>("authToken");
 
         if (string.IsNullOrWhiteSpace(token))
         {
@@ -38,13 +39,13 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public async Task NotifyUserAuthentication(string token)
     {
-        _memoryCache.Set("authToken", token);
+        await _sessionStorageService.SetItemAsync("authToken", token);
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public async Task NotifyUserLogout()
     {
-        _memoryCache.Remove("authToken");
+        await _sessionStorageService.RemoveItemAsync("authToken");
         _httpClient.DefaultRequestHeaders.Authorization = null;
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
