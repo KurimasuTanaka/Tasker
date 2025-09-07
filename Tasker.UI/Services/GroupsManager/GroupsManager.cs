@@ -39,5 +39,11 @@ public class GroupsManager : IGroupsManager
         return groups ?? new List<Group>();
     }
 
+    public async Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync($"api/groups/{groupId}", cancellationToken);
+        response.EnsureSuccessStatusCode();
 
+        return await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
+    }
 }

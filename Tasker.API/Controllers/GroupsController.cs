@@ -50,5 +50,14 @@ namespace Tasker.API.Controllers
             var createdGroup = await _groupRepository.AddAsync(newGroup);
             return CreatedAtAction(nameof(GetAllGroups), createdGroup);
         }
+
+        [HttpGet("{groupId:long}")]
+        public async Task<IActionResult> GetGroupById(long groupId, CancellationToken cancellationToken)
+        {
+            var group = await _groupRepository.GetAsync(groupId);
+            if (group == null) return NotFound();
+
+            return Ok(group);
+        }
     }
 }

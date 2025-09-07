@@ -1,0 +1,19 @@
+﻿@page "/group/{GroupId:long}"
+@using Tasker.DataAccess
+@using Tasker.UI.Services
+
+@inject IGroupsManager _groupsManager
+
+<h3>@group?.Name</h3>
+
+@code {
+    [Parameter]
+    public long GroupId { get; set; } 
+
+    private Group group; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        group = await _groupsManager.GetGroupById(GroupId);
+    }
+}
