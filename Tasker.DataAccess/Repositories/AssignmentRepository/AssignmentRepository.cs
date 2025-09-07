@@ -6,8 +6,8 @@ namespace Tasker.DataAccess.Repositories;
 
 public class AssignmentRepository : IAssignmentRepository
 {
-    private readonly IdentityContext _context;
-    public AssignmentRepository(IdentityContext context)
+    private readonly TaskerContext _context;
+    public AssignmentRepository(TaskerContext context)
     {
         _context = context;
     }

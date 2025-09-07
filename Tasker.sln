@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasker.DataAccess", "Tasker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasker.Database", "Tasker.Database\Tasker.Database.csproj", "{3F4E00A4-61B1-4B02-A5CE-4B3D086114BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasker.Tests", "Tasker.Tests\Tasker.Tests.csproj", "{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{3F4E00A4-61B1-4B02-A5CE-4B3D086114BB}.Release|x64.Build.0 = Release|Any CPU
 		{3F4E00A4-61B1-4B02-A5CE-4B3D086114BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{3F4E00A4-61B1-4B02-A5CE-4B3D086114BB}.Release|x86.Build.0 = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|x64.Build.0 = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|x64.ActiveCfg = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|x64.Build.0 = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC65A6C1-9507-4DDB-9C29-4396CB2FBB73}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,8 +6,8 @@ namespace Tasker.DataAccess.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly IdentityContext _context;
-    public UserRepository(IdentityContext context)
+    private readonly TaskerContext _context;
+    public UserRepository(TaskerContext context)
     {
         _context = context;
     }

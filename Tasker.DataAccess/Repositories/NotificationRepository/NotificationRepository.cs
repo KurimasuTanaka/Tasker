@@ -6,9 +6,9 @@ namespace Tasker.DataAccess.Repositories;
 
 public class NotificationRepository : INotificationRepository
 {
-    private readonly IdentityContext _context;
+    private readonly TaskerContext _context;
 
-    public NotificationRepository(IdentityContext context)
+    public NotificationRepository(TaskerContext context)
     {
         _context = context;
     }

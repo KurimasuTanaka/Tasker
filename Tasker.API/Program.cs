@@ -6,66 +6,76 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Tasker.DataAccess;
 using Tasker.Database;
+namespace Tasker.API;
 
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add CORS policy
-builder.Services.AddCors(options =>
+public partial class Program
 {
-    options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("https://localhost:7001")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials());
-});
-
-builder.Services.AddDbContext<IdentityContext>(options =>
-    options.UseSqlite("Data Source=./identity.db"));
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<IdentityContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    private static void Main(string[] args)
     {
-        ValidateIssuer = true, // Проверять issuer
-        ValidateAudience = true, // Проверять audience
-        ValidateLifetime = true, // Проверять срок
-        ValidateIssuerSigningKey = true, // Проверять подпись
-        ValidIssuer = "yourapp.com", // Твой issuer (можно из конфига)
-        ValidAudience = "yourapp.com", // Твой audience
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong")) // Секретный ключ, храни в secrets!
-    };
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDataAccess();
-
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddControllers().AddJsonOptions(options =>
+        // Add CORS policy
+        builder.Services.AddCors(options =>
         {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        }); 
+            options.AddPolicy("AllowFrontend",
+                policy => policy.WithOrigins("https://localhost:7001")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials());
+        });
+
+        builder.Services.AddDbContext<TaskerContext>(options =>
+            options.UseSqlite("Data Source=./tasker.db"));
+
+        builder.Services.AddDbContext<IdentityContext>(options =>
+            options.UseSqlite("Data Source=./identity.db"));
+
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<IdentityContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true, // Проверять issuer
+                ValidateAudience = true, // Проверять audience
+                ValidateLifetime = true, // Проверять срок
+                ValidateIssuerSigningKey = true, // Проверять подпись
+                ValidIssuer = "yourapp.com", // Твой issuer (можно из конфига)
+                ValidAudience = "yourapp.com", // Твой audience
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong")) // Секретный ключ, храни в secrets!
+            };
+        });
+
+        builder.Services.AddDataAccess();
+
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddControllers().AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                });
 
 
-var app = builder.Build();
+        var app = builder.Build();
 
-app.UseHttpsRedirection();
+        app.UseHttpsRedirection();
 
-// Use CORS policy
-app.UseCors("AllowFrontend");
-app.UseAuthentication();
-app.UseAuthorization();
+        // Use CORS policy
+        app.UseCors("AllowFrontend");
+        app.UseAuthentication();
+        app.UseAuthorization();
 
-app.UseSwaggerUI();
-app.UseSwagger();
-app.MapControllers();
-app.Run();
+        app.UseSwaggerUI();
+        app.UseSwagger();
+        app.MapControllers();
+        app.Run();
+    }
+}

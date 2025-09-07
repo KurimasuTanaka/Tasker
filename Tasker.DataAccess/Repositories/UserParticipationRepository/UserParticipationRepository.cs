@@ -6,9 +6,9 @@ namespace Tasker.DataAccess.Repositories;
 
 public class UserParticipationRepository : IUserParticipationRepository
 {
-    private readonly IdentityContext _context;
+    private readonly TaskerContext _context;
 
-    public UserParticipationRepository(IdentityContext context)
+    public UserParticipationRepository(TaskerContext context)
     {
         _context = context;
     }

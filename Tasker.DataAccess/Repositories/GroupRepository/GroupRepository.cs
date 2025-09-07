@@ -6,9 +6,9 @@ namespace Tasker.DataAccess.Repositories;
 
 public class GroupRepository : IGroupRepository
 {
-    private readonly IdentityContext _context;
+    private readonly TaskerContext _context;
 
-    public GroupRepository(IdentityContext context)
+    public GroupRepository(TaskerContext context)
     {
         _context = context;
     }
