@@ -14,6 +14,18 @@ public class AssignmentsService : IAssignmentsService
         _assignmentRepository = assignmentRepository;
     }
 
+    public Task<Result<Assignment>> AssignTaskToUser(long groupId, long assignmentId, long userId)
+    {
+        try
+        {
+            
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(Result.Failure<Assignment>($"Error assigning task to user: {ex.Message}"));
+        }
+    }
+
     public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
     {
         if (assignment == null) return Result.Failure<Assignment>("Assignment cannot be null");
@@ -70,7 +82,10 @@ public class AssignmentsService : IAssignmentsService
         }
     }
 
-    
+    public Task<Result<Assignment>> UnassignTaskFromUser(long groupId, long assignmentId, long userId)
+    {
+        throw new NotImplementedException();
+    }
 
     public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment)
     {

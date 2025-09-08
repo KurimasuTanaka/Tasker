@@ -11,4 +11,6 @@ public interface IAssignmentsService
     Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment);
     Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment);
     Task<Result<bool>> DeleteAssignment(long groupId, long assignmentId);
+    Task<Result<Assignment>> AssignTaskToUser(long groupId, long assignmentId, long userId);
+    Task<Result<Assignment>> UnassignTaskFromUser(long groupId, long assignmentId, long userId);
 }

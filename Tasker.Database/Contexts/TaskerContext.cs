@@ -10,10 +10,19 @@ public class TaskerContext : DbContext
     public DbSet<AssignmentModel> Assignments { get; set; } = null!;
     public DbSet<NotificationModel> Notifications { get; set; } = null!;
     public DbSet<UserParticipationModel> UserParticipations { get; set; } = null!;
+    public DbSet<UserAssignmentModel> UserAssignments { get; set; } = null!;
 
     public TaskerContext(DbContextOptions<TaskerContext> options)
         : base(options)
     {
+
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<UserAssignmentModel>()
+            .HasKey(ua => new { ua.UserId, ua.AssignmentId });
+    }
 }
