@@ -23,16 +23,16 @@ public class GroupRepository : IGroupRepository
     }
 
     // Read operations
-    public async Task<Group?> GetAsync(long id)
+    public async Task<Group?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
-        var groupModel = await _context.Groups.Include(g => g.Participants).FirstOrDefaultAsync(g => g.GroupId == id);
-        if (groupModel == null) return null; 
+        var groupModel = await _context.Groups.Include(g => g.Participants).FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
+        if (groupModel == null) return null;
         else return new Group(groupModel);
     }
 
-    public async Task<IEnumerable<Group>> GetAllAsync()
+    public async Task<IEnumerable<Group>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Groups.Select(g => new Group(g)).ToListAsync();
+        return await _context.Groups.Select(g => new Group(g)).ToListAsync(cancellationToken);
     }
 
     // Update operations
@@ -55,11 +55,11 @@ public class GroupRepository : IGroupRepository
         return true;
     }
 
-    public async Task<IEnumerable<Group>> GetAllAsync(string userId)
+    public async Task<IEnumerable<Group>> GetAllAsync(string userId, CancellationToken cancellationToken = default)
     {
         return await _context.UserParticipations.Include(up => up.Group).ThenInclude(up => up.Participants)
             .Where(up => up.User.UserIdentity == userId)
             .Select(up => new Group(up.Group!))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

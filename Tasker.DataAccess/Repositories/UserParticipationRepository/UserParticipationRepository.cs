@@ -23,16 +23,16 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Read operations
-    public async Task<UserParticipation?> GetAsync(long id)
+    public async Task<UserParticipation?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
-        var userParticipationModel = await _context.UserParticipations.FindAsync(id);
+        var userParticipationModel = await _context.UserParticipations.FindAsync(id, cancellationToken);
         if(userParticipationModel == null) return null; 
         else return new UserParticipation(userParticipationModel);
     }
 
-    public async Task<IEnumerable<UserParticipation>> GetAllAsync()
+    public async Task<IEnumerable<UserParticipation>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.UserParticipations.Select(up => new UserParticipation(up)).ToListAsync();
+        return await _context.UserParticipations.Select(up => new UserParticipation(up)).ToListAsync(cancellationToken);
     }
 
     // Update operations

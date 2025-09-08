@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Tasker.API.Services.GroupService;
 using Tasker.DataAccess;
 using Tasker.DataAccess.Repositories;
 
@@ -10,66 +11,45 @@ namespace Tasker.API.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        private readonly IGroupRepository _groupRepository;
-        private readonly IUserParticipationRepository _userParticipationRepository;
+        private readonly IGroupService _groupService;
 
-        private readonly UserManager<IdentityUser> _userManager;
-
-        public GroupsController(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository, UserManager<IdentityUser> userManager)
+        public GroupsController(IGroupService groupService)
         {
-            _groupRepository = groupRepository;
-            _userParticipationRepository = userParticipationRepository;
-            _userManager = userManager;
+            _groupService = groupService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Group>>> GetAllGroups(CancellationToken cancellationToken)
         {
-            var userId = _userManager.GetUserId(User);
+            var groups = await _groupService.GetAllGroups(User, cancellationToken);
 
-            if (userId == null) return BadRequest("Invalid user");
-
-            var groups = await _groupRepository.GetAllAsync(userId);
             return Ok(groups);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Group>> CreateGroup(Group group, CancellationToken cancellationToken)
+        public async Task<ActionResult<Group>> CreateGroup(Group group)
         {
-            var userId = _userManager.GetUserId(User);
-
-            if (userId == null) return BadRequest("Invalid user");
-
-
-
-            Group newGroup = new Group();
-            newGroup.Name = group.Name;
-            newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role = "Admin" });
-
-
-            var createdGroup = await _groupRepository.AddAsync(newGroup);
+            var createdGroup = await _groupService.CreateGroup(group, User);
+            
             return CreatedAtAction(nameof(GetAllGroups), createdGroup);
         }
 
         [HttpGet("{groupId:long}")]
         public async Task<IActionResult> GetGroupById(long groupId, CancellationToken cancellationToken)
         {
-            var group = await _groupRepository.GetAsync(groupId);
-            if (group == null) return NotFound();
+            var result = await _groupService.GetGroupById(groupId, cancellationToken);
+            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
-            return Ok(group);
+            return Ok(result.Value);
         }
 
         [HttpPost("{groupId:long}/members")]
-        public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId)
         {
-            await _userParticipationRepository.AddAsync(new UserParticipation
-            {
-                GroupId = groupId,
-                UserId = userId,
-                Role = "Member"
-            });
-            return Ok();
-        }
+            var result = await _groupService.AddGroupMember(groupId, userId);
+            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Value);
+        }   
     }
 }

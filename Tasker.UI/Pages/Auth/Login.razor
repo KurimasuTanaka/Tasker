@@ -16,7 +16,7 @@
 
     async Task HandleLogin()
     {
-        var success = await _authService.Login(loginModel);
-        if (success) Navigation.NavigateTo("/");
+        string result = await _authService.Login(loginModel);
+        if (result == "Authorized successfully") Navigation.NavigateTo("/");
     }
 }

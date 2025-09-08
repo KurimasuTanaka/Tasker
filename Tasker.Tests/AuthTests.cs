@@ -1,62 +1,81 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
+using Moq;
+using NUnit.Framework.Legacy;
 using Tasker.DataAccess.Auth;
 using Tasker.Database;
+using Tasker.UI.Auth;
 
 namespace Tasker.Tests;
 
 public class AuthTests
 {
     private WebApplicationFactory<API.Program> _webApplicationAPIFactory = null!;
+    
+    private CustomAuthStateProvider _authStateProvider = null!;
+    private AuthService _authService = null!;
     private HttpClient _client = null!;
 
     [SetUp]
     public void Setup()
     {
-        // Fix for multiple EF Core providers registered
-        AppContext.SetSwitch("Microsoft.EntityFrameworkCore.Issue9825", true);
 
-        _webApplicationAPIFactory = new WebApplicationFactory<API.Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
+        var _sessionStorageServiceMoq = new Mock<ISessionStorageService>();
+
+        _webApplicationAPIFactory = new WebApplicationFactory<API.Program>()
+            .WithWebHostBuilder(builder =>
             {
-                // Remove all DbContextOptions<IdentityContext> registrations
-                var dbContextOptionsDescriptors = services
-                    .Where(d => d.ServiceType == typeof(DbContextOptions<IdentityContext>))
-                    .ToList();
-                foreach (var descriptor in dbContextOptionsDescriptors)
+                builder.ConfigureServices(services =>
                 {
-                    services.Remove(descriptor);
-                }
+                    // Remove the existing DbContext registrations
+                    var descriptors = services
+                        .Where(d =>
+                            d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
+                            d.ServiceType == typeof(DbContextOptions<TaskerContext>) ||
+                            d.ServiceType == typeof(IdentityContext) ||
+                            d.ServiceType == typeof(TaskerContext)
+                            )
+                        .ToList();
 
-                // Remove all IdentityContext registrations
-                var identityContextDescriptors = services
-                    .Where(d => d.ServiceType == typeof(IdentityContext))
-                    .ToList();
-                foreach (var descriptor in identityContextDescriptors)
-                {
-                    services.Remove(descriptor);
-                }
+                    foreach (var d in descriptors)
+                    {
+                        services.Remove(d);
+                    }
 
-                services.AddDbContext<IdentityContext>(options =>   
-                {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    // Register in-memory databases instead
+                    services.AddDbContext<IdentityContext>(options =>
+                        options.UseSqlite("Data Source=./IdentityTestDb"));
+
+                    services.AddDbContext<TaskerContext>(options =>
+                        options.UseSqlite("Data Source=./TaskerTestDb"));
+
+                    var sp = services.BuildServiceProvider();
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var db = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+                        db.Database.EnsureDeleted();
+                        db.Database.EnsureCreated();
+                    }
+
+                    using (var scope = sp.CreateScope())
+                    {
+                        var db = scope.ServiceProvider.GetRequiredService<TaskerContext>();
+                        db.Database.EnsureDeleted();
+                        db.Database.EnsureCreated();
+                    }
+
                 });
-
-                // Build the provider and ensure the database is created
-                using (var scope = services.BuildServiceProvider().CreateScope())
-                {
-                    var identityContext = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-                    identityContext.Database.EnsureCreated();
-                }
             });
-            
-        });
+
         _client = _webApplicationAPIFactory.CreateClient();
 
-        
+        _authStateProvider = new(_sessionStorageServiceMoq.Object, _client);
+        _authService = new AuthService(_client, _authStateProvider, _sessionStorageServiceMoq.Object);
     }
 
     [Test]
@@ -69,7 +88,7 @@ public class AuthTests
     }
 
     [Test]
-    public async Task Post_RegisterNewUser_NewUserIsRegistered()
+    public async Task Post_RegisterNewUser_NewUserIsRegisteredAndAuthorized()
     {
         //Arrange
         RegisterModel model = new RegisterModel();
@@ -77,10 +96,32 @@ public class AuthTests
         model.Password = "Password123!";
 
         //Act
-        var response = await _client.PostAsJsonAsync("/api/auth/register", model);
+        string returnString = await _authService.Register(model);
 
         //Assert
-        response.EnsureSuccessStatusCode();
+        Assert.That(returnString, Is.EqualTo("Authorized successfully"));
+    }
+
+    [Test]
+    public async Task Post_LoginToNewAccount_UserIsAuthorized()
+    {
+        //Arrange
+        RegisterModel registerModel = new RegisterModel();
+        registerModel.Email = "test@email.com";
+        registerModel.Password = "Password123!";
+
+        await _authService.Register(registerModel);
+
+        //Act
+
+        LoginModel loginModel = new LoginModel();
+        loginModel.Email = "test@email.com";
+        loginModel.Password = "Password123!";
+
+        string result = await _authService.Login(loginModel);
+
+        //Assert
+        Assert.That(result, Is.EqualTo("Authorized successfully"));
 
     }
 

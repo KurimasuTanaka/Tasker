@@ -22,16 +22,16 @@ public class UserRepository : IUserRepository
     }
 
     // Read operations
-    public async Task<User?> GetAsync(string id)
+    public async Task<User?> GetAsync(string id, CancellationToken cancellationToken = default)
     {
-        var userModel = await _context.Users.Include(u => u.Participations).FirstOrDefaultAsync(u => u.UserIdentity == id);
+        var userModel = await _context.Users.Include(u => u.Participations).FirstOrDefaultAsync(u => u.UserIdentity == id, cancellationToken);
         if (userModel == null) return null; 
         else return new User(userModel);
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Users.Select(u => new User(u)).ToListAsync();
+        return await _context.Users.Select(u => new User(u)).ToListAsync(cancellationToken);
     }
 
     // Update operations

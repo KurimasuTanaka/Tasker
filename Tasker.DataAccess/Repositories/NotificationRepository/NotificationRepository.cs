@@ -23,16 +23,16 @@ public class NotificationRepository : INotificationRepository
     }
 
     // Read operations
-    public async Task<Notification?> GetAsync(long id)
+    public async Task<Notification?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
-        var notificationModel = await _context.Notifications.FindAsync(id);
+        var notificationModel = await _context.Notifications.FindAsync(id, cancellationToken);
         if (notificationModel == null) return null;
         else return new Notification(notificationModel);
     }
 
-    public async Task<IEnumerable<Notification>> GetAllAsync()
+    public async Task<IEnumerable<Notification>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Notifications.Select(n => new Notification(n)).ToListAsync();
+        return await _context.Notifications.Select(n => new Notification(n)).ToListAsync(cancellationToken);
     }
 
     // Update operations

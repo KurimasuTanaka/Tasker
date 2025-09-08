@@ -21,16 +21,16 @@ public class AssignmentRepository : IAssignmentRepository
     }
 
     // Read operations
-    public async Task<Assignment?> GetAsync(long id)
+    public async Task<Assignment?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
-        var assignmentModel = await _context.Assignments.FindAsync(id);
-        if (assignmentModel == null) return null; 
+        var assignmentModel = await _context.Assignments.FindAsync(id, cancellationToken);
+        if (assignmentModel == null) return null;
         else return new Assignment(assignmentModel);
     }
 
-    public async Task<IEnumerable<Assignment>> GetAllAsync()
+    public async Task<IEnumerable<Assignment>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Assignments.Select(t => new Assignment(t)).ToListAsync();
+        return await _context.Assignments.Select(t => new Assignment(t)).ToListAsync(cancellationToken);
     }
 
     // Update operations
