@@ -25,7 +25,7 @@ namespace Tasker.API.Controllers
         {
             var groups = await _groupService.GetAllGroups(User, cancellationToken);
 
-            return Ok(groups);
+            return Ok(groups.Value);
         }
 
         [HttpPost]
