@@ -16,14 +16,14 @@ namespace Tasker.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Assignment>>> GetAllAssignments(long groupId)
+        public async Task<ActionResult<List<Assignment>>> GetAllAssignments(long groupId, CancellationToken cancellationToken)
         {
             // Implementation for retrieving all group members
             return Ok(new List<Assignment>());
         }
 
         [HttpGet("{assignmentId:long}")]
-        public async Task<ActionResult<Assignment>> GetAssignment(long groupId, long assignmentId)
+        public async Task<ActionResult<Assignment>> GetAssignment(long groupId, long assignmentId, CancellationToken cancellationToken)
         {
             // Implementation for retrieving a specific assignment
             return Ok();

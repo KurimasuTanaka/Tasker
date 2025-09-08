@@ -12,13 +12,11 @@ public class GroupsService : IGroupsService
 {
     private readonly IGroupRepository _groupRepository;
     private readonly IUserParticipationRepository _userParticipationRepository;
-    private readonly UserManager<IdentityUser> _userManager;
 
-    public GroupsService(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository, UserManager<IdentityUser> userManager)
+    public GroupsService(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository)
     {
         _groupRepository = groupRepository;
         _userParticipationRepository = userParticipationRepository;
-        _userManager = userManager;
     }
 
     public async Task<Result<Group>> AddGroupMember(long groupId, string userId)
@@ -35,9 +33,8 @@ public class GroupsService : IGroupsService
         return Result.Success(group);
     }
 
-    public async Task<Result<Group>> CreateGroup(Group group, ClaimsPrincipal user)
+    public async Task<Result<Group>> CreateGroup(Group group, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         if (userId == null) return Result.Failure<Group>("Invalid user");
 
         Group newGroup = new Group();
@@ -49,10 +46,8 @@ public class GroupsService : IGroupsService
         return Result.Success(createdGroup);
     }
 
-    public async Task<Result<IEnumerable<Group>>> GetAllGroups(ClaimsPrincipal user, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Group>>> GetAllGroups(string userId, CancellationToken cancellationToken)
     {
-        var userId = _userManager.GetUserId(user);
-
         if (userId == null) return Result.Failure<IEnumerable<Group>>("Invalid user");
 
         var groups = await _groupRepository.GetAllAsync(userId, cancellationToken);

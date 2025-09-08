@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.API.Services.GroupsService;
 using Tasker.DataAccess;
+using Tasker.DataAccess.DataTransferObjects;
 using Tasker.DataAccess.Repositories;
 
 namespace Tasker.API.Controllers
@@ -13,17 +14,22 @@ namespace Tasker.API.Controllers
     public class GroupsController : ControllerBase
     {
         private readonly IGroupsService _groupService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public GroupsController(IGroupsService groupService)
+        public GroupsController(IGroupsService groupService, UserManager<IdentityUser> userManager)
         {
             _groupService = groupService;
+            _userManager = userManager;
         }
 
 
         [HttpGet]
         public async Task<ActionResult<List<Group>>> GetAllGroups(CancellationToken cancellationToken)
         {
-            var groups = await _groupService.GetAllGroups(User, cancellationToken);
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return BadRequest("Invalid user");
+
+            var groups = await _groupService.GetAllGroups(userId, cancellationToken);
 
             return Ok(groups.Value);
         }
@@ -31,9 +37,13 @@ namespace Tasker.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Group>> CreateGroup(Group group)
         {
-            var createdGroup = await _groupService.CreateGroup(group, User);
-            
-            return CreatedAtAction(nameof(GetAllGroups), createdGroup);
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return BadRequest("Invalid user");
+
+            Result<Group> createdGroup = await _groupService.CreateGroup(group, userId);
+
+            if (!createdGroup.IsSuccess) return BadRequest(createdGroup.ErrorMessage);
+            return CreatedAtAction("CreateGroup", createdGroup.Value);
         }
 
         [HttpGet("{groupId:long}")]
