@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.API.Services.GroupService;
+using Tasker.API.Services.GroupsService;
 using Tasker.DataAccess;
 using Tasker.DataAccess.Repositories;
 
@@ -12,9 +12,9 @@ namespace Tasker.API.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        private readonly IGroupService _groupService;
+        private readonly IGroupsService _groupService;
 
-        public GroupsController(IGroupService groupService)
+        public GroupsController(IGroupsService groupService)
         {
             _groupService = groupService;
         }

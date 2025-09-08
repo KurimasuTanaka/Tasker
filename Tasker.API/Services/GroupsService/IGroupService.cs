@@ -3,9 +3,9 @@ using System.Security.Claims;
 using Tasker.DataAccess;
 using Tasker.DataAccess.DataTransferObjects;
 
-namespace Tasker.API.Services.GroupService;
+namespace Tasker.API.Services.GroupsService;
 
-public interface IGroupService
+public interface IGroupsService
 {
     Task<Result<IEnumerable<Group>>> GetAllGroups(ClaimsPrincipal user, CancellationToken cancellationToken);
     Task<Result<Group>> CreateGroup(Group group, ClaimsPrincipal user);

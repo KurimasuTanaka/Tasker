@@ -6,15 +6,15 @@ using Tasker.DataAccess.DataTransferObjects;
 using Tasker.DataAccess.Repositories;
 using System.Security.Claims;
 
-namespace Tasker.API.Services.GroupService;
+namespace Tasker.API.Services.GroupsService;
 
-public class GroupService : IGroupService
+public class GroupsService : IGroupsService
 {
     private readonly IGroupRepository _groupRepository;
     private readonly IUserParticipationRepository _userParticipationRepository;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public GroupService(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository, UserManager<IdentityUser> userManager)
+    public GroupsService(IGroupRepository groupRepository, IUserParticipationRepository userParticipationRepository, UserManager<IdentityUser> userManager)
     {
         _groupRepository = groupRepository;
         _userParticipationRepository = userParticipationRepository;
