@@ -66,7 +66,27 @@ public partial class Program
                 {
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 });
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Adming", policy =>
+                policy.RequireAssertion(context =>
+                    context.User.Claims.Any(c =>
+                        c.Type == "GroupRole" &&
+                        c.Value.EndsWith(":Admin"))));
 
+            options.AddPolicy("Manager", policy =>
+                policy.RequireAssertion(context =>
+                    context.User.Claims.Any(c =>
+                        c.Type == "GroupRole" &&
+                        c.Value.EndsWith(":Manager"))));
+
+            options.AddPolicy("User", policy =>
+                policy.RequireAssertion(context =>
+                    context.User.Claims.Any(c =>
+                        c.Type == "GroupRole" &&
+                        c.Value.EndsWith(":User"))));
+
+        });
 
         var app = builder.Build();
 

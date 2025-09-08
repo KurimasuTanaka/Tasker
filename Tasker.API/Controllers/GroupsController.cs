@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace Tasker.API.Controllers
         {
             _groupService = groupService;
         }
+
 
         [HttpGet]
         public async Task<ActionResult<List<Group>>> GetAllGroups(CancellationToken cancellationToken)
@@ -43,6 +45,8 @@ namespace Tasker.API.Controllers
             return Ok(result.Value);
         }
 
+        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Manager")]
         [HttpPost("{groupId:long}/members")]
         public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId)
         {

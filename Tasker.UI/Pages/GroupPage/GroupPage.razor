@@ -29,10 +29,6 @@
     protected override async Task OnInitializedAsync()
     {
         var user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
-        if(user.IsInRole($"{GroupId}:Member") || user.IsInRole($"{GroupId}:Admin"))
-        {
-            int f = 3;
-        }
         group = await _groupsManager.GetGroupById(GroupId);
     }
 
