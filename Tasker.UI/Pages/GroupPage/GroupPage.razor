@@ -1,7 +1,5 @@
 ﻿@page "/group/{GroupId:long}"
-@using Tasker.DataAccess
-@using Tasker.UI.Services
-@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 
 @inject IGroupsManager _groupsManager
 @inject AuthenticationStateProvider _authenticationStateProvider

@@ -1,7 +1,9 @@
-﻿@page "/"
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@page "/dashboard"
+@attribute [Authorize]
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<PageTitle>Home</PageTitle>
+
+<PageTitle>Dashboard</PageTitle>
 
 @(userName)
 
