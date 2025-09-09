@@ -5,7 +5,7 @@ using Tasker.DataAccess;
 
 namespace Tasker.API.Controllers
 {
-    [Route("api/[controller]/groups/{groupId:long}/assignments")]
+    [Route("api/groups/{groupId:long}/assignments")]
     [ApiController]
     public class AssignmentController : ControllerBase
     {

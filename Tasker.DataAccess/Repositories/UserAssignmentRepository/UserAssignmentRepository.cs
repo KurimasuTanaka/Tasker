@@ -1,6 +1,5 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Tasker.DataAccess.DomainObjects;
 using Tasker.Database;
 
 namespace Tasker.DataAccess.Repositories;

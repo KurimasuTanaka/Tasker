@@ -7,12 +7,10 @@ namespace Tasker.UI.Services;
 public class GroupsManager : IGroupsManager
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<GroupsManager> _logger;
 
-    public GroupsManager(HttpClient httpClient, ILogger<GroupsManager> logger)
+    public GroupsManager(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _logger = logger;
     }
 
     public async Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default)
