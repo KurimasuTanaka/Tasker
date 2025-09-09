@@ -27,7 +27,7 @@ public partial class Program
                                 .AllowCredentials());
         });
 
-        builder.Services.AddDbContext<TaskerContext>(options =>
+        builder.Services.AddDbContextFactory<TaskerContext>(options =>
             options.UseSqlite("Data Source=./tasker.db"));
 
         builder.Services.AddDbContext<IdentityContext>(options =>

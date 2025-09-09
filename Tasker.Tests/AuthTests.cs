@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Moq;
@@ -35,7 +36,7 @@ public class AuthTests
                     var descriptors = services
                         .Where(d =>
                             d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
-                            d.ServiceType == typeof(DbContextOptions<TaskerContext>) ||
+                            d.ServiceType == typeof(IDbContextFactory<TaskerContext>) ||
                             d.ServiceType == typeof(IdentityContext) ||
                             d.ServiceType == typeof(TaskerContext)
                             )
@@ -50,7 +51,7 @@ public class AuthTests
                     services.AddDbContext<IdentityContext>(options =>
                         options.UseSqlite("Data Source=./IdentityTestDb"));
 
-                    services.AddDbContext<TaskerContext>(options =>
+                    services.AddDbContextFactory<TaskerContext>(options =>
                         options.UseSqlite("Data Source=./TaskerTestDb"));
 
                     var sp = services.BuildServiceProvider();

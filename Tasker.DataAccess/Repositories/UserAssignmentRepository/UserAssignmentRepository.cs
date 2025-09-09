@@ -7,15 +7,16 @@ namespace Tasker.DataAccess.Repositories;
 public class UserAssignmentRepository : IUserAssignmentRepository
 {
 
-    private readonly TaskerContext _context;
+    private readonly IDbContextFactory<TaskerContext> _contextFactory;
 
-    public UserAssignmentRepository(TaskerContext context)
+    public UserAssignmentRepository(IDbContextFactory<TaskerContext> contextFactory)
     {
-        _context = context;
+        _contextFactory = contextFactory;
     }
 
     public async Task<UserAssignment> AddAsync(UserAssignment entity)
     {
+        using var _context = await _contextFactory.CreateDbContextAsync();
         await _context.UserAssignments.AddAsync(entity);
         await _context.SaveChangesAsync();
         return entity;
@@ -23,6 +24,7 @@ public class UserAssignmentRepository : IUserAssignmentRepository
 
     public async Task<bool> DeleteAsync((long UserId, long AssignmentId) id)
     {
+        using var _context = await _contextFactory.CreateDbContextAsync();
         var entity = await _context.UserAssignments.FindAsync(id);
         if (entity == null) return false;
 
@@ -33,11 +35,13 @@ public class UserAssignmentRepository : IUserAssignmentRepository
 
     public async Task<IEnumerable<UserAssignment>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+        using var _context = await _contextFactory.CreateDbContextAsync();
         return await _context.UserAssignments.Select(ua => new UserAssignment(ua)).ToListAsync(cancellationToken);
     }
 
     public async Task<UserAssignment?> GetAsync((long UserId, long AssignmentId) id, CancellationToken cancellationToken = default)
     {
+        using var _context = await _contextFactory.CreateDbContextAsync();
         var userAssignmentModel = await _context.UserAssignments.FindAsync(id);
         if(userAssignmentModel == null) return null; 
         else return new UserAssignment(userAssignmentModel);    
@@ -45,6 +49,8 @@ public class UserAssignmentRepository : IUserAssignmentRepository
 
     public async Task<UserAssignment> UpdateAsync(UserAssignment entity)
     {
+        using var _context = await _contextFactory.CreateDbContextAsync();
+         
         _context.UserAssignments.Update(entity);
         await _context.SaveChangesAsync();
         return entity;
