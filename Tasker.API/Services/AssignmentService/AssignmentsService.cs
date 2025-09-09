@@ -51,7 +51,6 @@ public class AssignmentsService : IAssignmentsService
     public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
     {
         if (assignment == null) return Result.Failure<Assignment>("Assignment cannot be null");
-
         try
         {
             Assignment createdAssignment = await _assignmentRepository.AddAsync(assignment);

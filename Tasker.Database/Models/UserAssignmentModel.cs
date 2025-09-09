@@ -4,7 +4,7 @@ namespace Tasker.Database;
 
 public class UserAssignmentModel
 {
-    public long UserId { get; set; }
+    public string UserId { get; set; } = String.Empty;
     public long AssignmentId { get; set; }
     // Navigation properties
     public UserModel User { get; set; } = null!;

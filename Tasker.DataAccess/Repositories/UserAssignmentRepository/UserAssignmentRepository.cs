@@ -22,10 +22,10 @@ public class UserAssignmentRepository : IUserAssignmentRepository
         return entity;
     }
 
-    public async Task<bool> DeleteAsync((long UserId, long AssignmentId) id)
+    public async Task<bool> DeleteAsync((string UserId, long AssignmentId) id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var entity = await _context.UserAssignments.FindAsync(id);
+        var entity = await _context.UserAssignments.FindAsync(id.UserId, id.AssignmentId);
         if (entity == null) return false;
 
         _context.UserAssignments.Remove(entity);
@@ -39,10 +39,10 @@ public class UserAssignmentRepository : IUserAssignmentRepository
         return await _context.UserAssignments.Select(ua => new UserAssignment(ua)).ToListAsync(cancellationToken);
     }
 
-    public async Task<UserAssignment?> GetAsync((long UserId, long AssignmentId) id, CancellationToken cancellationToken = default)
+    public async Task<UserAssignment?> GetAsync((string UserId, long AssignmentId) id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var userAssignmentModel = await _context.UserAssignments.FindAsync(id);
+        var userAssignmentModel = await _context.UserAssignments.FindAsync(id.UserId, id.AssignmentId);
         if(userAssignmentModel == null) return null; 
         else return new UserAssignment(userAssignmentModel);    
     }

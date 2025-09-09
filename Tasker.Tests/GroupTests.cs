@@ -1,141 +1,153 @@
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
-using Moq;
-using NUnit.Framework.Legacy;
-using Tasker.DataAccess.Auth;
-using Tasker.Database;
-using Tasker.UI.Auth;
-using Tasker.UI.Services;
+using Tasker.API.Services.GroupsService;
+using Tasker.DataAccess;
+using Tasker.DataAccess.Repositories;
 
 namespace Tasker.Tests;
 
 public class GroupTests
 {
-    private WebApplicationFactory<API.Program> _webApplicationAPIFactory = null!;
-
-    private CustomAuthStateProvider _authStateProvider = null!;
-    private AuthService _authService = null!;
-    private GroupsManager _groupManager = null!;
-    private HttpClient _client = null!;
-
-    private UserModel _userGroupCreator = null!;
-    private string _userGroupCreatorPassword = "Password123!";
-    private string _userGroupCreatorEmail = "testuser@example.com";
-
-
-    private UserModel _userGroupMember = null!;
-    private string _userGroupMemberPassword = "Password123!";
-    private string _userGroupMemberEmail = "testusermember@example.com";
+    GroupsService _groupsService = null!;
+    protected TestDbContextFactory _contextFactory;
+    protected IGroupRepository _groupRepository;
+    protected INotificationRepository _notificationRepository;
+    protected IUserRepository _userRepository;
+    protected IUserAssignmentRepository _userAssignmentRepository;
+    protected IUserParticipationRepository _userParticipationRepository;
 
     [SetUp]
-    public void Setup()
+    public async Task Setup()
     {
+        _contextFactory = new TestDbContextFactory();
 
-        var _sessionStorageServiceMoq = new Mock<ISessionStorageService>();
+        _userRepository = new UserRepository(_contextFactory);
+        _groupRepository = new GroupRepository(_contextFactory);
+        _userParticipationRepository = new UserParticipationRepository(_contextFactory);
 
-        _webApplicationAPIFactory = new WebApplicationFactory<API.Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    // Remove the existing DbContext registrations
-                    var descriptors = services
-                        .Where(d =>
-                            d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
-                            d.ServiceType == typeof(DbContextOptions<TaskerContext>) ||
-                            d.ServiceType == typeof(IdentityContext) ||
-                            d.ServiceType == typeof(TaskerContext)
-                            )
-                        .ToList();
-
-                    foreach (var d in descriptors)
-                    {
-                        services.Remove(d);
-                    }
-
-                    // Register in-memory databases instead
-                    services.AddDbContext<IdentityContext>(options =>
-                        options.UseSqlite("Data Source=./IdentityTestDb"));
-
-                    services.AddDbContext<TaskerContext>(options =>
-                        options.UseSqlite("Data Source=./TaskerTestDb"));
-
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var db = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-                        db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
-                    }
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var db = scope.ServiceProvider.GetRequiredService<TaskerContext>();
-                        db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
-                    }
-
-                });
-            });
-
-        _client = _webApplicationAPIFactory.CreateClient();
-
-        _authStateProvider = new(_sessionStorageServiceMoq.Object, _client);
-        _authService = new AuthService(_client, _authStateProvider, _sessionStorageServiceMoq.Object);
-        _groupManager = new GroupsManager(_client);
+        _groupsService = new GroupsService(_groupRepository, _userParticipationRepository);
 
 
+        await _userRepository.AddAsync(new User()
+        {
+            UserIdentity = Guid.NewGuid().ToString(),
+            FirstName = "TestName",
+            LastName = "TestLastName",
+        });
     }
 
     [Test]
-    public async Task Post_SentRequestToCreateGroup_NewGroupIsCreated()
+    public async Task CreateGroup_CreateNewGroup_NewGroupIsCreated()
     {
         //Arrange
-        string testGroupName = "Test Group";
+        string userId = (await _userRepository.GetAllAsync()).First().UserIdentity;
 
-        await _authService.Register(new RegisterModel
-        {
-            Email = _userGroupCreatorEmail,
-            Password = _userGroupCreatorPassword
-        });
+        var groupName = "Test Group";
+        Group group = new() { Name = groupName };
 
-        await _authService.Register(new RegisterModel
-        {
-            Email = _userGroupMemberEmail,
-            Password = _userGroupMemberPassword
-        });
-
-        var loginKey = await _authService.Login(new LoginModel
-        {
-            Email = _userGroupCreatorEmail,
-            Password = _userGroupCreatorPassword
-        });
-
-        _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginKey);
-        _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
         //Act
-        var group = await _groupManager.CreateGroup(testGroupName);
+        Group createdGroup = (await _groupsService.CreateGroup(group, userId)).Value;
+
         //Assert
 
-        Assert.That(group, Is.Not.Null);
-        Assert.That(group.Name, Is.EqualTo(testGroupName));
+        Assert.That(createdGroup, Is.Not.Null);
+        Assert.That(createdGroup.Name, Is.EqualTo(groupName));
+
 
     }
-
-
-
-
-
-    [TearDown]
-    public void TearDown()
+    [Test]
+    public async Task GetAllGroups_CreateTwoGroupsAndReturnThem_TwoGroupsAreReturned()
     {
-        _webApplicationAPIFactory?.Dispose();
-        _client?.Dispose();
+        //Arrange
+        string userId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+
+        var groupName1 = "Test Group 1";
+        var groupName2 = "Test Group 2";
+        Group group1 = new() { Name = groupName1 };
+        Group group2 = new() { Name = groupName2 };
+
+        await _groupsService.CreateGroup(group1, userId);
+        await _groupsService.CreateGroup(group2, userId);
+        //Act
+
+        List<Group> createdGroups = (await _groupsService.GetAllGroups(userId, CancellationToken.None)).Value.ToList();
+
+        //Assert
+
+        Assert.That(createdGroups, Is.Not.Null);
+        Assert.That(createdGroups.Count, Is.EqualTo(2));
+
     }
+    [Test]
+    public async Task GetGroupById_CreateNewGroupAndGetItById_GroupIsReturned()
+    {
+        //Arrange
+        string userId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+
+
+        Group group1 = new() { Name = "Test Group 1" };
+
+        Group createdGroup = (await _groupsService.CreateGroup(group1, userId)).Value;
+        //Act
+
+        Group? retrievedGroup = (await _groupsService.GetGroupById(createdGroup.GroupId, CancellationToken.None)).Value;
+        //Assert
+
+        Assert.That(retrievedGroup, Is.Not.Null);
+        Assert.That(retrievedGroup?.GroupId, Is.EqualTo(createdGroup.GroupId));
+        Assert.That(retrievedGroup?.Name, Is.EqualTo(createdGroup.Name));
+    }
+
+    [Test]
+    public async Task AddGroupMember_CreateNewGroupAndAddNewUserToIt_UserIsAddedToGroup()
+    {
+        //Arrange
+        string firstUserId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+        User addedUser = await _userRepository.AddAsync(new User()
+        {
+            UserIdentity = Guid.NewGuid().ToString(),
+            FirstName = "TestName2",
+            LastName = "TestLastName2",
+        });
+
+        Group group1 = new() { Name = "Test Group 1" };
+        Group createdGroup = (await _groupsService.CreateGroup(group1, firstUserId)).Value;
+        //Act
+
+        Group? retrievedGroup = (await _groupsService.AddGroupMember(createdGroup.GroupId, addedUser.UserIdentity)).Value;
+        //Assert
+
+        Assert.That(retrievedGroup, Is.Not.Null);
+        Assert.That(retrievedGroup?.GroupId, Is.EqualTo(createdGroup.GroupId));
+        Assert.That(retrievedGroup?.Participants.Count, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task GetAllGroups_CreateOneGroupPerUserAndAddOneUserToAnother_ListWithTwoGroupsFromOneUser()
+    {
+        //Arrange
+        string firstUserId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+        User secondUser = await _userRepository.AddAsync(new User()
+        {
+            UserIdentity = Guid.NewGuid().ToString(),
+            FirstName = "TestName2",
+            LastName = "TestLastName2",
+        });
+
+        Group group1 = new() { Name = "Test Group 1" };
+        Group group2 = new() { Name = "Test Group 2" };
+        
+        Group firstUserGroup = (await _groupsService.CreateGroup(group1, firstUserId)).Value;
+        Group secondUserGroup = (await _groupsService.CreateGroup(group2, secondUser.UserIdentity)).Value;
+
+        await _groupsService.AddGroupMember(firstUserGroup.GroupId, secondUser.UserIdentity);
+
+        //Act
+
+        List<Group> retrievedGroups = (await _groupsService.GetAllGroups(secondUser.UserIdentity, CancellationToken.None)).Value.ToList();
+        //Assert
+
+        Assert.That(retrievedGroups, Is.Not.Null);
+        Assert.That(retrievedGroups.Count, Is.EqualTo(2));
+    }
+
 }

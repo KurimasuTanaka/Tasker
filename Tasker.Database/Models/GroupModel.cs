@@ -9,5 +9,6 @@ public class GroupModel
     public long GroupId { get; set; }
     public string Name { get; set; } = String.Empty;
     public List<UserParticipationModel> Participants { get; set; } = new();
+    public List<AssignmentModel> Assignments { get; set; } = new();
 }
 
