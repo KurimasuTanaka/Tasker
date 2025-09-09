@@ -8,23 +8,45 @@ namespace Tasker.API.Services.AssignmentsService;
 public class AssignmentsService : IAssignmentsService
 {
     private readonly IAssignmentRepository _assignmentRepository;
+    private readonly IUserAssignmentRepository _userAssignmentRepository;
 
-    public AssignmentsService(IAssignmentRepository assignmentRepository)
+    public AssignmentsService(IAssignmentRepository assignmentRepository, IUserAssignmentRepository userAssignmentRepository)
     {
         _assignmentRepository = assignmentRepository;
+        _userAssignmentRepository = userAssignmentRepository;
     }
 
-    public Task<Result<Assignment>> AssignTaskToUser(long groupId, long assignmentId, long userId)
+    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignment userAssignment)
     {
+        if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
         {
-            
+            var createdUserAssignment = await _userAssignmentRepository.AddAsync(userAssignment);
+            if (createdUserAssignment == null) return Result.Failure<UserAssignment>("Failed to assign task to user");
+            return Result.Success<UserAssignment>(createdUserAssignment);
         }
         catch (Exception ex)
         {
-            return Task.FromResult(Result.Failure<Assignment>($"Error assigning task to user: {ex.Message}"));
+            return Result.Failure<UserAssignment>($"Error assigning task to user: {ex.Message}");
         }
     }
+
+    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)
+    {
+        if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
+        try
+        {
+            bool deletedUserAssignment = await _userAssignmentRepository.DeleteAsync((userAssignment.UserId, userAssignment.AssignmentId));
+            if (!deletedUserAssignment) return Result.Failure<UserAssignment>("Failed to unassign task from user");
+            return Result.Success<UserAssignment>(userAssignment);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<UserAssignment>($"Error unassigning task from user: {ex.Message}");
+        }
+
+    }
+
 
     public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
     {
@@ -39,7 +61,6 @@ public class AssignmentsService : IAssignmentsService
         {
             return Result.Failure<Assignment>($"Error creating assignment: {ex.Message}");
         }
-
     }
 
     public async Task<Result<bool>> DeleteAssignment(long groupId, long assignmentId)
@@ -82,10 +103,6 @@ public class AssignmentsService : IAssignmentsService
         }
     }
 
-    public Task<Result<Assignment>> UnassignTaskFromUser(long groupId, long assignmentId, long userId)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment)
     {

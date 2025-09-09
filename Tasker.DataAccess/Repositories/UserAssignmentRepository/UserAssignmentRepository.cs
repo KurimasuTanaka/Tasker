@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Tasker.DataAccess.DomainObjects;
 using Tasker.Database;
 
-namespace Tasker.DataAccess.Repositories.UserAssignmentRepository;
+namespace Tasker.DataAccess.Repositories;
 
 public class UserAssignmentRepository : IUserAssignmentRepository
 {

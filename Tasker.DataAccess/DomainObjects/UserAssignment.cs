@@ -1,7 +1,7 @@
 using System;
 using Tasker.Database;
 
-namespace Tasker.DataAccess.DomainObjects;
+namespace Tasker.DataAccess;
 
 public class UserAssignment : UserAssignmentModel
 {
