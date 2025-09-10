@@ -16,7 +16,7 @@ namespace Tasker.Tests;
 public class AuthTests
 {
     private WebApplicationFactory<API.Program> _webApplicationAPIFactory = null!;
-    
+
     private CustomAuthStateProvider _authStateProvider = null!;
     private AuthService _authService = null!;
     private HttpClient _client = null!;
@@ -95,6 +95,8 @@ public class AuthTests
         RegisterModel model = new RegisterModel();
         model.Email = "test@email.com";
         model.Password = "Password123!";
+        model.FirstName = "Test";
+        model.LastName = "Testsson";
 
         //Act
         string returnString = await _authService.Register(model);
@@ -110,7 +112,9 @@ public class AuthTests
         var registerModel = new RegisterModel
         {
             Email = "test@email.com",
-            Password = "Password123!"
+            Password = "Password123!",
+            FirstName = "Test",
+            LastName = "Testsson"
         };
 
         await _authService.Register(registerModel);
