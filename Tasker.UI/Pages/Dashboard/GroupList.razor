@@ -1,0 +1,52 @@
+﻿@using Tasker.DataAccess
+@using Tasker.UI.Services
+@inject IGroupsManager _groupsManager
+@inject NavigationManager NavigationManager
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="CreateGroup">Create Group</MudButton>
+
+
+@foreach (var group in _groups)
+{
+    <MudCard Outlined="true" Style="margin-top:10px;">
+        <MudCardContent>
+            <MudText>@group.Name</MudText>
+            <MudText Typo="Typo.body2">Users: @group.Participants.Count</MudText>
+            <MudText Typo="Typo.body2">Task: @group.Assignments.Where(a=> !a.IsCompleted).ToList().Count</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => OpenGroup(group.GroupId)">Open
+            </MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => DeleteGroup(group.GroupId)">Delete
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+
+}
+
+@code {
+    private List<Group> _groups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _groups = await _groupsManager.GetAllGroups();
+    }
+    private async Task CreateGroup(MouseEventArgs args)
+    {
+        await _groupsManager.CreateGroup("New Group" + (_groups.Count + 1).ToString());
+        _groups = await _groupsManager.GetAllGroups();
+
+        StateHasChanged();
+    }
+    private void OpenGroup(long groupId)
+    {
+        NavigationManager.NavigateTo($"/group/{groupId}");
+    }
+
+    private async Task DeleteGroup(long groupId)
+    {
+        await _groupsManager.DeleteGroup(groupId);
+        _groups.RemoveAll(g => g.GroupId == groupId);
+        StateHasChanged();
+    }
+}

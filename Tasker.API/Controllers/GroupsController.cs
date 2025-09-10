@@ -64,6 +64,16 @@ namespace Tasker.API.Controllers
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
             return Ok(result.Value);
-        }   
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpDelete("{groupId:long}")]
+        public async Task<IActionResult> DeleteGroup(long groupId)
+        {
+            var result = await _groupService.DeleteGroup(groupId);
+            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+
+            return NoContent();
+        }
     }
 }

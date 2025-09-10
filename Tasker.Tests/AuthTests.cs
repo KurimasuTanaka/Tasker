@@ -107,17 +107,21 @@ public class AuthTests
     public async Task Post_LoginToNewAccount_UserIsAuthorized()
     {
         //Arrange
-        RegisterModel registerModel = new RegisterModel();
-        registerModel.Email = "test@email.com";
-        registerModel.Password = "Password123!";
+        var registerModel = new RegisterModel
+        {
+            Email = "test@email.com",
+            Password = "Password123!"
+        };
 
         await _authService.Register(registerModel);
 
         //Act
 
-        LoginModel loginModel = new LoginModel();
-        loginModel.Email = "test@email.com";
-        loginModel.Password = "Password123!";
+        var loginModel = new LoginModel
+        {
+            Email = "test@email.com",
+            Password = "Password123!"
+        };
 
         string result = await _authService.Login(loginModel);
 

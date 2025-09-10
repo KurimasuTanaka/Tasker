@@ -21,44 +21,85 @@ public class GroupsService : IGroupsService
 
     public async Task<Result<Group>> AddGroupMember(long groupId, string userId)
     {
-        await _userParticipationRepository.AddAsync(new UserParticipation
+        if (userId == null) return Result.Failure<Group>("Invalid user");
+        try
         {
-            GroupId = groupId,
-            UserId = userId,
-            Role = "Member"
-        });
+            await _userParticipationRepository.AddAsync(new UserParticipation
+            {
+                GroupId = groupId,
+                UserId = userId,
+                Role = "Member"
+            });
 
-        Group? group = await _groupRepository.GetAsync(groupId);
-        if (group is null) return Result.Failure<Group>("Group not found");
-        return Result.Success(group);
+            Group? group = await _groupRepository.GetAsync(groupId);
+            if (group is null) return Result.Failure<Group>("Group not found");
+            return Result.Success(group);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Group>($"Error adding member to group: {ex.Message}");
+        }
     }
 
     public async Task<Result<Group>> CreateGroup(Group group, string userId)
     {
         if (userId == null) return Result.Failure<Group>("Invalid user");
 
-        Group newGroup = new Group();
-        newGroup.Name = group.Name;
-        newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role = "Admin" });
+        try
+        {
+            Group newGroup = new Group();
+            newGroup.Name = group.Name;
+            newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role = "Admin" });
+            var createdGroup = await _groupRepository.AddAsync(newGroup);
+            return Result.Success(createdGroup);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Group>($"Error creating group: {ex.Message}");
+        }
+    }
 
-
-        var createdGroup = await _groupRepository.AddAsync(newGroup);
-        return Result.Success(createdGroup);
+    public async Task<Result<bool>> DeleteGroup(long groupId)
+    {
+        try
+        {
+            await _groupRepository.DeleteAsync(groupId);
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<bool>($"Error deleting group: {ex.Message}");
+        }
     }
 
     public async Task<Result<IEnumerable<Group>>> GetAllGroups(string userId, CancellationToken cancellationToken)
     {
         if (userId == null) return Result.Failure<IEnumerable<Group>>("Invalid user");
 
-        var groups = await _groupRepository.GetAllAsync(userId, cancellationToken);
-        return Result.Success(groups);
+        try
+        {
+            var groups = await _groupRepository.GetAllAsync(userId, cancellationToken);
+            return Result.Success(groups);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<IEnumerable<Group>>("Error retrieving groups: " + ex.Message);
+        }
     }
 
     public async Task<Result<Group>> GetGroupById(long groupId, CancellationToken cancellationToken)
     {
-        var group = await _groupRepository.GetAsync(groupId);
-        if (group == null) return Result.Failure<Group>("Group not found");
+        try
+        {
+            var group = await _groupRepository.GetAsync(groupId);
+            if (group == null) return Result.Failure<Group>("Group not found");
+            return Result.Success(group);
 
-        return Result.Success(group);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Group>("Error retrieving group: " + ex.Message);
+        }
+
     }
 }
