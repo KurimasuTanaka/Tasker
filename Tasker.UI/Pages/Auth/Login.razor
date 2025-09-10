@@ -1,15 +1,20 @@
 ﻿@page "/login"
-@using Tasker.DataAccess.Auth
-@using Tasker.UI.Auth
+
+@attribute [AllowAnonymous]
+
 @inject IAuthService _authService;
 @inject NavigationManager Navigation
 
-<h3>Login</h3>
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-    <InputText @bind-Value="loginModel.Email" />
-    <InputText type="password" @bind-Value="loginModel.Password" />
-    <button type="submit">Login</button>
-</EditForm>
+<MudPaper>
+    <MudText Typo="Typo.h5">Login</MudText>
+
+    <MudForm Model="loginModel">
+        <MudTextField Variant="Variant.Outlined" HelperText="Email" Required="true" @bind-Value="loginModel.Email" />
+        <MudTextField Variant="Variant.Outlined" HelperText="Password" Required="true" type="password"
+            @bind-Value="loginModel.Password" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="HandleLogin">Login</MudButton>
+    </MudForm>
+</MudPaper>
 
 @code {
     LoginModel loginModel = new LoginModel();

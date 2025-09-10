@@ -1,27 +1,34 @@
 ﻿@inherits LayoutComponentBase
-@* Required *@
+@inject NavigationManager navMan
+
 <MudThemeProvider />
 <MudPopoverProvider />
-
-@* Needed for dialogs *@
 <MudDialogProvider />
-
-@* Needed for snackbars *@
 <MudSnackbarProvider />
 
+<MudLayout>
+    <MudAppBar>
+        <MudText Typo="Typo.h4">Tasker</MudText>
+        <AuthorizeView>
+            <Authorized>
+                <MudButton Size="Size.Large" Color="Color.Info" Href="/dashboard">Dashboard</MudButton>
+                <MudButton Size="Size.Large" Color="Color.Info" Href="/logout">Logout</MudButton>
+            </Authorized>
+        </AuthorizeView>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="p-4">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <RedirectToMain />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+}

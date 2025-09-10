@@ -2,8 +2,18 @@
 @page "/"
 @attribute [AllowAnonymous]
 
-<h3>MainPage</h3>
+@inject NavigationManager Navigation
 
-@code {
+<MudText Typo="Typo.h4" class="m-2">Test app for HYS Enterprise by Vedmitskyi Stanislav</MudText>
 
-}
+<MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Default" class="m-4" Href="/login">Login</MudButton>
+<MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Default" class="m-4" Href="/register">Register</MudButton>
+
+<AuthorizeView>
+    <Authorized>
+        <RedirectToDashboard />
+    </Authorized>
+</AuthorizeView>
+
+
+    

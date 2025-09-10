@@ -1,22 +1,29 @@
 ﻿@page "/register"
-@using Tasker.DataAccess.Auth
-@using Tasker.UI.Auth
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<h3>Register</h3>
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-    <InputText @bind-Value="loginModel.Email" />
-    <InputText type="password" @bind-Value="loginModel.Password" />
-    <button type="submit">Register</button>
-</EditForm>
+@attribute [AllowAnonymous]
+
+<MudText Typo="Typo.h4">Register</MudText>
+
+<MudPaper>
+    <MudForm Model="registerModel">
+
+        <MudTextField Variant="Variant.Outlined" HelperText="First Name" @bind-Value="registerModel.FirstName" />
+        <MudTextField Variant="Variant.Outlined" HelperText="Last Name" @bind-Value="registerModel.LastName" />
+        <MudTextField Variant="Variant.Outlined" HelperText="Email" @bind-Value="registerModel.Email" />
+        <MudTextField Variant="Variant.Outlined" HelperText="Password" type="password"
+            @bind-Value="registerModel.Password" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="submit" @onclick="HandleRegistration">Register</MudButton>
+    </MudForm>
+</MudPaper>
 
 @code {
-    RegisterModel loginModel = new RegisterModel();
+    RegisterModel registerModel = new RegisterModel();
 
-    async Task HandleLogin()
+    async Task HandleRegistration()
     {
-        string success = await AuthService.Register(loginModel);
+        string success = await AuthService.Register(registerModel);
         if (success is not null) Navigation.NavigateTo("/");
     }
 }
