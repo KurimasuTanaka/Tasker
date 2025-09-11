@@ -1,0 +1,35 @@
+﻿@inject IGroupsManager _groupsManager
+
+
+<MudDialog>
+    <TitleContent>
+        Add new member
+    </TitleContent>
+    <DialogContent>
+        <InputText @bind-Value="newUserId" class="form-control" />
+        <MudButton ButtonType="ButtonType.Submit" @onclick="AddMember">Add member</MudButton>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public long GroupId { get; set; } = default!;
+
+    string newUserId = string.Empty;
+
+    protected async Task AddMember()
+    {
+        await _groupsManager.AddMember(GroupId, newUserId);
+    }
+
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

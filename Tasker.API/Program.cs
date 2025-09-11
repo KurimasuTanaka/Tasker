@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Tasker.API.Services;
 using Tasker.API.Services.AuthService;
 using Tasker.API.Services.GroupsService;
 using Tasker.DataAccess;
@@ -59,6 +60,8 @@ public partial class Program
         builder.Services.AddDataAccess();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupsService, GroupsService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+
 
         builder.Services.AddSwaggerGen();
 

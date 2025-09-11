@@ -55,7 +55,7 @@ public class AuthService : IAuthService
             issuer: "yourapp.com",
             audience: "yourapp.com",
             claims: claims,
-            expires: DateTime.Now.AddMinutes(30), 
+            expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds);
 
         return Result.Success(new JwtSecurityTokenHandler().WriteToken(token));
@@ -64,13 +64,24 @@ public class AuthService : IAuthService
     public async Task<Result<string>> Register(RegisterModel registerModel)
     {
         var user = new IdentityUser { UserName = registerModel.Email, Email = registerModel.Email, Id = Guid.NewGuid().ToString() };
-        var result = await _userManager.CreateAsync(user, registerModel.Password);
 
-        if (result.Succeeded)
+        try
         {
-            await _userRepository.AddAsync(new User { UserIdentity = user.Id });
-            return await Login(new LoginModel { Email = registerModel.Email, Password = registerModel.Password });
+
+            var result = await _userManager.CreateAsync(user, registerModel.Password);
+            if (result.Succeeded)
+            {
+                await _userRepository.AddAsync(new User { UserIdentity = user.Id, FirstName = registerModel.FirstName, LastName = registerModel.LastName });
+                return await Login(new LoginModel { Email = registerModel.Email, Password = registerModel.Password });
+            }
+
         }
+        catch (Exception ex)
+        {
+            return Result.Failure<string>($"Registration failed: {ex.Message}");
+        }
+
+
 
         return Result.Failure<string>("Registration failed");
     }

@@ -23,6 +23,10 @@
 
     async Task HandleRegistration()
     {
+        registerModel.FirstName = registerModel.FirstName.Trim();
+        registerModel.LastName = registerModel.LastName.Trim();
+        registerModel.Email = registerModel.Email.Trim();
+
         string success = await AuthService.Register(registerModel);
         if (success is not null) Navigation.NavigateTo("/");
     }

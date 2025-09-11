@@ -27,7 +27,7 @@ public class GroupRepository : IGroupRepository
     public async Task<Group?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var groupModel = await _context.Groups.Include(g => g.Participants).FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
+        var groupModel = await _context.Groups.Include(g => g.Participants).ThenInclude(gp => gp.User).FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
         if (groupModel == null) return null;
         else return new Group(groupModel);
     }

@@ -125,6 +125,7 @@ public class AuthTests
         {
             Email = "test@email.com",
             Password = "Password123!"
+            
         };
 
         string result = await _authService.Login(loginModel);

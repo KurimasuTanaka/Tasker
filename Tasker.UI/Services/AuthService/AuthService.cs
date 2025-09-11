@@ -22,7 +22,7 @@ public class AuthService : IAuthService
     }
 
     public async Task<string> Register(RegisterModel model)
-    {
+    {   
         var response = await _httpClient.PostAsJsonAsync("api/auth/register", model);
 
         try

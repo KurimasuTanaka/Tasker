@@ -1,37 +1,49 @@
 ﻿@page "/group/{GroupId:long}"
 @attribute [Authorize]
 
-@inject IGroupsManager _groupsManager
 @inject AuthenticationStateProvider _authenticationStateProvider
+@inject IGroupsManager _groupsManager
+@inject IDialogService DialogService
 
-<h3>@group?.Name</h3>
-
+<MudText Typo="Typo.h4">@group?.Name</MudText>
+<MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
-        <InputText @bind-Value="newUserId" class="form-control" />
-        <button class="btn btn-secondary" @onclick="AddMember">Add member</button>
+        <MudButton OnClick="OpenDialogAsync">Add User</MudButton>
+
     </Authorized>
 </AuthorizeView>
 
-@foreach (var member in group?.Participants)
+In group:
+@foreach (var member in group.Participants)
 {
-    <div>@member.UserId</div>
+    <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName ,</MudText>
+}
+<MudDivider />
+
+<MudText Typo="Typo.h5">Task:</MudText>
+@foreach (var task in group.Assignments)
+{
+    <MudText Typo="Typo.body1">@task.Title ,</MudText>
 }
 
 @code {
     [Parameter]
-    public long GroupId { get; set; } 
-    private Group group = new(); 
+    public long GroupId { get; set; }
+    private Group group = new();
     private string newUserId = string.Empty;
 
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
+
+        return DialogService.ShowAsync<AddUserDialog>("Simple Dialog", dialogParameters, options);
+    }
     protected override async Task OnInitializedAsync()
     {
         var user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
         group = await _groupsManager.GetGroupById(GroupId);
     }
 
-    protected async Task AddMember()
-    {
-        await _groupsManager.AddMember(GroupId, newUserId);
-    }
 }
