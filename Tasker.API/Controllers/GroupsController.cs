@@ -16,29 +16,27 @@ namespace Tasker.API.Controllers
     {
         private readonly IGroupsService _groupService;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IAuthorizationService _authorizationService;
 
-        public GroupsController(IGroupsService groupService, UserManager<IdentityUser> userManager, IAuthorizationService authorizationService)
+        public GroupsController(IGroupsService groupService, UserManager<IdentityUser> userManager)
         {
-            _authorizationService = authorizationService;
             _groupService = groupService;
             _userManager = userManager;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Group>>> GetAllGroups(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<GroupDTO>>> GetAllGroups(CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             if (userId == null) return BadRequest("Invalid user");
 
             var groups = await _groupService.GetAllGroups(userId, cancellationToken);
 
-            return Ok(groups.Value);
+            return Ok(groups.Value.Select(g => new Group(g)).ToList());
         }
 
         [HttpPost]
-        public async Task<ActionResult<Group>> CreateGroup(Group group)
+        public async Task<ActionResult<GroupDTO>> CreateGroup(Group group)
         {
             var userId = _userManager.GetUserId(User);
             if (userId == null) return BadRequest("Invalid user");
@@ -46,20 +44,17 @@ namespace Tasker.API.Controllers
             Result<Group> createdGroup = await _groupService.CreateGroup(group, userId);
 
             if (!createdGroup.IsSuccess) return BadRequest(createdGroup.ErrorMessage);
-            return CreatedAtAction("CreateGroup", createdGroup.Value);
+            return CreatedAtAction("CreateGroup", createdGroup.Value.ToDTO());
         }
 
         [HttpGet("{groupId:long}")]
         [GroupAuthorize(GroupRole.User)]
-        public async Task<ActionResult<Group>> GetGroupById(long groupId, CancellationToken cancellationToken)
+        public async Task<ActionResult<GroupDTO>> GetGroupById(long groupId, CancellationToken cancellationToken)
         {
-            // var authResult = await _authorizationService.AuthorizeAsync(User, groupId, new PermisionRequirement(GroupRole.User));
-            // if (!authResult.Succeeded) return Forbid();
-
             var result = await _groupService.GetGroupById(groupId, cancellationToken);
             if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
-            return Ok(result.Value);
+            return Ok(result.Value.ToDTO());
         }
 
         

@@ -21,12 +21,12 @@ namespace Tasker.API.Controllers
 
         [GroupAuthorize(GroupRole.Manager)]
         [HttpPost]
-        public async Task<IActionResult> AssignTaskToUser([FromBody] UserAssignmentDTO userAssignment)
+        public async Task<ActionResult<UserAssignmentDTO>> AssignTaskToUser([FromBody] UserAssignmentDTO userAssignment)
         {
-            var result = await _assignmentsService.AssignTaskToUser(userAssignment);
+            var result = await _assignmentsService.AssignTaskToUser(new UserAssignment(userAssignment));
             if (result.IsSuccess)
             {
-                return CreatedAtAction("AssignTaskToUser", result.Value);
+                return CreatedAtAction(nameof(AssignTaskToUser), result.Value.ToDTO());
             }
             return BadRequest(result.ErrorMessage);
         }
@@ -35,7 +35,7 @@ namespace Tasker.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> UnassignTaskFromUser([FromBody] UserAssignmentDTO userAssignment)
         {
-            var result = await _assignmentsService.UnassignTaskFromUser(userAssignment);
+            var result = await _assignmentsService.UnassignTaskFromUser(new UserAssignment(userAssignment));
             if (result.IsSuccess)
             {
                 return NoContent();

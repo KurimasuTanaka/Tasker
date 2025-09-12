@@ -16,7 +16,7 @@ public class AssignmentsService : IAssignmentsService
         _userAssignmentRepository = userAssignmentRepository;
     }
 
-    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignmentDTO userAssignment)
+    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignment userAssignment)
     {
         if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
@@ -43,7 +43,7 @@ public class AssignmentsService : IAssignmentsService
         return Result.Failure<UserAssignment>($"Error assigning task to user");
     }
 
-    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignmentDTO userAssignment)
+    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)
     {
         if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
@@ -64,7 +64,7 @@ public class AssignmentsService : IAssignmentsService
     }
 
 
-    public async Task<Result<Assignment>> CreateAssignment(long groupId, AssignmentDTO assignment)
+    public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
     {
         if (assignment == null) return Result.Failure<Assignment>("Assignment cannot be null");
         try
@@ -125,7 +125,7 @@ public class AssignmentsService : IAssignmentsService
     }
 
 
-    public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, AssignmentDTO updatedAssignment)
+    public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment)
     {
         if (updatedAssignment == null) return Result.Failure<Assignment>("Updated assignment cannot be null");
 

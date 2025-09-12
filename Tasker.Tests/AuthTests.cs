@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -34,27 +35,28 @@ public class AuthTests
             {
                 builder.ConfigureServices(services =>
                 {
-                    // Remove the existing DbContext registrations
+                    services.AddAuthentication("TestScheme")
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
+
+                    // (Твой код по настройке БД оставляем без изменений)
                     var descriptors = services
                         .Where(d =>
                             d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
                             d.ServiceType == typeof(IDbContextFactory<TaskerContext>) ||
                             d.ServiceType == typeof(IdentityContext) ||
                             d.ServiceType == typeof(TaskerContext)
-                            )
+                        )
                         .ToList();
 
                     foreach (var d in descriptors)
-                    {
                         services.Remove(d);
-                    }
 
-                    // Register in-memory databases instead
                     services.AddDbContext<IdentityContext>(options =>
                         options.UseSqlite("Data Source=./IdentityTestDb"));
 
                     services.AddDbContextFactory<TaskerContext>(options =>
                         options.UseSqlite("Data Source=./TaskerTestDb"));
+
 
                     var sp = services.BuildServiceProvider();
 
@@ -71,9 +73,8 @@ public class AuthTests
                         db.Database.EnsureDeleted();
                         db.Database.EnsureCreated();
                     }
-
                 });
-            });
+    });
 
         _client = _webApplicationAPIFactory.CreateClient();
 

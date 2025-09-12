@@ -11,14 +11,7 @@
 
     </DialogContent>
     <DialogActions>
-        @if (isNewCreated)
-        {
-            <MudButton Color="Color.Primary" OnClick="CreateAssignment">Create task</MudButton>
-        }
-        else
-        {
-            <MudButton Color="Color.Primary" OnClick="UpdateAssignment">Edit task</MudButton>
-        }
+        <MudButton Color="Color.Primary" OnClick="CreateAssignment">Create task</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -27,7 +20,6 @@
     private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter]
     public long GroupId { get; set; } = default;
-    [Parameter] public bool isNewCreated { get; set; } = true;
 
     DataAccess.Assignment assignment = new();
     protected async Task CreateAssignment()
@@ -36,15 +28,4 @@
         MudDialog.Close(DialogResult.Ok(createdAssignment));
     }
 
-    protected async Task UpdateAssignment()
-    {
-        await _groupsManager.UpdateAssignment(GroupId, new AssignmentDTO
-        {
-            AssignmentId = assignment.AssignmentId,
-            Title = assignment.Title,
-            Description = assignment.Description,
-            IsCompleted = assignment.IsCompleted,
-            GroupId = assignment.GroupId
-        });
-    }
 }

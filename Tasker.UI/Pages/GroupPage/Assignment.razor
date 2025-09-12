@@ -7,7 +7,7 @@
     <MudCardContent>
         <div>
         <MudText>@assignment.Title</MudText>
-        <button @onclick="OpenEditAssignmentDialog"><MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" /></button>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" @onclick="OpenEditAssignmentDialog" />
         </div>
         <MudText Typo="Typo.body2">@assignment.Description</MudText>
         <MudText Typo="Typo.body1">Working: @participants
@@ -70,9 +70,9 @@
     public async Task OpenEditAssignmentDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        var dialogParameters = new DialogParameters { { "GroupId", group.GroupId }, { "isNewCreated", false } };
+        var dialogParameters = new DialogParameters { { "GroupId", group.GroupId } };
 
-        var dialog = await DialogService.ShowAsync<CreateTaskDialog>("Edit Task", dialogParameters, options);
+        var dialog = await DialogService.ShowAsync<UpdateAssignmentDialog>("Edit Task", dialogParameters, options);
         var result = await dialog.Result;
     }
 

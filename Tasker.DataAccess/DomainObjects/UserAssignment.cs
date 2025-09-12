@@ -1,4 +1,5 @@
 using System;
+using Tasker.DataAccess.DataTransferObjects;
 using Tasker.Database;
 
 namespace Tasker.DataAccess;
@@ -12,6 +13,22 @@ public class UserAssignment : UserAssignmentModel
         AssignmentId = model.AssignmentId;
         User = model.User;
         Assignment = model.Assignment;
+        
+    }
+
+    public UserAssignment(UserAssignmentDTO dto)
+    {
+        UserId = dto.UserId;
+        AssignmentId = dto.AssignmentId;
+    }
+
+    public UserAssignmentDTO ToDTO()
+    {
+        return new UserAssignmentDTO
+        {
+            UserId = UserId,
+            AssignmentId = AssignmentId
+        };
     }
 
     public UserAssignment() { }

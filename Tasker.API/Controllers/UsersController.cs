@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.API.Services;
+using Tasker.DataAccess;
+using Tasker.DataAccess.DataTransferObjects;
 using Tasker.Database;
 
 namespace Tasker.API.Controllers
@@ -19,12 +21,12 @@ namespace Tasker.API.Controllers
 
         [Authorize]
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserById(string userId)
+        public async Task<ActionResult<UserDTO>> GetUserById(string userId)
         {
             var result = await _userService.GetUserById(userId);
             if (result.IsSuccess)
             {
-                return Ok(result.Value);
+                return Ok(result.Value.ToDTO());
             }
             return NotFound(result.ErrorMessage);
         }

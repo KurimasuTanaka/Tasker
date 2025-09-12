@@ -84,7 +84,6 @@ public partial class Program
 
         app.UseHttpsRedirection();
 
-        // Use CORS policy
         app.UseCors("AllowFrontend");
         app.UseAuthentication();
         app.UseAuthorization();

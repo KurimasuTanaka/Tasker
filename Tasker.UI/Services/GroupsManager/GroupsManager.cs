@@ -93,9 +93,14 @@ public class GroupsManager : IGroupsManager
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate)
+    public async Task<Assignment> UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate)
     {
         var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupId}/assignments/{assignmentToUpdate.AssignmentId}", assignmentToUpdate);
         response.EnsureSuccessStatusCode();
+
+        var updatedAssignment = await response.Content.ReadFromJsonAsync<Assignment>();
+        if (updatedAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
+
+        return updatedAssignment;
     }
 }
