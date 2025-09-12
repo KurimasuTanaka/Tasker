@@ -12,4 +12,6 @@ public interface IGroupsManager
     Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default);
     Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default);
     Task AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default);
+    Task DeleteAssignment(long groupId, long assignmentId);
+    Task UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate);
 }

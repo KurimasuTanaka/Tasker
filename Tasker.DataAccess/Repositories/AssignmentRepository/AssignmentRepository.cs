@@ -54,10 +54,17 @@ public class AssignmentRepository : IAssignmentRepository
     {
 
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var entity = await GetAsync(id);
-        if (entity == null) return false;
+        var assignmentToDelete = await GetAsync(id);
+        if (assignmentToDelete == null) return false;
 
-        _context.Assignments.Remove(entity);
+        List<UserAssignmentModel> userAssignments = await  _context.UserAssignments.Where(ua => ua.AssignmentId == assignmentToDelete.AssignmentId).ToListAsync();
+
+        userAssignments.ForEach(ua =>
+        {
+            _context.UserAssignments.Remove(ua);
+        });
+
+        _context.Assignments.Remove(assignmentToDelete);
         await _context.SaveChangesAsync();
         return true;
     }

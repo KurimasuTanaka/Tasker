@@ -6,12 +6,19 @@
         Create new task
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="assignment.Title" class="form-control" />
-        <MudTextField @bind-Value="assignment.Description" class="form-control" Lines="4" />
+        <MudTextField @bind-Value="assignment.Title" Variant="Variant.Outlined" class="form-control" />
+        <MudTextField @bind-Value="assignment.Description" Variant="Variant.Outlined" class="form-control" Lines="4" />
 
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="CreateAssignment">Create task</MudButton>
+        @if (isNewCreated)
+        {
+            <MudButton Color="Color.Primary" OnClick="CreateAssignment">Create task</MudButton>
+        }
+        else
+        {
+            <MudButton Color="Color.Primary" OnClick="UpdateAssignment">Edit task</MudButton>
+        }
     </DialogActions>
 </MudDialog>
 
@@ -20,11 +27,24 @@
     private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter]
     public long GroupId { get; set; } = default;
+    [Parameter] public bool isNewCreated { get; set; } = true;
 
     DataAccess.Assignment assignment = new();
     protected async Task CreateAssignment()
     {
         DataAccess.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
         MudDialog.Close(DialogResult.Ok(createdAssignment));
+    }
+
+    protected async Task UpdateAssignment()
+    {
+        await _groupsManager.UpdateAssignment(GroupId, new AssignmentDTO
+        {
+            AssignmentId = assignment.AssignmentId,
+            Title = assignment.Title,
+            Description = assignment.Description,
+            IsCompleted = assignment.IsCompleted,
+            GroupId = assignment.GroupId
+        });
     }
 }

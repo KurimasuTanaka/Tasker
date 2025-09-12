@@ -86,4 +86,16 @@ public class GroupsManager : IGroupsManager
         var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/userassignments", userAssignmentDto);
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task DeleteAssignment(long groupId, long assignmentId)
+    {
+        var response = await _httpClient.DeleteAsync($"api/groups/{groupId}/assignments/{assignmentId}");
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupId}/assignments/{assignmentToUpdate.AssignmentId}", assignmentToUpdate);
+        response.EnsureSuccessStatusCode();
+    }
 }

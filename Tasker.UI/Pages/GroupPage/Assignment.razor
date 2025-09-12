@@ -1,15 +1,39 @@
-﻿@inject IDialogService DialogService
-
+﻿@using System.Security.Claims
+@inject IDialogService DialogService
+@inject IGroupsManager _groupsManager;
+@inject AuthenticationStateProvider _authenticationStateProvider;
 
 <MudCard Outlined="true">
     <MudCardContent>
+        <div>
         <MudText>@assignment.Title</MudText>
+        <button @onclick="OpenEditAssignmentDialog"><MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" /></button>
+        </div>
         <MudText Typo="Typo.body2">@assignment.Description</MudText>
         <MudText Typo="Typo.body1">Working: @participants
         </MudText>
     </MudCardContent>
     <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenAssignmentDialog">Assign</MudButton>
+        <AuthorizeView Roles="@($"{group.GroupId}:Manager,{group.GroupId}:Admin")">
+            <Authorized>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenAssignmentDialog">Assign
+                </MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="DeleteAssignment">Delete</MudButton>
+            </Authorized>
+        </AuthorizeView>
+        @if (assignment.HasThisUserAssigned(userId))
+        {
+
+            @if (@assignment.IsCompleted)
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Success" @onclick="MarkAsIncomplete">Mark as incomplete
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Warning" @onclick="MarkAsComplete">Mark as completed</MudButton>
+            }
+        }
     </MudCardActions>
 
 </MudCard>
@@ -21,12 +45,18 @@
 
     string participants = string.Empty;
 
-    protected override void OnParametersSet()
+    string userId = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
     {
         participants = "";
-        foreach(UserAssignment user in assignment.Participants.Select(p => new UserAssignment(p)))
+        foreach (UserAssignment user in assignment.Participants.Select(p => new UserAssignment(p)))
         {
             participants += ($"{user.User.FirstName} {user.User.LastName}");
+
+            ClaimsPrincipal? u = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
+            userId = u.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
+
         }
     }
     public async Task OpenAssignmentDialog()
@@ -35,5 +65,45 @@
         var dialogParameters = new DialogParameters { { "assignment", assignment }, { "group", group } };
 
         await DialogService.ShowAsync<AssignAssignmentDialog>("Assignment", dialogParameters, options);
+    }
+
+    public async Task OpenEditAssignmentDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "GroupId", group.GroupId }, { "isNewCreated", false } };
+
+        var dialog = await DialogService.ShowAsync<CreateTaskDialog>("Edit Task", dialogParameters, options);
+        var result = await dialog.Result;
+    }
+
+    private async Task DeleteAssignment()
+    {
+        await _groupsManager.DeleteAssignment(group.GroupId, assignment.AssignmentId);
+    }
+
+    private async Task MarkAsComplete()
+    {
+        assignment.IsCompleted = true;
+        await _groupsManager.UpdateAssignment(group.GroupId, new AssignmentDTO
+        {
+            AssignmentId = assignment.AssignmentId,
+            Title = assignment.Title,
+            Description = assignment.Description,
+            IsCompleted = assignment.IsCompleted,
+            GroupId = assignment.GroupId
+        });
+    }
+    private async Task MarkAsIncomplete()
+    {
+        assignment.IsCompleted = false;
+        await _groupsManager.UpdateAssignment(group.GroupId, new AssignmentDTO
+        {
+            AssignmentId = assignment.AssignmentId,
+            Title = assignment.Title,
+            Description = assignment.Description,
+            IsCompleted = assignment.IsCompleted,
+            GroupId = assignment.GroupId
+        });
+
     }
 }

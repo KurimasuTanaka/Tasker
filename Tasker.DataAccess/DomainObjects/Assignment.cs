@@ -15,4 +15,10 @@ public class Assignment : AssignmentModel
 		this.IsCompleted = model.IsCompleted;
 		this.Participants = model.Participants;
 	}
+
+	public bool HasThisUserAssigned(string userId)
+	{
+		return Participants.Select(p => p.User.UserIdentity).
+				Contains(userId);
+	}
 }
