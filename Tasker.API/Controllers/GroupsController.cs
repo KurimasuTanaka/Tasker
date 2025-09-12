@@ -6,6 +6,7 @@ using Tasker.API.Services.GroupsService;
 using Tasker.DataAccess;
 using Tasker.DataAccess.DataTransferObjects;
 using Tasker.DataAccess.Repositories;
+using Tasker.Database;
 
 namespace Tasker.API.Controllers
 {
@@ -15,9 +16,11 @@ namespace Tasker.API.Controllers
     {
         private readonly IGroupsService _groupService;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public GroupsController(IGroupsService groupService, UserManager<IdentityUser> userManager)
+        public GroupsController(IGroupsService groupService, UserManager<IdentityUser> userManager, IAuthorizationService authorizationService)
         {
+            _authorizationService = authorizationService;
             _groupService = groupService;
             _userManager = userManager;
         }
@@ -47,17 +50,21 @@ namespace Tasker.API.Controllers
         }
 
         [HttpGet("{groupId:long}")]
-        public async Task<IActionResult> GetGroupById(long groupId, CancellationToken cancellationToken)
+        [GroupAuthorize(GroupRole.User)]
+        public async Task<ActionResult<Group>> GetGroupById(long groupId, CancellationToken cancellationToken)
         {
+            // var authResult = await _authorizationService.AuthorizeAsync(User, groupId, new PermisionRequirement(GroupRole.User));
+            // if (!authResult.Succeeded) return Forbid();
+
             var result = await _groupService.GetGroupById(groupId, cancellationToken);
             if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
             return Ok(result.Value);
         }
 
-        [Authorize(Policy = "Admin")]
-        [Authorize(Policy = "Manager")]
+        
         [HttpPost("{groupId:long}/members")]
+        [GroupAuthorize(GroupRole.Manager)]
         public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId)
         {
             var result = await _groupService.AddGroupMember(groupId, userId);
@@ -66,7 +73,7 @@ namespace Tasker.API.Controllers
             return Ok(result.Value);
         }
 
-        [Authorize(Policy = "Admin")]
+        [GroupAuthorize(GroupRole.Admin)]
         [HttpDelete("{groupId:long}")]
         public async Task<IActionResult> DeleteGroup(long groupId)
         {

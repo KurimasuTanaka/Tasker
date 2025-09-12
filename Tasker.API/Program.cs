@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -39,6 +40,7 @@ public partial class Program
             .AddEntityFrameworkStores<IdentityContext>()
             .AddDefaultTokenProviders();
 
+        builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -58,12 +60,15 @@ public partial class Program
             };
         });
 
+
+        builder.Services.AddAuthorization();
+
+
         builder.Services.AddDataAccess();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupsService, GroupsService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IAssignmentsService, AssignmentsService>();
-
 
         builder.Services.AddSwaggerGen();
 
@@ -73,27 +78,7 @@ public partial class Program
                 });
 
                 
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy("Admin", policy =>
-                policy.RequireAssertion(context =>
-                    context.User.Claims.Any(c =>
-                        c.Type == "GroupRole" &&
-                        c.Value.EndsWith(":Admin"))));
 
-            options.AddPolicy("Manager", policy =>
-                policy.RequireAssertion(context =>
-                    context.User.Claims.Any(c =>
-                        c.Type == "GroupRole" &&
-                        c.Value.EndsWith(":Manager"))));
-
-            options.AddPolicy("User", policy =>
-                policy.RequireAssertion(context =>
-                    context.User.Claims.Any(c =>
-                        c.Type == "GroupRole" &&
-                        c.Value.EndsWith(":User"))));
-
-        });
 
         var app = builder.Build();
 

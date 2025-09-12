@@ -13,5 +13,6 @@ public class Assignment : AssignmentModel
 		this.GroupId = model.GroupId;
 		this.Description = model.Description;
 		this.IsCompleted = model.IsCompleted;
+		this.Participants = model.Participants;
 	}
 }

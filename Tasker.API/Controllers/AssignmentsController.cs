@@ -20,6 +20,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpPost]
+        [GroupAuthorize(GroupRole.Manager)]
         public async Task<ActionResult<Assignment>> CreateAssignment(long groupId, [FromBody] AssignmentDTO assignment)
         {
             var result = await _assignmentsService.CreateAssignment(groupId, assignment);
@@ -35,6 +36,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpGet]
+        [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<List<Assignment>>> GetAllAssignments(long groupId, CancellationToken cancellationToken)
         {
             var result = await _assignmentsService.GetAllAssignments(groupId, cancellationToken);
@@ -46,6 +48,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpGet("{assignmentId:long}")]
+        [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<Assignment>> GetAssignment(long groupId, long assignmentId, CancellationToken cancellationToken)
         {
             var result = await _assignmentsService.GetAssignment(groupId, assignmentId, cancellationToken);
@@ -57,6 +60,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpDelete("{assignmentId:long}")]
+        [GroupAuthorize(GroupRole.Manager)]
         public async Task<IActionResult> DeleteAssignment(long groupId, long assignmentId)
         {
             var result = await _assignmentsService.DeleteAssignment(groupId, assignmentId);
@@ -68,6 +72,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpPut("{assignmentId:long}")]
+        [GroupAuthorize(GroupRole.User)]
         public async Task<IActionResult> UpdateAssignment(long groupId, long assignmentId, [FromBody] AssignmentDTO updatedAssignment)
         {
             var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment);

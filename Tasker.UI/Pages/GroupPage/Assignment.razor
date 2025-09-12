@@ -5,7 +5,8 @@
     <MudCardContent>
         <MudText>@assignment.Title</MudText>
         <MudText Typo="Typo.body2">@assignment.Description</MudText>
-        <MudText Typo="Typo.body1">Working: </MudText>
+        <MudText Typo="Typo.body1">Working: @participants
+        </MudText>
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenAssignmentDialog">Assign</MudButton>
@@ -18,6 +19,16 @@
     [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
     [Parameter] public DataAccess.Group group { get; set; } = new();
 
+    string participants = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        participants = "";
+        foreach(UserAssignment user in assignment.Participants.Select(p => new UserAssignment(p)))
+        {
+            participants += ($"{user.User.FirstName} {user.User.LastName}");
+        }
+    }
     public async Task OpenAssignmentDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };

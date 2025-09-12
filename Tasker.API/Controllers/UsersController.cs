@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.API.Services;
+using Tasker.Database;
 
 namespace Tasker.API.Controllers
 {
@@ -15,6 +17,7 @@ namespace Tasker.API.Controllers
             _userService = userService;
         }
 
+        [Authorize]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(string userId)
         {

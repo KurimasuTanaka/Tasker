@@ -59,4 +59,17 @@ public class UserParticipationRepository : IUserParticipationRepository
         await _context.SaveChangesAsync();
         return true;
     }
+    public async Task<UserParticipation?> GetUserParticipationAsyc(string userId, long groupId)
+    {
+        using var _context = await _contextFactory.CreateDbContextAsync();
+
+        var entity = _context.UserParticipations.FirstOrDefault(up => up.UserId == userId && up.GroupId == groupId);
+
+        if (entity is null)
+        {
+            return null;
+        }
+
+        return new UserParticipation(entity);
+    }
 }

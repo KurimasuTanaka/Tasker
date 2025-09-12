@@ -28,7 +28,7 @@ public class GroupsService : IGroupsService
             {
                 GroupId = groupId,
                 UserId = userId,
-                Role = "Member"
+                Role = Database.GroupRole.User
             });
 
             Group? group = await _groupRepository.GetAsync(groupId);
@@ -49,7 +49,8 @@ public class GroupsService : IGroupsService
         {
             Group newGroup = new Group();
             newGroup.Name = group.Name;
-            newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role = "Admin" });
+            newGroup.Participants.Add(new UserParticipation() { UserId = userId, Role =Database.GroupRole.Admin
+             });
             var createdGroup = await _groupRepository.AddAsync(newGroup);
             return Result.Success(createdGroup);
         }

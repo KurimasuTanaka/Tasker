@@ -83,7 +83,7 @@ public class GroupsManager : IGroupsManager
             UserId = userId,
             AssignmentId = assignmentId
         };
-        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", userAssignmentDto);
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/userassignments", userAssignmentDto);
         response.EnsureSuccessStatusCode();
     }
 }

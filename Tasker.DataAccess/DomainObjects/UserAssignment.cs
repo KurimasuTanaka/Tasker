@@ -10,6 +10,8 @@ public class UserAssignment : UserAssignmentModel
     {
         UserId = model.UserId;
         AssignmentId = model.AssignmentId;
+        User = model.User;
+        Assignment = model.Assignment;
     }
 
     public UserAssignment() { }
