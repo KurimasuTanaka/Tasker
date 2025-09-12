@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.API.Services.AssignmentsService;
 using Tasker.DataAccess;
+using Tasker.DataAccess.Auth;
+using Tasker.DataAccess.DataTransferObjects;
+using Tasker.Database;
 
 namespace Tasker.API.Controllers
 {
@@ -17,12 +20,16 @@ namespace Tasker.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAssignment(long groupId, [FromBody] Assignment assignment)
+        public async Task<ActionResult<Assignment>> CreateAssignment(long groupId, [FromBody] AssignmentDTO assignment)
         {
             var result = await _assignmentsService.CreateAssignment(groupId, assignment);
             if (result.IsSuccess)
             {
-                return CreatedAtAction("CreateAssignment", result.Value);
+                return CreatedAtAction(
+                    nameof(GetAssignment),
+                    new { groupId = groupId, assignmentId = result.Value.AssignmentId },
+                    result.Value
+                );
             }
             return BadRequest(result.ErrorMessage);
         }
@@ -61,7 +68,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpPut("{assignmentId:long}")]
-        public async Task<IActionResult> UpdateAssignment(long groupId, long assignmentId, [FromBody] Assignment updatedAssignment)
+        public async Task<IActionResult> UpdateAssignment(long groupId, long assignmentId, [FromBody] AssignmentDTO updatedAssignment)
         {
             var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment);
             if (result.IsSuccess)

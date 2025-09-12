@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Tasker.API.Services;
+using Tasker.API.Services.AssignmentsService;
 using Tasker.API.Services.AuthService;
 using Tasker.API.Services.GroupsService;
 using Tasker.DataAccess;
@@ -61,6 +62,7 @@ public partial class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupsService, GroupsService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IAssignmentsService, AssignmentsService>();
 
 
         builder.Services.AddSwaggerGen();
@@ -69,9 +71,11 @@ public partial class Program
                 {
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 });
+
+                
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("Adming", policy =>
+            options.AddPolicy("Admin", policy =>
                 policy.RequireAssertion(context =>
                     context.User.Claims.Any(c =>
                         c.Type == "GroupRole" &&

@@ -12,4 +12,6 @@ public class UserAssignment : UserAssignmentModel
         AssignmentId = model.AssignmentId;
     }
 
+    public UserAssignment() { }
+
 }

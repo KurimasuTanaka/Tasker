@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.API.Services.AssignmentsService;
 using Tasker.DataAccess;
+using Tasker.DataAccess.DataTransferObjects;
 
 namespace Tasker.API.Controllers
 {
@@ -17,7 +18,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignTaskToUser([FromBody] UserAssignment userAssignment)
+        public async Task<IActionResult> AssignTaskToUser([FromBody] UserAssignmentDTO userAssignment)
         {
             var result = await _assignmentsService.AssignTaskToUser(userAssignment);
             if (result.IsSuccess)
@@ -28,7 +29,7 @@ namespace Tasker.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> UnassignTaskFromUser([FromBody] UserAssignment userAssignment)
+        public async Task<IActionResult> UnassignTaskFromUser([FromBody] UserAssignmentDTO userAssignment)
         {
             var result = await _assignmentsService.UnassignTaskFromUser(userAssignment);
             if (result.IsSuccess)

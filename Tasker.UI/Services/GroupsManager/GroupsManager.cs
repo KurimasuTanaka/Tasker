@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http.Json;
 using Tasker.DataAccess;
+using Tasker.DataAccess.DataTransferObjects;
 
 namespace Tasker.UI.Services;
 
@@ -25,7 +26,10 @@ public class GroupsManager : IGroupsManager
         var response = await _httpClient.PostAsJsonAsync("api/groups", group, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
+        var createdGroup = await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
+        if (createdGroup == null) throw new InvalidOperationException("Failed to create group.");
+
+        return createdGroup;
     }
 
     public async Task DeleteGroup(long groupId, CancellationToken cancellationToken = default)
@@ -48,6 +52,38 @@ public class GroupsManager : IGroupsManager
         var response = await _httpClient.GetAsync($"api/groups/{groupId}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
+        var group = await response.Content.ReadFromJsonAsync<Group>(cancellationToken: cancellationToken);
+        if (group == null) throw new InvalidOperationException("Failed to retrieve group.");
+
+        return group;
+    }
+
+    public async Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default)
+    {
+        AssignmentDTO assignmentDto = new AssignmentDTO
+        {
+            Title = assignment.Title,
+            Description = assignment.Description,
+            IsCompleted = assignment.IsCompleted,
+            GroupId = groupId
+        };
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", assignmentDto);
+        response.EnsureSuccessStatusCode();
+
+        var createdAssignment = await response.Content.ReadFromJsonAsync<Assignment>(cancellationToken: cancellationToken);
+        if (createdAssignment == null) throw new InvalidOperationException("Failed to create assignment.");
+
+        return createdAssignment;
+    }
+
+    public async Task AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default)
+    {
+        UserAssignmentDTO userAssignmentDto = new UserAssignmentDTO
+        {
+            UserId = userId,
+            AssignmentId = assignmentId
+        };
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", userAssignmentDto);
+        response.EnsureSuccessStatusCode();
     }
 }

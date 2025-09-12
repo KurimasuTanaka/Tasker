@@ -1,0 +1,30 @@
+﻿@inject IGroupsManager _groupsManager
+
+
+<MudDialog>
+    <TitleContent>
+        Create new task
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="assignment.Title" class="form-control" />
+        <MudTextField @bind-Value="assignment.Description" class="form-control" Lines="4" />
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="CreateAssignment">Create task</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter]
+    public long GroupId { get; set; } = default;
+
+    DataAccess.Assignment assignment = new();
+    protected async Task CreateAssignment()
+    {
+        DataAccess.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
+        MudDialog.Close(DialogResult.Ok(createdAssignment));
+    }
+}

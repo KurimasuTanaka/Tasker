@@ -1,0 +1,28 @@
+﻿@inject IDialogService DialogService
+
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>@assignment.Title</MudText>
+        <MudText Typo="Typo.body2">@assignment.Description</MudText>
+        <MudText Typo="Typo.body1">Working: </MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenAssignmentDialog">Assign</MudButton>
+    </MudCardActions>
+
+</MudCard>
+
+
+@code {
+    [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
+    [Parameter] public DataAccess.Group group { get; set; } = new();
+
+    public async Task OpenAssignmentDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "assignment", assignment }, { "group", group } };
+
+        await DialogService.ShowAsync<AssignAssignmentDialog>("Assignment", dialogParameters, options);
+    }
+}

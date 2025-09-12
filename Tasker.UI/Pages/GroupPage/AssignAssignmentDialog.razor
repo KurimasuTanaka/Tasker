@@ -1,0 +1,54 @@
+﻿<MudDialog>
+    <TitleContent>
+        Create new task
+    </TitleContent>
+    <DialogContent>
+        <MudTable T="DataAccess.User" Items="@(group.Participants.Select(p => p.User).Select(um => new User(um)))" OnRowClick="AddToSelection">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Assign</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.FirstName @context.LastName</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudText>To task assigned: </MudText>
+        <MudText> 
+            @foreach(User user in usersToAssign)
+            {
+                @user.FirstName @user.LastName
+            }
+        </MudText>
+        <MudButton Color="Color.Primary" OnClick="AssignAssignment">Assign to task</MudButton>
+        </DialogActions>
+    </MudDialog>
+@code {
+    [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
+    [Parameter] public DataAccess.Group group { get; set; } = new();
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    List<User> usersToAssign = new();
+
+    protected override void OnParametersSet()
+    {
+        usersToAssign = assignment.Participants.Select(p => new User(p.User)).ToList();
+    }
+
+    private void AssignAssignment()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void AddToSelection(TableRowClickEventArgs<User> args)
+    {
+        if(usersToAssign.Select(uta => uta.UserIdentity).Contains(args.Item!.UserIdentity))
+        {
+            usersToAssign.RemoveAll((u) => u.UserIdentity == args.Item.UserIdentity);
+        } else 
+        {
+            usersToAssign.Add(args.Item);
+        }
+    }
+}

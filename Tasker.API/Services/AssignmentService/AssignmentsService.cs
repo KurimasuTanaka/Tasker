@@ -16,12 +16,16 @@ public class AssignmentsService : IAssignmentsService
         _userAssignmentRepository = userAssignmentRepository;
     }
 
-    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignment userAssignment)
+    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignmentDTO userAssignment)
     {
         if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
         {
-            var createdUserAssignment = await _userAssignmentRepository.AddAsync(userAssignment);
+            var createdUserAssignment = await _userAssignmentRepository.AddAsync(new UserAssignment
+            {
+                UserId = userAssignment.UserId,
+                AssignmentId = userAssignment.AssignmentId
+            });
             if (createdUserAssignment == null) return Result.Failure<UserAssignment>("Failed to assign task to user");
             return Result.Success<UserAssignment>(createdUserAssignment);
         }
@@ -31,14 +35,18 @@ public class AssignmentsService : IAssignmentsService
         }
     }
 
-    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)
+    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignmentDTO userAssignment)
     {
         if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
         {
             bool deletedUserAssignment = await _userAssignmentRepository.DeleteAsync((userAssignment.UserId, userAssignment.AssignmentId));
             if (!deletedUserAssignment) return Result.Failure<UserAssignment>("Failed to unassign task from user");
-            return Result.Success<UserAssignment>(userAssignment);
+            return Result.Success<UserAssignment>(new UserAssignment
+            {
+                UserId = userAssignment.UserId,
+                AssignmentId = userAssignment.AssignmentId
+            });
         }
         catch (Exception ex)
         {
@@ -48,12 +56,18 @@ public class AssignmentsService : IAssignmentsService
     }
 
 
-    public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
+    public async Task<Result<Assignment>> CreateAssignment(long groupId, AssignmentDTO assignment)
     {
         if (assignment == null) return Result.Failure<Assignment>("Assignment cannot be null");
         try
         {
-            Assignment createdAssignment = await _assignmentRepository.AddAsync(assignment);
+            Assignment createdAssignment = await _assignmentRepository.AddAsync(new Assignment
+            {
+                Title = assignment.Title,
+                Description = assignment.Description,
+                IsCompleted = assignment.IsCompleted,
+                GroupId = groupId
+            });
             return Result.Success(createdAssignment);
         }
         catch (Exception ex)
@@ -103,14 +117,21 @@ public class AssignmentsService : IAssignmentsService
     }
 
 
-    public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment)
+    public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, AssignmentDTO updatedAssignment)
     {
         if (updatedAssignment == null) return Result.Failure<Assignment>("Updated assignment cannot be null");
 
         try
         {
-            Assignment updated = await _assignmentRepository.UpdateAsync(updatedAssignment);
-            
+            Assignment updated = await _assignmentRepository.UpdateAsync(new Assignment
+            {
+                AssignmentId = assignmentId,
+                Title = updatedAssignment.Title,
+                Description = updatedAssignment.Description,
+                IsCompleted = updatedAssignment.IsCompleted,
+                GroupId = groupId
+            });
+
             return Result.Success(updated);
         }
         catch (Exception ex)

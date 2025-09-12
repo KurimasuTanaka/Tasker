@@ -14,17 +14,20 @@
     </Authorized>
 </AuthorizeView>
 
-In group:
+<MudText Typo="Typo.h6">In group:</MudText>
 @foreach (var member in group.Participants)
 {
-    <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName ,</MudText>
+    <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName</MudText>
 }
 <MudDivider />
 
+
 <MudText Typo="Typo.h5">Task:</MudText>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog">Add Task</MudButton>
+
 @foreach (var task in group.Assignments)
 {
-    <MudText Typo="Typo.body1">@task.Title ,</MudText>
+    <Assignment assignment="new DataAccess.Assignment(task)" group="group" />
 }
 
 @code {
@@ -45,5 +48,11 @@ In group:
         var user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
         group = await _groupsManager.GetGroupById(GroupId);
     }
+    private async Task OpenTaskDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
 
+        await DialogService.ShowAsync<CreateTaskDialog>("Simple Dialog", dialogParameters, options);
+    }
 }

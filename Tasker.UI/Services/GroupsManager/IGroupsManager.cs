@@ -10,4 +10,6 @@ public interface IGroupsManager
     Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default);
     Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default);
     Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default);
+    Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default);
+    Task AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default);
 }

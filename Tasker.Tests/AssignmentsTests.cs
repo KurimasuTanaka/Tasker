@@ -41,16 +41,13 @@ public class AssignmentsTests
 
         Group createdGroup = await _groupRepository.AddAsync(new() { Name = "Test Group" });
 
-        Assignment assignment = new Assignment(new AssignmentModel
+        AssignmentDTO assignment = new AssignmentDTO
         {
             Title = "Test Assignment",
             Description = "Test Desc",
-            CreatedDate = DateTime.UtcNow,
-            DueDate = DateTime.UtcNow.AddDays(1),
             IsCompleted = false,
-            Priority = "High",
             GroupId = createdGroup.GroupId
-        });
+        };
         // Act
         var result = await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment);
 
@@ -68,8 +65,8 @@ public class AssignmentsTests
         // Arrange
         Group createdGroup = await _groupRepository.AddAsync(new() { Name = "Test Group" });
 
-        var assignment1 = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
-        var assignment2 = new Assignment(new AssignmentModel { Title = "A2", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment1 = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
+        var assignment2 = new AssignmentDTO { Title = "A2", GroupId = createdGroup.GroupId };
         await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment1);
         await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment2);
 
@@ -87,7 +84,7 @@ public class AssignmentsTests
         // Arrange
         Group createdGroup = await _groupRepository.AddAsync(new() { Name = "Test Group" });
 
-        var assignment = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment)).Value;
 
         // Act
@@ -104,12 +101,18 @@ public class AssignmentsTests
         // Arrange
         Group createdGroup = await _groupRepository.AddAsync(new() { Name = "Test Group" });
 
-        var assignment = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment)).Value;
         created.Title = "Updated Title";
 
         // Act
-        var result = await _assignmentsService.UpdateAssignment(createdGroup.GroupId, created.AssignmentId, created);
+        var result = await _assignmentsService.UpdateAssignment(createdGroup.GroupId, created.AssignmentId, new AssignmentDTO
+        {
+            Title = created.Title,
+            Description = created.Description,
+            IsCompleted = created.IsCompleted,
+            GroupId = created.GroupId
+        });
 
         // Assert
         Assert.That(result.IsSuccess, Is.True);
@@ -121,7 +124,7 @@ public class AssignmentsTests
     {
         // Arrange
         Group createdGroup = await _groupRepository.AddAsync(new() { Name = "Test Group" });
-        var assignment = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment)).Value;
 
         // Act
@@ -144,7 +147,7 @@ public class AssignmentsTests
             LastName = "TestLastName",
         });
 
-        var assignment = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment)).Value;
 
         var userAssignment = new UserAssignment(new UserAssignmentModel { UserId = user.UserIdentity, AssignmentId = created.AssignmentId });
@@ -170,7 +173,7 @@ public class AssignmentsTests
             LastName = "TestLastName",
         });
 
-        var assignment = new Assignment(new AssignmentModel { Title = "A1", CreatedDate = DateTime.UtcNow, GroupId = createdGroup.GroupId });
+        var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment)).Value;
         var userAssignment = new UserAssignment(new UserAssignmentModel { UserId = user.UserIdentity, AssignmentId = created.AssignmentId });
         await _assignmentsService.AssignTaskToUser(userAssignment);

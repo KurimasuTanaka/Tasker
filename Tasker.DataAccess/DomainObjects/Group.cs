@@ -11,6 +11,7 @@ public class Group : GroupModel
         this.GroupId = model.GroupId;
         this.Name = model.Name;
         this.Participants = model.Participants;
+        this.Assignments = model.Assignments;
     }
     public Group()
     {

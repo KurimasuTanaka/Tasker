@@ -12,9 +12,6 @@ public class Assignment : AssignmentModel
 		this.Title = model.Title;
 		this.GroupId = model.GroupId;
 		this.Description = model.Description;
-		this.CreatedDate = model.CreatedDate;
-		this.DueDate = model.DueDate;
 		this.IsCompleted = model.IsCompleted;
-		this.Priority = model.Priority;
 	}
 }

@@ -9,11 +9,10 @@ public class AssignmentModel
     public long AssignmentId { get; set; }
     public string Title { get; set; } = String.Empty;
     public string Description { get; set; } = String.Empty;
-    public DateTime CreatedDate { get; set; }
-    public DateTime? DueDate { get; set; }
     public bool IsCompleted { get; set; }
-    public string Priority { get; set; } = String.Empty;
 
     public long GroupId { get; set; }
     public GroupModel Group { get; set; } = null!;
+
+    public List<UserAssignmentModel> Participants { get; set; } = new();
 }
