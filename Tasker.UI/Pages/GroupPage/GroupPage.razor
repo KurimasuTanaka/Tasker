@@ -2,7 +2,6 @@
 @using System.Security.Claims
 @attribute [Authorize]
 
-@inject AuthenticationStateProvider _authenticationStateProvider
 @inject IGroupsManager _groupsManager
 @inject IDialogService DialogService
 
@@ -10,7 +9,7 @@
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
-        <MudButton OnClick="OpenDialogAsync">Add User</MudButton>
+        <MudButton OnClick="OpenUserAdditionDialog">Add User</MudButton>
     </Authorized>
 </AuthorizeView>
 
@@ -37,7 +36,7 @@
     <MudTabPanel Text="My tasks">
         @foreach (Database.AssignmentModel task in group.Assignments.Where(a => a.Participants.
                 Select(p => p.User.UserIdentity).
-                Contains(userId)))
+                Contains(CurrentUser.UserIdentity)))
         {
             <Assignment assignment="new DataAccess.Assignment(task)" group="group" />
         }
@@ -45,24 +44,20 @@
 </MudTabs>
 
 @code {
-    [Parameter]
-    public long GroupId { get; set; }
+    [Parameter] public long GroupId { get; set; }
+    [CascadingParameter] public User CurrentUser {get; set;} = default!;
     private Group group = new();
-    private string userId;
     private string newUserId = string.Empty;
 
-    private Task OpenDialogAsync()
+    private Task OpenUserAdditionDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
         var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
 
-        return DialogService.ShowAsync<AddUserDialog>("Simple Dialog", dialogParameters, options);
+        return DialogService.ShowAsync<AddUserDialog>("Add new user", dialogParameters, options);
     }
     protected override async Task OnInitializedAsync()
     {
-        ClaimsPrincipal? user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
-        userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
-
         group = await _groupsManager.GetGroupById(GroupId);
     }
     private async Task OpenTaskDialog()

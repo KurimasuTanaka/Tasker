@@ -1,24 +1,25 @@
 ﻿@page "/dashboard"
+@using System.Security.Claims
 @attribute [Authorize]
 
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IUsersManager _usersManager
 
 <PageTitle>Dashboard</PageTitle>
-
-<h3>Welcome, @userName!</h3>
+@if (CurrentUser is not null)
+{
+    <h3>Welcome, @CurrentUser.FirstName @CurrentUser.LastName!</h3>
+}
 <GroupList />
 
 @code {
-    private string userName = "Guest";
+    [CascadingParameter] public User CurrentUser { get; set; } = default!;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        ClaimsPrincipal? user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
+        string userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
 
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            userName = user.Identity.Name ?? "User";
-        }
+        CurrentUser = await _usersManager.GetUserById(userId);
     }
 }

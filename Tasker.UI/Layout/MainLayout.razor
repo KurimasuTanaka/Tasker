@@ -11,11 +11,20 @@
 
 <MudLayout>
     <MudAppBar>
-        <MudText  Typo="Typo.h4">Tasker</MudText>
+        <MudText Typo="Typo.h4" class="mr-5">Tasker</MudText>
         <AuthorizeView>
             <Authorized>
-                <MudButton Size="Size.Large" Color="Color.Default" OnClick="Logout">Logout</MudButton>
-                <MudButton Size="Size.Large" Color="Color.Default" OnClick="ShowUserInfo">UserInfo</MudButton>
+
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/dashboard">
+                    Dashboard
+                </MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="Logout">
+                    Logout
+                </MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="ShowUserInfo">
+                    User Info
+                </MudButton>
+
             </Authorized>
         </AuthorizeView>
 
@@ -42,6 +51,6 @@
     private Task ShowUserInfo(MouseEventArgs args)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        return DialogService.ShowAsync<UserInfoDialog>("User Info",  options);
+        return DialogService.ShowAsync<UserInfoDialog>("User Info", options);
     }
 }

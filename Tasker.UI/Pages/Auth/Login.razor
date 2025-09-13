@@ -5,8 +5,8 @@
 @inject IAuthService _authService;
 @inject NavigationManager Navigation
 
-<MudPaper>
-    <MudText Typo="Typo.h5">Login</MudText>
+<MudPaper Elevation="3" Outlined="true" Class="pa-10 ma-2">
+    <MudText Typo="Typo.h4">Login</MudText>
 
     <MudForm Model="loginModel">
         <MudTextField Variant="Variant.Outlined" HelperText="Email" Required="true" @bind-Value="loginModel.Email" />
