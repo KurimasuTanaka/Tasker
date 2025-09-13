@@ -103,4 +103,16 @@ public class GroupsManager : IGroupsManager
 
         return updatedAssignment;
     }
+
+    public async Task<Group> UpdateGroup(Group groupToUpdate)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupToUpdate.GroupId}", groupToUpdate.ToDTO());
+        response.EnsureSuccessStatusCode();
+
+        var group = await response.Content.ReadFromJsonAsync<Group>();
+        if(group is null) throw new InvalidOperationException("Failed to update group.");
+
+        return group;
+
+    }
 }

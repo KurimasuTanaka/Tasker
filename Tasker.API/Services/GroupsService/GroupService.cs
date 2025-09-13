@@ -103,4 +103,18 @@ public class GroupsService : IGroupsService
         }
 
     }
+
+    public async Task<Result<Group>> UpdateGroup(Group group)
+    {
+        try
+        {
+            var upatedGroup = await _groupRepository.UpdateAsync(group);
+            if (upatedGroup is null) return Result.Failure<Group>("Group was not updated");
+            return Result.Success(group);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Group>("Failed updating group: " + ex.Message);
+        }
+    }
 }

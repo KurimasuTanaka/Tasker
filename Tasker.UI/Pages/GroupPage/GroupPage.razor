@@ -1,11 +1,16 @@
 ﻿@page "/group/{GroupId:long}"
 @using System.Security.Claims
+@using Tasker.UI.Pages.Dashboard
 @attribute [Authorize]
 
 @inject IGroupsManager _groupsManager
 @inject IDialogService DialogService
 
-<MudText Typo="Typo.h4">@group?.Name</MudText>
+<div>
+    <MudText Typo="Typo.h4">@group?.Name</MudText>
+    <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenGroupEditDialog" />
+
+</div>
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
@@ -45,7 +50,7 @@
 
 @code {
     [Parameter] public long GroupId { get; set; }
-    [CascadingParameter] public User CurrentUser {get; set;} = default!;
+    [CascadingParameter] public User CurrentUser { get; set; } = default!;
     private Group group = new();
     private string newUserId = string.Empty;
 
@@ -66,5 +71,14 @@
         var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
 
         await DialogService.ShowAsync<CreateTaskDialog>("Simple Dialog", dialogParameters, options);
+    }
+
+    private async Task OpenGroupEditDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "group", group } };
+
+        await DialogService.ShowAsync<GroupEditDialog>("Edit group", dialogParameters, options);
+
     }
 }

@@ -57,7 +57,7 @@ namespace Tasker.API.Controllers
             return Ok(result.Value.ToDTO());
         }
 
-        
+
         [HttpPost("{groupId:long}/members")]
         [GroupAuthorize(GroupRole.Manager)]
         public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId)
@@ -73,6 +73,16 @@ namespace Tasker.API.Controllers
         public async Task<IActionResult> DeleteGroup(long groupId)
         {
             var result = await _groupService.DeleteGroup(groupId);
+            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+
+            return NoContent();
+        }
+
+        [GroupAuthorize(GroupRole.Admin)]
+        [HttpPut("{groupId:long}")]
+        public async Task<ActionResult<GroupDTO>> UpdateGroup(long groupId,[FromBody] GroupDTO groupDTO)
+        {
+            var result = await _groupService.UpdateGroup(new Group(groupDTO));
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
             return NoContent();
