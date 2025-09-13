@@ -12,7 +12,7 @@
         <MudCardContent>
             <MudText>@group.Name</MudText>
             <MudText Typo="Typo.body2">Users: @group.Participants.Count</MudText>
-            <MudText Typo="Typo.body2">Task: @group.Assignments.Where(a=> !a.IsCompleted).ToList().Count</MudText>
+            <MudText Typo="Typo.body2">Task: @group.GetNumberOfUncompletedAssignments()</MudText>
         </MudCardContent>
         <MudCardActions>
             <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => OpenGroup(group.GroupId)">Open

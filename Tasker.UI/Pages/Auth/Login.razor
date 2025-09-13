@@ -9,7 +9,7 @@
     <MudText Typo="Typo.h4">Login</MudText>
 
     <MudForm Model="loginModel">
-        <MudTextField Variant="Variant.Outlined" HelperText="Email" Required="true" @bind-Value="loginModel.Email" />
+        <MudTextField Variant="Variant.Outlined" HelperText="Email"  Required="true" @bind-Value="loginModel.Email" />
         <MudTextField Variant="Variant.Outlined" HelperText="Password" Required="true" type="password"
             @bind-Value="loginModel.Password" />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="HandleLogin">Login</MudButton>
@@ -18,6 +18,13 @@
 
 @code {
     LoginModel loginModel = new LoginModel();
+
+    //DELETE
+    protected override void OnParametersSet()
+    {
+        loginModel.Email = "obama2@gmail.com";
+        loginModel.Password = "WarLord_13";
+    }
 
     async Task HandleLogin()
     {

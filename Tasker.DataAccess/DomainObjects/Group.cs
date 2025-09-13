@@ -53,4 +53,10 @@ public class Group : GroupModel
     public Group()
     {
     }
+
+    public int GetNumberOfUncompletedAssignments()
+    {
+        int retval = Assignments.Where(a => !a.IsCompleted).Count();
+        return retval;
+    }
 }

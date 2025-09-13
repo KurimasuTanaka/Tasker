@@ -35,7 +35,7 @@ public class GroupRepository : IGroupRepository
     public async Task<IEnumerable<Group>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.Groups.Select(g => new Group(g)).ToListAsync(cancellationToken);
+        return await _context.Groups.Include(g => g.Assignments).Select(g => new Group(g)).ToListAsync(cancellationToken);
     }
 
     // Update operations
@@ -63,7 +63,7 @@ public class GroupRepository : IGroupRepository
     public async Task<IEnumerable<Group>> GetAllAsync(string userId, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.UserParticipations.Include(up => up.Group).ThenInclude(up => up.Participants)
+        return await _context.UserParticipations.Include(up => up.Group).ThenInclude(up => up.Participants).Include(up => up.Group).ThenInclude(g => g.Assignments)
             .Where(up => up.User.UserIdentity == userId)
             .Select(up => new Group(up.Group!))
             .ToListAsync(cancellationToken);
