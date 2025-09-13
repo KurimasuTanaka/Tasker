@@ -26,7 +26,7 @@ namespace Tasker.API.Controllers
             var result = await _userService.GetUserById(userId);
             if (result.IsSuccess)
             {
-                return Ok(result.Value.ToDTO());
+                return Ok(new UserDTO(result.Value));
             }
             return NotFound(result.ErrorMessage);
         }

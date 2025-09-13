@@ -1,46 +1,24 @@
-using System;
-using Tasker.DataAccess.DataTransferObjects;
 using Tasker.Database;
 
 namespace Tasker.DataAccess;
 
-public class UserParticipation : UserParticipationModel
+public class UserParticipation
 {
+    public long UserParticipationId { get; set; }
+    public GroupRole Role { get; set; }
+    public string UserId { get; set; } = String.Empty;
+    public User? User { get; set; }
+    public long GroupId { get; set; }
+
+
     public UserParticipation(UserParticipationModel model)
     {
-        this.UserParticipationId = model.UserParticipationId;
-        this.Role = model.Role;
-        this.User = model.User;
-        this.UserId = model.UserId;
-        this.GroupId = model.GroupId;
-        this.Group = model.Group;
+        UserParticipationId = model.UserParticipationId;
+        Role = model.Role;
+        UserId = model.UserId;
+        GroupId = model.GroupId;
     }
-
-    public UserParticipation(UserParticipationDTO userParticipationDTO)
-    {
-        this.UserParticipationId = userParticipationDTO.UserParticipationId;
-        this.Role = userParticipationDTO.Role;
-        this.User = userParticipationDTO.User;
-        this.UserId = userParticipationDTO.UserId;
-        this.GroupId = userParticipationDTO.GroupId;
-        this.Group = userParticipationDTO.Group;
-    }
-
     public UserParticipation()
     {
-    }
-
-
-    public UserParticipationDTO ToDTO()
-    {
-        return new UserParticipationDTO
-        {
-            UserParticipationId = this.UserParticipationId,
-            Role = Role,
-            User = new User(User),
-            UserId = UserId,
-            GroupId = GroupId,
-            Group = new Group(Group)
-        };
     }
 }

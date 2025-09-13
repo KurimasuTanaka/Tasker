@@ -32,7 +32,7 @@ namespace Tasker.API.Controllers
 
             var groups = await _groupService.GetAllGroups(userId, cancellationToken);
 
-            return Ok(groups.Value.Select(g => new Group(g)).ToList());
+            return Ok(groups.Value.Select(g => new GroupDTO(g)).ToList());
         }
 
         [HttpPost]
@@ -44,7 +44,7 @@ namespace Tasker.API.Controllers
             Result<Group> createdGroup = await _groupService.CreateGroup(group, userId);
 
             if (!createdGroup.IsSuccess) return BadRequest(createdGroup.ErrorMessage);
-            return CreatedAtAction("CreateGroup", createdGroup.Value.ToDTO());
+            return CreatedAtAction("CreateGroup", new GroupDTO(createdGroup.Value));
         }
 
         [HttpGet("{groupId:long}")]
@@ -54,18 +54,18 @@ namespace Tasker.API.Controllers
             var result = await _groupService.GetGroupById(groupId, cancellationToken);
             if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
-            return Ok(result.Value.ToDTO());
+            return Ok(new GroupDTO(result.Value));
         }
 
 
         [HttpPost("{groupId:long}/members")]
         [GroupAuthorize(GroupRole.Manager)]
-        public async Task<IActionResult> AddMember(long groupId, [FromBody] string userId)
+        public async Task<ActionResult<GroupDTO>> AddMember(long groupId, [FromBody] string userId)
         {
             var result = await _groupService.AddGroupMember(groupId, userId);
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
-            return Ok(result.Value);
+            return Ok(new GroupDTO(result.Value));
         }
 
         [GroupAuthorize(GroupRole.Admin)]
@@ -82,7 +82,7 @@ namespace Tasker.API.Controllers
         [HttpPut("{groupId:long}")]
         public async Task<ActionResult<GroupDTO>> UpdateGroup(long groupId,[FromBody] GroupDTO groupDTO)
         {
-            var result = await _groupService.UpdateGroup(new Group(groupDTO));
+            var result = await _groupService.UpdateGroup(groupDTO.ToDomainObject());
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
             return NoContent();
