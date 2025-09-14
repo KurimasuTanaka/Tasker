@@ -5,12 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Tasker.API.Services;
-using Tasker.API.Services.AssignmentsService;
-using Tasker.API.Services.AuthService;
-using Tasker.API.Services.GroupsService;
-using Tasker.DataAccess;
-using Tasker.Database;
+using Tasker.Application;
+using Tasker.Domain;
+using Tasker.Infrastructure;
 namespace Tasker.API;
 
 
@@ -63,8 +60,12 @@ public partial class Program
 
         builder.Services.AddAuthorization();
 
+        builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+        builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IUserAssignmentRepository, UserAssignmentRepository>();
+        builder.Services.AddScoped<IUserParticipationRepository, UserParticipationRepository>();
 
-        builder.Services.AddDataAccess();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupsService, GroupsService>();
         builder.Services.AddScoped<IUserService, UserService>();

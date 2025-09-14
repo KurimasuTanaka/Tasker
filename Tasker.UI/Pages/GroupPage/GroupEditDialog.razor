@@ -1,0 +1,27 @@
+﻿@inject IGroupsManager _groupsManager
+
+
+<MudDialog>
+    <TitleContent>
+        Edit group info
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="group.Name" Variant="Variant.Outlined" class="form-control" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="UpdateGroup">Create task</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public Group group { get; set; } = new();
+
+    protected async Task UpdateGroup()
+    {
+        group = await _groupsManager.UpdateGroup(group);
+        MudDialog.Close(DialogResult.Ok(group));
+    }
+
+}

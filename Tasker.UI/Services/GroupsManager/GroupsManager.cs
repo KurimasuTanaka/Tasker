@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http.Json;
-using Tasker.DataAccess;
-using Tasker.DataAccess.DataTransferObjects;
+using Tasker.Application;
+using Tasker.Domain;
 
 namespace Tasker.UI.Services;
 
@@ -106,7 +106,7 @@ public class GroupsManager : IGroupsManager
 
     public async Task<Group> UpdateGroup(Group groupToUpdate)
     {
-        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupToUpdate.GroupId}", groupToUpdate.ToDTO());
+        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupToUpdate.GroupId}", groupToUpdate.ToDto());
         response.EnsureSuccessStatusCode();
 
         var group = await response.Content.ReadFromJsonAsync<Group>();

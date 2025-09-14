@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.API.Services.AssignmentsService;
-using Tasker.DataAccess;
-using Tasker.DataAccess.Auth;
-using Tasker.DataAccess.DataTransferObjects;
-using Tasker.Database;
+using Tasker.Application;
+using Tasker.Domain;
+using Tasker.Enums;
+using Tasker.Infrastructure;
 
 namespace Tasker.API.Controllers
 {
@@ -26,7 +25,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.CreateAssignment(groupId, assignment.ToDomainObject());
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(CreateAssignment), new AssignmentDTO(result.Value));
+                return CreatedAtAction(nameof(CreateAssignment), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }
@@ -38,7 +37,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.GetAllAssignments(groupId, cancellationToken);
             if (result.IsSuccess)
             {
-                return Ok(result.Value.Select(a => new AssignmentDTO(a)).ToList());
+                return Ok(result.Value.Select(a => a.ToDto()).ToList());
             }
             return BadRequest(result.ErrorMessage);
         }
@@ -50,7 +49,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.GetAssignment(groupId, assignmentId, cancellationToken);
             if (result.IsSuccess)
             {
-                return Ok(new AssignmentDTO(result.Value));
+                return Ok(result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }

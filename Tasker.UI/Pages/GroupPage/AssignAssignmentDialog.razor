@@ -5,7 +5,7 @@
         Create new task
     </TitleContent>
     <DialogContent>
-        <MudTable T="DataAccess.User" Items="@(group.Participants.Select(p => p.User).Select(um => new User(um)))"
+        <MudTable T="Domain.User" Items="@(group.UserParticipations.Select(up => up.User))"
             OnRowClick="AddToSelection">
             <HeaderContent>
                 <MudTh>Name</MudTh>
@@ -28,15 +28,15 @@
     </DialogActions>
 </MudDialog>
 @code {
-    [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
-    [Parameter] public DataAccess.Group group { get; set; } = new();
+    [Parameter] public Domain.Assignment assignment { get; set; } = new();
+    [Parameter] public Domain.Group group { get; set; } = new();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     List<User> usersToAssign = new();
 
     protected override void OnParametersSet()
     {
-        usersToAssign = assignment.Participants.Select(p => new User(p.User)).ToList();
+        usersToAssign = assignment.UserAssignments.Select(p => p.User).ToList();
     }
 
     private void AssignAssignment()

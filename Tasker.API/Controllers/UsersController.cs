@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.API.Services;
-using Tasker.DataAccess;
-using Tasker.DataAccess.DataTransferObjects;
-using Tasker.Database;
+using Tasker.Application;
 
 namespace Tasker.API.Controllers
 {
@@ -26,7 +23,7 @@ namespace Tasker.API.Controllers
             var result = await _userService.GetUserById(userId);
             if (result.IsSuccess)
             {
-                return Ok(new UserDTO(result.Value));
+                return Ok(result.Value.ToDto());
             }
             return NotFound(result.ErrorMessage);
         }

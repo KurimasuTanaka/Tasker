@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.JSInterop;
-using Tasker.DataAccess.Auth;
+using Tasker.Application;
 
 namespace Tasker.UI.Auth;
 

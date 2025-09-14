@@ -1,5 +1,4 @@
-﻿@using Tasker.DataAccess
-@using Tasker.UI.Services
+﻿@using Tasker.UI.Services
 @inject IGroupsManager _groupsManager
 @inject NavigationManager NavigationManager
 
@@ -11,7 +10,7 @@
     <MudCard Outlined="true" Style="margin-top:10px;">
         <MudCardContent>
             <MudText>@group.Name</MudText>
-            <MudText Typo="Typo.body2">Users: @group.Participants.Count</MudText>
+            <MudText Typo="Typo.body2">Users: @group.UserParticipations.Count</MudText>
             <MudText Typo="Typo.body2">Task: @group.GetNumberOfUncompletedAssignments()</MudText>
         </MudCardContent>
         <MudCardActions>

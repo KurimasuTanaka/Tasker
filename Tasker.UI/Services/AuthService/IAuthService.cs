@@ -1,5 +1,5 @@
 using System;
-using Tasker.DataAccess.Auth;
+using Tasker.Application;
 
 namespace Tasker.UI.Auth;
 

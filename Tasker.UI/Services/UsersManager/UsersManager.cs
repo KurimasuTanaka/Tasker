@@ -1,6 +1,6 @@
 using System;
 using System.Net.Http.Json;
-using Tasker.DataAccess;
+using Tasker.Domain;
 
 namespace Tasker.UI.Services.UsersManager;
 

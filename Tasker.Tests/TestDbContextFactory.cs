@@ -1,6 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Database;
+using Tasker.Infrastructure;
 
 namespace Tasker.Tests;
 

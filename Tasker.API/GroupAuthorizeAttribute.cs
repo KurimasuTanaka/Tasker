@@ -1,7 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.DataAccess;
-using Tasker.Database;
+using Tasker.Enums;
 
 namespace Tasker.API;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]

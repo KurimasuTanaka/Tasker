@@ -8,10 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Moq;
 using NUnit.Framework.Legacy;
-using Tasker.DataAccess;
-using Tasker.DataAccess.Auth;
-using Tasker.DataAccess.DataTransferObjects;
-using Tasker.Database;
+using Tasker.Application;
+using Tasker.Infrastructure;
 using Tasker.UI.Auth;
 
 namespace Tasker.Tests;
@@ -35,11 +33,7 @@ public class AuthTests
             {
                 builder.ConfigureServices(services =>
                 {
-                    services.AddAuthentication("TestScheme")
-                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
-
-                    // (Твой код по настройке БД оставляем без изменений)
-                    var descriptors = services
+                       var descriptors = services
                         .Where(d =>
                             d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
                             d.ServiceType == typeof(IDbContextFactory<TaskerContext>) ||
@@ -137,32 +131,7 @@ public class AuthTests
         Assert.That(result, Is.EqualTo("Authorized successfully"));
 
     }
-    [Test]
-    public async Task Post_Test_Test()
-    {
-        //Arrange
-        var registerModel = new RegisterModel
-        {
-            Email = "test@email.com",
-            Password = "Password123!",
-            FirstName = "Test",
-            LastName = "Testsson"
-        };
 
-        //Act
-        AssignmentDTO assignment = new();
-        assignment.Title = "Test Assignment";
-        assignment.Description = "This is a test assignment.";
-        assignment.GroupId = 1;
-
-
-
-        var response = await _client.PostAsJsonAsync($"api/groups/{assignment.GroupId}/assignments", assignment);
-        response.EnsureSuccessStatusCode();
-
-        //Assert
-
-    }
 
     [TearDown]
     public void TearDown()

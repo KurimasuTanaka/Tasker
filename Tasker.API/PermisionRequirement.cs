@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
-using Tasker.Database;
+using Tasker.Enums;
 
 namespace Tasker.API;
 

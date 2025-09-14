@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Tasker.DataAccess.Auth;
-using Tasker.API.Services.AuthService;
+using Tasker.Application;
 
 namespace Tasker.API.Controllers
 {

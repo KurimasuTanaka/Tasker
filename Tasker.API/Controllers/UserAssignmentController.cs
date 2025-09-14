@@ -1,10 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.API.Services.AssignmentsService;
-using Tasker.DataAccess;
-using Tasker.DataAccess.DataTransferObjects;
-using Tasker.Database;
+using Tasker.Application;
+using Tasker.Enums;
 
 namespace Tasker.API.Controllers
 {
@@ -26,7 +22,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.AssignTaskToUser(userAssignment.ToDomainObject());
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(AssignTaskToUser), new UserAssignmentDTO(result.Value));
+                return CreatedAtAction(nameof(AssignTaskToUser), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }
@@ -38,7 +34,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.UnassignTaskFromUser(userAssignment.ToDomainObject());
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(AssignTaskToUser), new UserAssignmentDTO(result.Value));
+                return CreatedAtAction(nameof(AssignTaskToUser), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }

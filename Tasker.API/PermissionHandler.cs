@@ -1,8 +1,7 @@
 using System;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Tasker.DataAccess;
-using Tasker.DataAccess.Repositories;
+using Tasker.Domain;
 
 namespace Tasker.API;
 

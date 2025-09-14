@@ -1,6 +1,7 @@
-using Tasker.API.Services.GroupsService;
-using Tasker.DataAccess;
-using Tasker.DataAccess.Repositories;
+
+using Tasker.Application;
+using Tasker.Domain;
+using Tasker.Infrastructure;
 
 namespace Tasker.Tests;
 
@@ -118,7 +119,7 @@ public class GroupTests
 
         Assert.That(retrievedGroup, Is.Not.Null);
         Assert.That(retrievedGroup?.GroupId, Is.EqualTo(createdGroup.GroupId));
-        Assert.That(retrievedGroup?.Participants.Count, Is.EqualTo(2));
+        Assert.That(retrievedGroup?.UserParticipations.Count, Is.EqualTo(2));
     }
 
     [Test]

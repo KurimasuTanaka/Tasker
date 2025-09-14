@@ -1,5 +1,6 @@
 using System;
-using Tasker.DataAccess;
+using Tasker.Application;
+using Tasker.Domain;
 
 namespace Tasker.UI.Services;
 

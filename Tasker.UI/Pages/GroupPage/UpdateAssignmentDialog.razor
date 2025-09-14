@@ -18,10 +18,10 @@
 @code {
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
-    [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
+    [Parameter] public Domain.Assignment assignment { get; set; } = new();
     protected async Task CreateAssignment()
     {
-        DataAccess.Assignment createdAssignment = await _groupsManager.CreateAssignment(assignment.GroupId, assignment);
+        Domain.Assignment createdAssignment = await _groupsManager.CreateAssignment(assignment.GroupId, assignment);
         MudDialog.Close(DialogResult.Ok(createdAssignment));
     }
 

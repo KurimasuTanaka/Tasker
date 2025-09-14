@@ -21,10 +21,10 @@
     [Parameter]
     public long GroupId { get; set; } = default;
 
-    DataAccess.Assignment assignment = new();
+    Domain.Assignment assignment = new();
     protected async Task CreateAssignment()
     {
-        DataAccess.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
+        Domain.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
         MudDialog.Close(DialogResult.Ok(createdAssignment));
     }
 

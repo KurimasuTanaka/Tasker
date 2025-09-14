@@ -19,7 +19,7 @@
 </AuthorizeView>
 
 <MudText Typo="Typo.h6">In group:</MudText>
-@foreach (var member in group.Participants)
+@foreach (var member in group.UserParticipations)
 {
     <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName</MudText>
 }
@@ -33,17 +33,17 @@
             </Authorized>
         </AuthorizeView>
 
-        @foreach (Database.AssignmentModel task in group.Assignments)
+        @foreach (Domain.Assignment task in group.Assignments)
         {
-            <Assignment assignment="new DataAccess.Assignment(task)" group="group" />
+            <Assignment assignment="task" group="group" />
         }
     </MudTabPanel>
     <MudTabPanel Text="My tasks">
-        @foreach (Database.AssignmentModel task in group.Assignments.Where(a => a.Participants.
+        @foreach (Domain.Assignment task in group.Assignments.Where(a => a.UserAssignments.
                 Select(p => p.User.UserIdentity).
                 Contains(CurrentUser.UserIdentity)))
         {
-            <Assignment assignment="new DataAccess.Assignment(task)" group="group" />
+            <Assignment assignment="task" group="group" />
         }
     </MudTabPanel>
 </MudTabs>

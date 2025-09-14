@@ -40,8 +40,8 @@
 
 
 @code {
-    [Parameter] public DataAccess.Assignment assignment { get; set; } = new();
-    [Parameter] public DataAccess.Group group { get; set; } = new();
+    [Parameter] public Domain.Assignment assignment { get; set; } = new();
+    [Parameter] public Domain.Group group { get; set; } = new();
 
     string participants = string.Empty;
 
@@ -50,9 +50,9 @@
     protected override async Task OnParametersSetAsync()
     {
         participants = "";
-        foreach (UserAssignment user in assignment.Participants.Select(p => new UserAssignment(p)))
+        foreach (Domain.User user in assignment.UserAssignments.Select(ua => ua.User))
         {
-            participants += ($"{user.User.FirstName} {user.User.LastName}");
+            participants += ($"{user!.FirstName} {user!.LastName}");
 
             ClaimsPrincipal? u = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
             userId = u.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
