@@ -5,9 +5,9 @@ namespace Tasker.Infrastructure;
 
 public static partial class GroupMappingExtensions
 {
-    public static Group ToDomain(this GroupModel entity)
+    public static Group? ToDomain(this GroupModel entity)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        if (entity == null) return null;
 
         return new Group
         {
@@ -18,9 +18,9 @@ public static partial class GroupMappingExtensions
         };
     }
 
-    public static GroupModel ToModel(this Group domain)
+    public static GroupModel? ToModel(this Group domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new GroupModel
         {

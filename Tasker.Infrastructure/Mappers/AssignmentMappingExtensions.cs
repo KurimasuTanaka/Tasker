@@ -5,9 +5,9 @@ namespace Tasker.Infrastructure;
 
 public static partial class AssignmentMappingExtensions
 {
-    public static Assignment ToDomain(this AssignmentModel entity)
+    public static Assignment? ToDomain(this AssignmentModel entity)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        if (entity == null) return null;
 
         return new Assignment
         {
@@ -20,9 +20,9 @@ public static partial class AssignmentMappingExtensions
         };
     }
 
-    public static AssignmentModel ToModel(this Assignment domain)
+    public static AssignmentModel? ToModel(this Assignment domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new AssignmentModel
         {

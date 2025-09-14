@@ -5,9 +5,9 @@ namespace Tasker.Application;
 
 public static partial class UserMappingExtensions
 {
-    public static User ToDomainObject(this UserDTO dto)
+    public static User? ToDomainObject(this UserDTO dto)
     {
-        if (dto == null) throw new ArgumentNullException(nameof(dto));
+        if (dto == null) return null;
 
         return new User
         {
@@ -16,9 +16,9 @@ public static partial class UserMappingExtensions
             LastName = dto.LastName
         };
     }
-    public static UserDTO ToDto(this User domain)
+    public static UserDTO? ToDto(this User domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new UserDTO
         {

@@ -5,9 +5,9 @@ namespace Tasker.Infrastructure;
 
 public static partial class UserParticipationMappingExtensions
 {
-    public static UserParticipation ToDomain(this UserParticipationModel entity)
+    public static UserParticipation? ToDomain(this UserParticipationModel entity)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        if (entity == null) return null;
 
         return new UserParticipation
         {
@@ -19,9 +19,9 @@ public static partial class UserParticipationMappingExtensions
         };
     }
 
-    public static UserParticipationModel ToModel(this UserParticipation domain)
+    public static UserParticipationModel? ToModel(this UserParticipation domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new UserParticipationModel
         {

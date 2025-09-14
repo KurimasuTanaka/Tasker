@@ -5,9 +5,9 @@ namespace Tasker.Infrastructure;
 
 public static partial class UserMappingExtensions
 {
-    public static User ToDomain(this UserModel entity)
+    public static User? ToDomain(this UserModel entity)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        if (entity == null) return null;
 
         return new User
         {
@@ -17,9 +17,9 @@ public static partial class UserMappingExtensions
         };
     }
 
-    public static UserModel ToModel(this User domain)
+    public static UserModel? ToModel(this User domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new UserModel
         {

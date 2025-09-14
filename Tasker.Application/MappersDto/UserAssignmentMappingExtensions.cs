@@ -5,9 +5,9 @@ namespace Tasker.Application;
 
 public static partial class UserAssignmentMappingExtensions
 {
-    public static UserAssignment ToDomainObject(this UserAssignmentDTO dto)
+    public static UserAssignment? ToDomainObject(this UserAssignmentDTO dto)
     {
-        if (dto == null) throw new ArgumentNullException(nameof(dto));
+        if (dto == null) return null;
 
         return new UserAssignment
         {
@@ -16,9 +16,9 @@ public static partial class UserAssignmentMappingExtensions
         };
     }
 
-    public static UserAssignmentDTO ToDto(this UserAssignment domain)
+    public static UserAssignmentDTO? ToDto(this UserAssignment domain)
     {
-        if (domain == null) throw new ArgumentNullException(nameof(domain));
+        if (domain == null) return null;
 
         return new UserAssignmentDTO
         {
