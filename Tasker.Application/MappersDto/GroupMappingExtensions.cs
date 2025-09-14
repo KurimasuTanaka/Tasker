@@ -12,6 +12,7 @@ public static partial class GroupMappingExtensions
         Group groupToReturn = new();
 
         groupToReturn.GroupId = dto.GroupId;
+        groupToReturn.Name = dto.Name;
         groupToReturn.UserParticipations = dto.Participants.Select(p => new UserParticipation
         {
             GroupId = dto.GroupId,
@@ -30,6 +31,7 @@ public static partial class GroupMappingExtensions
         return new GroupDTO
         {
             GroupId = domain.GroupId,
+            Name = domain.Name,
             Participants = domain.UserParticipations.Select(up => up.User.ToDto()).ToList(),
             Assignments = domain.Assignments.Select(a => a.ToDto()).ToList()
         };

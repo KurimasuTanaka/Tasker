@@ -25,10 +25,10 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Read operations
-    public async Task<UserParticipation?> GetAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<UserParticipation?> GetAsync((string userId, long groupId) id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var userParticipationModel = await _context.UserParticipations.FindAsync(id, cancellationToken);
+        var userParticipationModel = await _context.UserParticipations.FindAsync(id.userId, id.groupId, cancellationToken);
         if(userParticipationModel == null) return null; 
         else return userParticipationModel.ToDomain();
     }
@@ -53,7 +53,7 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Delete operations
-    public async Task<bool> DeleteAsync(long id)
+    public async Task<bool> DeleteAsync((string userId, long groupId) id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
         var entity = await GetAsync(id);
@@ -63,17 +63,11 @@ public class UserParticipationRepository : IUserParticipationRepository
         await _context.SaveChangesAsync();
         return true;
     }
-    public async Task<UserParticipation?> GetUserParticipationAsyc(string userId, long groupId)
+
+    public async Task<IEnumerable<UserParticipation>> GetUserParticipationsAsyc(string userId, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
+        return await _context.UserParticipations.Where(up => up.UserId == userId).Select(up => up.ToDomain()).ToListAsync(cancellationToken);
 
-        var entity = _context.UserParticipations.FirstOrDefault(up => up.UserId == userId && up.GroupId == groupId);
-
-        if (entity is null)
-        {
-            return null;
-        }
-
-        return entity.ToDomain();
     }
 }

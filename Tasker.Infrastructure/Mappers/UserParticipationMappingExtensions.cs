@@ -11,7 +11,6 @@ public static partial class UserParticipationMappingExtensions
 
         return new UserParticipation
         {
-            UserParticipationId = entity.UserParticipationId,
             UserId = entity.UserId,
             GroupId = entity.GroupId,
             Role = entity.Role,

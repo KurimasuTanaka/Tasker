@@ -81,7 +81,7 @@ namespace Tasker.API.Controllers
             var result = await _groupService.UpdateGroup(groupDTO.ToDomainObject());
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
-            return NoContent();
+            return Ok(result.Value.ToDto());
         }
     }
 }

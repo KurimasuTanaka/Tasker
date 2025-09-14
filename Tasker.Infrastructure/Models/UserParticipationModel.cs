@@ -8,8 +8,6 @@ namespace Tasker.Infrastructure;
 
 public class UserParticipationModel
 {
-    [Key]
-    public long UserParticipationId { get; set; }
     public GroupRole Role { get; set; }
     public string UserId { get; set; } = String.Empty;
     public UserModel User { get; set; } = null!;

@@ -24,7 +24,7 @@ public class PermissionHandler : AuthorizationHandler<PermisionRequirement, long
         }
 
         // Ищем запись о членстве
-        UserParticipation? userParticipation = await _userParticipationRepository.GetUserParticipationAsyc(userId, groupId);
+        UserParticipation? userParticipation = await _userParticipationRepository.GetAsync((userId, groupId));
 
         if (userParticipation == null)
         {

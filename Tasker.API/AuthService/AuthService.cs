@@ -12,11 +12,13 @@ public class AuthService : IAuthService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IUserRepository _userRepository;
-    public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository)
+    private readonly IUserParticipationRepository _userParticipationRepository;
+    public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository, IUserParticipationRepository userParticipationRepository)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userRepository = userRepository;
+        _userParticipationRepository = userParticipationRepository;
     }
 
     public async Task<Result<string>> Login(LoginModel model)
@@ -28,8 +30,7 @@ public class AuthService : IAuthService
         if (!result.Succeeded) return Result.Failure<string>("Invalid password");
 
 
-        var dbUser = await _userRepository.GetAsync(user.Id);
-        if (dbUser == null) return Result.Failure<string>("User not found in database");
+        List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsyc(user.Id)).ToList();
 
         var claims = new List<Claim>
             {
@@ -39,7 +40,7 @@ public class AuthService : IAuthService
                 new Claim(ClaimTypes.Role, "User") // Default role
             };
 
-        foreach (var participation in dbUser.UserParticipations)
+        foreach (var participation in userParticipations)
         {
             claims.Add(new Claim(ClaimTypes.Role, $"{participation.GroupId}:{participation.Role}"));
         }
