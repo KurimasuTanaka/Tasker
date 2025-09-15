@@ -7,7 +7,7 @@ public static partial class GroupMappingExtensions
 {
     public static Group? ToDomainObject(this GroupDTO dto)
     {
-        if (dto == null) return null;
+        if (dto == null) return new Group();
 
         Group groupToReturn = new();
 
@@ -26,7 +26,7 @@ public static partial class GroupMappingExtensions
 
     public static GroupDTO? ToDto(this Group domain)
     {
-        if (domain == null) return null;
+        if (domain == null) return new GroupDTO();
 
         return new GroupDTO
         {

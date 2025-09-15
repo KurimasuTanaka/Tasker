@@ -6,10 +6,13 @@
 @inject IGroupsManager _groupsManager
 @inject IDialogService DialogService
 
-<div>
+<div class="d-flex">
     <MudText Typo="Typo.h4">@group?.Name</MudText>
-    <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenGroupEditDialog" />
-
+    <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
+        <Authorized>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OpenGroupEditDialog" />
+        </Authorized>
+    </AuthorizeView>
 </div>
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
@@ -24,14 +27,14 @@
     <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName</MudText>
 }
 <MudDivider />
+<AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
+    <Authorized>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog">Add Task</MudButton>
+    </Authorized>
+</AuthorizeView>
 
 <MudTabs>
     <MudTabPanel Text="Group tasks">
-        <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
-            <Authorized>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog">Add Task</MudButton>
-            </Authorized>
-        </AuthorizeView>
 
         @foreach (Domain.Assignment task in group.Assignments)
         {

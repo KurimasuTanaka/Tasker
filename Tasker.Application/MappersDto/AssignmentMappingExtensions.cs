@@ -7,7 +7,7 @@ public static partial class AssignmentMappingExtensions
 {
     public static Assignment? ToDomainObject(this AssignmentDTO dto)
     {
-        if (dto == null) return null;
+        if (dto == null) return new Assignment();
         return new Assignment
         {
             AssignmentId = dto.AssignmentId,
@@ -21,7 +21,7 @@ public static partial class AssignmentMappingExtensions
 
     public static AssignmentDTO? ToDto(this Assignment domain)
     {
-        if (domain == null) return null;
+        if (domain == null) return new AssignmentDTO();
         return new AssignmentDTO
         {
             AssignmentId = domain.AssignmentId,

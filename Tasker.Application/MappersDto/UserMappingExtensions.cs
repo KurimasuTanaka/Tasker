@@ -7,7 +7,7 @@ public static partial class UserMappingExtensions
 {
     public static User? ToDomainObject(this UserDTO dto)
     {
-        if (dto == null) return null;
+        if (dto == null) return new User();
 
         return new User
         {
@@ -18,7 +18,7 @@ public static partial class UserMappingExtensions
     }
     public static UserDTO? ToDto(this User domain)
     {
-        if (domain == null) return null;
+        if (domain == null) return new UserDTO();
 
         return new UserDTO
         {

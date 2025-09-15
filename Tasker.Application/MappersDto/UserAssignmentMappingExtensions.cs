@@ -7,7 +7,7 @@ public static partial class UserAssignmentMappingExtensions
 {
     public static UserAssignment? ToDomainObject(this UserAssignmentDTO dto)
     {
-        if (dto == null) return null;
+        if (dto == null) return new UserAssignment();
 
         return new UserAssignment
         {
@@ -18,7 +18,7 @@ public static partial class UserAssignmentMappingExtensions
 
     public static UserAssignmentDTO? ToDto(this UserAssignment domain)
     {
-        if (domain == null) return null;
+        if (domain == null) return new UserAssignmentDTO();
 
         return new UserAssignmentDTO
         {
