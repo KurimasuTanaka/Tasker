@@ -17,7 +17,7 @@
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
-        <MudButton OnClick="OpenUserAdditionDialog">Add User</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenUserAdditionDialog" Size="Size.Large" Class="p-3">Add User</MudButton>
     </Authorized>
 </AuthorizeView>
 
@@ -29,11 +29,11 @@
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
     <Authorized>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog">Add Task</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog" Size="Size.Large" Class="p-3">Add Task</MudButton>
     </Authorized>
 </AuthorizeView>
 
-<MudTabs>
+<MudTabs Elevation="2" PanelClass="pa-6">
     <MudTabPanel Text="Group tasks">
 
         @foreach (Domain.Assignment task in group.Assignments)
@@ -76,10 +76,19 @@
         await DialogService.ShowAsync<CreateTaskDialog>("Simple Dialog", dialogParameters, options);
     }
 
+    public async Task RefreshGroup(Group group)
+    {
+        this.group = group;
+        StateHasChanged();
+    }
+
     private async Task OpenGroupEditDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        var dialogParameters = new DialogParameters { { "group", group } };
+        var dialogParameters = new DialogParameters { 
+            { "group", group },
+            { "UpdateGroupCallback", EventCallback.Factory.Create<Group>(this, RefreshGroup) }
+         };
 
         await DialogService.ShowAsync<GroupEditDialog>("Edit group", dialogParameters, options);
 

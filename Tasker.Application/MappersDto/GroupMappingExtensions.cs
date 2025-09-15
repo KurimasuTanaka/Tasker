@@ -1,5 +1,6 @@
 using System;
 using Tasker.Domain;
+using Tasker.Enums;
 
 namespace Tasker.Application;
 
@@ -18,6 +19,7 @@ public static partial class GroupMappingExtensions
             GroupId = dto.GroupId,
             User = p.ToDomainObject(),
             UserId = p.UserIdentity,
+            Role = p.Role
         }).ToList();
         groupToReturn.Assignments = dto.Assignments.Select(a => a.ToDomainObject()).ToList();
 
@@ -32,7 +34,12 @@ public static partial class GroupMappingExtensions
         {
             GroupId = domain.GroupId,
             Name = domain.Name,
-            Participants = domain.UserParticipations.Select(up => up.User.ToDto()).ToList(),
+            Participants = domain.UserParticipations.Select(up =>
+            {
+                UserDTO userDTO = up.User.ToDto();
+                if (userDTO != null) userDTO.Role = up.Role;
+                return userDTO;
+            }).ToList(),
             Assignments = domain.Assignments.Select(a => a.ToDto()).ToList()
         };
     }
