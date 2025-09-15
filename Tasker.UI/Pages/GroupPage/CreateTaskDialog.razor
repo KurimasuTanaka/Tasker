@@ -20,11 +20,14 @@
     private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter]
     public long GroupId { get; set; } = default;
+    [Parameter]
+    public EventCallback<Domain.Assignment> UpdateGroupCallback { get; set; }
 
     Domain.Assignment assignment = new();
     protected async Task CreateAssignment()
     {
         Domain.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
+        await UpdateGroupCallback.InvokeAsync(createdAssignment);
         MudDialog.Close(DialogResult.Ok(createdAssignment));
     }
 

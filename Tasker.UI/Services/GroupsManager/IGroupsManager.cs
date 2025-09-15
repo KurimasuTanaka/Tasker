@@ -13,7 +13,7 @@ public interface IGroupsManager
     Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default);
     Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default);
     Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default);
-    Task AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default);
-    Task DeleteAssignment(long groupId, long assignmentId);
+    Task<Assignment> AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default);
+    Task<Assignment> DeleteAssignment(long groupId, long assignmentId);
     Task<Assignment> UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate);
 }

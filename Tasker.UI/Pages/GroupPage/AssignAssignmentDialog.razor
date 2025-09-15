@@ -31,6 +31,7 @@
     [Parameter] public Domain.Assignment assignment { get; set; } = new();
     [Parameter] public Domain.Group group { get; set; } = new();
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public EventCallback<Domain.Assignment> UpdateGroupCallback { get; set; }
 
     List<User> usersToAssign = new();
 
@@ -39,13 +40,15 @@
         usersToAssign = assignment.UserAssignments.Select(p => p.User).ToList();
     }
 
-    private void AssignAssignment()
+    private async Task AssignAssignment()
     {
+        Domain.Assignment? updatedAssignment;
         foreach (User user in usersToAssign)
         {
-            _groupsManager.AssignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+            updatedAssignment = await _groupsManager.AssignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
         }
 
+        await UpdateGroupCallback.InvokeAsync(assignment);
         MudDialog.Close(DialogResult.Ok(true));
     }
 

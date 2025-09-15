@@ -5,7 +5,11 @@
 
 @inject IGroupsManager _groupsManager
 @inject IDialogService DialogService
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IUsersManager _usersManager
 
+
+@*Header*@
 <div class="d-flex align-center">
     <MudText Typo="Typo.h4">@group?.Name</MudText>
     <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
@@ -14,14 +18,17 @@
         </Authorized>
     </AuthorizeView>
 </div>
+
 <MudDivider />
+
+@*Add User Button*@
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenUserAdditionDialog" class="ma-3">Add User</MudButton>
     </Authorized>
 </AuthorizeView>
 
-<UserListComponent Users="group.UserParticipations.Select(up => up.User).ToList()" Title="Group members" />
+<UserListComponent Users="group.UserParticipations.Select(up => up.User).ToList()" Title="Group members:" />
 
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
@@ -39,43 +46,71 @@
         }
     </MudTabPanel>
     <MudTabPanel Text="My tasks">
+        @if(CurrentUser is null)
+        {
+            <MudText Typo="Typo.h6">No user data available.</MudText>
+        } else 
+        {
+
         @foreach (Domain.Assignment task in group.Assignments.Where(a => a.UserAssignments.
                 Select(p => p.User.UserIdentity).
                 Contains(CurrentUser.UserIdentity)))
         {
             <Assignment assignment="task" group="group" />
         }
+        }
     </MudTabPanel>
 </MudTabs>
 
 @code {
     [Parameter] public long GroupId { get; set; }
-    [CascadingParameter] public User CurrentUser { get; set; } = default!;
+    [Parameter] public User? CurrentUser { get; set; }
     private Group group = new();
     private string newUserId = string.Empty;
 
     private Task OpenUserAdditionDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
+        var dialogParameters = new DialogParameters { { "GroupId", GroupId }
+        };
 
         return DialogService.ShowAsync<AddUserDialog>("Add new user", dialogParameters, options);
     }
     protected override async Task OnInitializedAsync()
     {
+        ClaimsPrincipal? user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
+        string userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
+
+        CurrentUser = await _usersManager.GetUserById(userId);
+
+
         group = await _groupsManager.GetGroupById(GroupId);
     }
     private async Task OpenTaskDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        var dialogParameters = new DialogParameters { { "GroupId", GroupId } };
+        var dialogParameters = new DialogParameters { 
+            { "GroupId", GroupId }, 
+            { "UpdateGroupCallback", EventCallback.Factory.Create<Domain.Assignment>(this, RefreshGroup) } };
 
         await DialogService.ShowAsync<CreateTaskDialog>("Simple Dialog", dialogParameters, options);
+    }
+
+    public async Task RefreshGroup(Domain.Assignment newAssignment)
+    {
+        this.group.Assignments.Add(newAssignment);
+        StateHasChanged();
     }
 
     public async Task RefreshGroup(Group group)
     {
         this.group = group;
+        StateHasChanged();
+    }
+
+    public async Task AssignmentRemoved(Domain.Assignment assignment)
+    {
+        this.group.Assignments.Remove(assignment);
         StateHasChanged();
     }
 

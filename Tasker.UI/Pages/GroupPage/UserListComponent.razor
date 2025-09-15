@@ -1,0 +1,15 @@
+﻿<MudPaper Class="pa-3 mb-3">
+    <MudText Typo="Typo.h6">@Title</MudText>
+    <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap" Justify="Justify.FlexStart">
+        @foreach (var member in Users)
+        {
+            <MudPaper Class="pa-1">@member.FirstName @member.LastName</MudPaper>
+        }
+    </MudStack>
+
+</MudPaper>
+
+@code {
+    [Parameter] public List<User> Users { get; set; } = new();
+    [Parameter] public string Title { get; set; } = string.Empty;
+}

@@ -76,7 +76,7 @@ public class GroupsManager : IGroupsManager
         return createdAssignment.ToDomainObject();
     }
 
-    public async Task AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default)
+    public async Task<Assignment> AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default)
     {
         UserAssignmentDTO userAssignmentDto = new UserAssignmentDTO
         {
@@ -85,12 +85,23 @@ public class GroupsManager : IGroupsManager
         };
         var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/userassignments", userAssignmentDto);
         response.EnsureSuccessStatusCode();
+
+        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>(cancellationToken: cancellationToken);
+        if (createdAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
+
+        return createdAssignment.ToDomainObject();
+
     }
 
-    public async Task DeleteAssignment(long groupId, long assignmentId)
+    public async Task<Assignment> DeleteAssignment(long groupId, long assignmentId)
     {
         var response = await _httpClient.DeleteAsync($"api/groups/{groupId}/assignments/{assignmentId}");
         response.EnsureSuccessStatusCode();
+
+        var deletedAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
+        if (deletedAssignment == null) throw new InvalidOperationException("Failed to delete assignment.");
+
+        return deletedAssignment.ToDomainObject();
     }
 
     public async Task<Assignment> UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate)
@@ -110,7 +121,7 @@ public class GroupsManager : IGroupsManager
         response.EnsureSuccessStatusCode();
 
         var group = await response.Content.ReadFromJsonAsync<GroupDTO>();
-        if(group is null) throw new InvalidOperationException("Failed to update group.");
+        if (group is null) throw new InvalidOperationException("Failed to update group.");
 
         return group.ToDomainObject();
 

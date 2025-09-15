@@ -9,7 +9,7 @@
             <MudText Typo="Typo.h6">@assignment.Title</MudText>
             <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" @onclick="OpenEditAssignmentDialog" />
         </div>
-        <MudText Typo="Typo.body2">@assignment.Description</MudText>
+        <MudText Typo="Typo.body1">@assignment.Description</MudText>
         <UserListComponent Users="assignment.UserAssignments.Select(ua => ua.User).ToList()" Title="Working: " />
     </MudCardContent>
     <MudCardActions>

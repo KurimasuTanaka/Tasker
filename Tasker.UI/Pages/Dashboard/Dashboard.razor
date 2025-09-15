@@ -13,7 +13,7 @@
 <GroupList />
 
 @code {
-    [CascadingParameter] public User CurrentUser { get; set; } = default!;
+    private User? CurrentUser { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
