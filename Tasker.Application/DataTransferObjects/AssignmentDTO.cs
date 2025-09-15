@@ -10,7 +10,7 @@ public class AssignmentDTO
     public string Description { get; set; } = string.Empty;
     public bool IsCompleted { get; set; }
     public long GroupId { get; set; }
-    public List<UserAssignmentDTO> UserAssignments { get; set; } = new();
+    public List<UserDTO> Users { get; set; } = new();
 
     public AssignmentDTO() {}
 

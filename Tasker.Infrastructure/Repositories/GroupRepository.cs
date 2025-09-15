@@ -28,7 +28,10 @@ public class GroupRepository : IGroupRepository
     public async Task<Group?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        var groupModel = await _context.Groups.AsNoTracking().AsSplitQuery().Include(g => g.UserParticipations).ThenInclude(ua => ua.User).Include(g => g.Assignments).ThenInclude(a => a.Participants).ThenInclude(ua => ua.User).FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
+        var groupModel = await _context.Groups.AsNoTracking().AsSplitQuery().
+            Include(g => g.UserParticipations).ThenInclude(ua => ua.User).
+            Include(g => g.Assignments).ThenInclude(a => a.Participants).ThenInclude(ua => ua.User).
+            FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
         if (groupModel == null) return null;
         else return groupModel.ToDomain();
     }
@@ -67,6 +70,6 @@ public class GroupRepository : IGroupRepository
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
 
-        return await _context.Groups.Include(g => g.UserParticipations).Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
+        return await _context.Groups.Include(g => g.Assignments).Include(g => g.UserParticipations).Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
     }
 }

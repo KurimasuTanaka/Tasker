@@ -15,7 +15,11 @@ public static partial class AssignmentMappingExtensions
             Description = dto.Description,
             IsCompleted = dto.IsCompleted,
             GroupId = dto.GroupId,
-            UserAssignments = dto.UserAssignments.Select(ua => ua.ToDomainObject()).ToList()
+            UserAssignments = dto.Users.Select(u => new UserAssignment
+            {
+                UserId = u.UserIdentity,
+                User = u.ToDomainObject()
+            }).ToList()
         };
     }
 
@@ -29,7 +33,7 @@ public static partial class AssignmentMappingExtensions
             Description = domain.Description,
             IsCompleted = domain.IsCompleted,
             GroupId = domain.GroupId,
-            UserAssignments = domain.UserAssignments.Select(ua => ua.ToDto()).ToList()
+            Users = domain.UserAssignments.Select(ua => ua.User.ToDto()).ToList()
         };
     }
 }

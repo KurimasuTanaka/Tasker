@@ -6,7 +6,7 @@
 @inject IGroupsManager _groupsManager
 @inject IDialogService DialogService
 
-<div class="d-flex">
+<div class="d-flex align-center">
     <MudText Typo="Typo.h4">@group?.Name</MudText>
     <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
         <Authorized>
@@ -17,23 +17,20 @@
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenUserAdditionDialog" Size="Size.Large" Class="p-3">Add User</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenUserAdditionDialog" class="ma-3">Add User</MudButton>
     </Authorized>
 </AuthorizeView>
 
-<MudText Typo="Typo.h6">In group:</MudText>
-@foreach (var member in group.UserParticipations)
-{
-    <MudText Typo="Typo.body1">@member.User.FirstName @member.User.LastName</MudText>
-}
+<UserListComponent Users="group.UserParticipations.Select(up => up.User).ToList()" Title="Group members" />
+
 <MudDivider />
 <AuthorizeView Roles="@($"{GroupId}:Manager, {GroupId}:Admin")">
     <Authorized>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog" Size="Size.Large" Class="p-3">Add Task</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenTaskDialog" class="ma-3">Add Task</MudButton>
     </Authorized>
 </AuthorizeView>
 
-<MudTabs Elevation="2" PanelClass="pa-6">
+<MudTabs Elevation="2" PanelClass="pa-6" Outlined="true" Rounded="true" ApplyEffectsToContainer="true">
     <MudTabPanel Text="Group tasks">
 
         @foreach (Domain.Assignment task in group.Assignments)

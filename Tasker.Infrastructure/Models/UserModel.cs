@@ -10,4 +10,6 @@ public class UserModel
     public string UserIdentity { get; set; } = String.Empty;
     public string FirstName { get; set; } = String.Empty;
     public string LastName { get; set; } = String.Empty;
+
+    public List<UserAssignmentModel> UserAssignments { get; set; } = new();
 }

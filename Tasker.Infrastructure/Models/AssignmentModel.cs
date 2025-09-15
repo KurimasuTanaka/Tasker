@@ -11,8 +11,9 @@ public class AssignmentModel
     public string Title { get; set; } = String.Empty;
     public string Description { get; set; } = String.Empty;
     public bool IsCompleted { get; set; }
-    [ForeignKey(nameof(GroupModel))]
+
     public long GroupId { get; set; }
+    public GroupModel? Group { get; set; }
 
     public List<UserAssignmentModel> Participants { get; set; } = new();
 }

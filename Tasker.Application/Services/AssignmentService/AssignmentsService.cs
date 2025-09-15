@@ -30,14 +30,12 @@ public class AssignmentsService : IAssignmentsService
                 if (createdUserAssignment == null) return Result.Failure<UserAssignment>("Failed to assign task to user");
                 return Result.Success<UserAssignment>(createdUserAssignment);
             }
-            else Result.Success<UserAssignment>(existingAssignment);
+            else return Result.Success<UserAssignment>(existingAssignment);
         }
         catch (Exception ex)
         {
             return Result.Failure<UserAssignment>($"Error assigning task to user: {ex.Message}");
         }
-
-        return Result.Failure<UserAssignment>($"Error assigning task to user");
     }
 
     public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)

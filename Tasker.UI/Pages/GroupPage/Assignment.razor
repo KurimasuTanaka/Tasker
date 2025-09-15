@@ -5,13 +5,12 @@
 
 <MudCard Outlined="true">
     <MudCardContent>
-        <div>
-        <MudText>@assignment.Title</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" @onclick="OpenEditAssignmentDialog" />
+        <div class="d-flex align-center">
+            <MudText Typo="Typo.h6">@assignment.Title</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" @onclick="OpenEditAssignmentDialog" />
         </div>
         <MudText Typo="Typo.body2">@assignment.Description</MudText>
-        <MudText Typo="Typo.body1">Working: @participants
-        </MudText>
+        <UserListComponent Users="assignment.UserAssignments.Select(ua => ua.User).ToList()" Title="Working: " />
     </MudCardContent>
     <MudCardActions>
         <AuthorizeView Roles="@($"{group.GroupId}:Manager,{group.GroupId}:Admin")">
