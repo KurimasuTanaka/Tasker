@@ -21,6 +21,7 @@ public class GroupAuthorizeFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // Extract groupId from the endpoint route 
         if (!context.RouteData.Values.TryGetValue("groupId", out var groupIdObj) ||
             !long.TryParse(groupIdObj?.ToString(), out var groupId))
         {
@@ -28,7 +29,7 @@ public class GroupAuthorizeFilter : IAsyncActionFilter
             return;
         }
 
-        _logger.LogDebug($"Authorizing access to group {groupId} with required role {_requiredRole}");
+        _logger.LogTrace($"Authorizing access to group {groupId} with required role {_requiredRole}");
 
         var authResult = await _authorizationService.AuthorizeAsync(context.HttpContext.User, groupId, new PermisionRequirement(_requiredRole));
         if (!authResult.Succeeded)
@@ -37,7 +38,7 @@ public class GroupAuthorizeFilter : IAsyncActionFilter
             context.Result = new ForbidResult();
         }
 
-        _logger.LogDebug($"Authorization succeeded for group {groupId} with required role {_requiredRole}");
+        _logger.LogTrace($"Authorization succeeded for group {groupId} with required role {_requiredRole}");
         await next();
     }
 }

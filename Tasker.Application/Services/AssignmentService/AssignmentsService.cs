@@ -22,6 +22,7 @@ public class AssignmentsService : IAssignmentsService
 
         try
         {
+            // Check if the assignment is already assigned to the user
             UserAssignment? existingAssignment = await _userAssignmentRepository.GetAsync((userAssignment.UserId, userAssignment.AssignmentId));
             if (existingAssignment is null)
             {

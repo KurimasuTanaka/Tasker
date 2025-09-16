@@ -18,7 +18,7 @@ public class PermissionHandler : AuthorizationHandler<PermisionRequirement, long
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermisionRequirement requirement, long groupId)
     {
-        _logger.LogDebug($"Handling permission requirement for group {groupId} with minimum role {requirement.minimumRole}");
+        _logger.LogTrace($"Handling permission requirement for group {groupId} with minimum role {requirement.minimumRole}");
 
         var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
@@ -28,7 +28,7 @@ public class PermissionHandler : AuthorizationHandler<PermisionRequirement, long
             return;
         }
 
-        // Ищем запись о членстве
+        // Get user participation in the group
         UserParticipation? userParticipation = await _userParticipationRepository.GetAsync((userId, groupId));
 
         if (userParticipation == null)
@@ -38,9 +38,10 @@ public class PermissionHandler : AuthorizationHandler<PermisionRequirement, long
             return;
         }
 
+        // Check if the user's role meets the requirement
         if (userParticipation.Role >= requirement.minimumRole)
         {
-            _logger.LogDebug($"User {userId} has sufficient role {userParticipation.Role} for group {groupId}");
+            _logger.LogTrace($"User {userId} has sufficient role {userParticipation.Role} for group {groupId}");
             context.Succeed(requirement);
         }
     }

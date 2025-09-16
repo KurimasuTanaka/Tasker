@@ -12,7 +12,6 @@ public class UserRepository : IUserRepository
         _contextFactory = contextFactory;
     }
 
-    // Create operations
     public async Task<User?> AddAsync(User entity)
     {
         if (entity == null) return null;
@@ -26,7 +25,6 @@ public class UserRepository : IUserRepository
         return userModel.ToDomain();
     }
 
-    // Read operations
     public async Task<User?> GetAsync(string id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
@@ -39,6 +37,7 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
+
         return (await _context.Users.
             Select(u => u.ToDomain()).
             ToListAsync(cancellationToken)).
@@ -46,7 +45,6 @@ public class UserRepository : IUserRepository
             
     }
 
-    // Update operations
     public async Task<User?> UpdateAsync(User entity)
     {
         if (entity == null) return null;
@@ -55,12 +53,13 @@ public class UserRepository : IUserRepository
         UserModel userModel = entity.ToModel()!;
 
         _context.Users.Update(userModel);
+        
         await _context.SaveChangesAsync();
         await _context.Entry(userModel).ReloadAsync();
+
         return userModel.ToDomain();
     }
 
-    // Delete operations
     public async Task<bool> DeleteAsync(string id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();

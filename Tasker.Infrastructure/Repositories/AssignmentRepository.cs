@@ -11,7 +11,6 @@ public class AssignmentRepository : IAssignmentRepository
         _contextFactory = contextFactory;
     }
 
-    // Create operations
     public async Task<Assignment?> AddAsync(Assignment entity)
     {
         if (entity == null) return null;
@@ -26,7 +25,6 @@ public class AssignmentRepository : IAssignmentRepository
         return assignmentModel.ToDomain();
     }
 
-    // Read operations
     public async Task<Assignment?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
 
@@ -45,7 +43,6 @@ public class AssignmentRepository : IAssignmentRepository
             ToListAsync(cancellationToken);
     }
 
-    // Update operations
     public async Task<Assignment?> UpdateAsync(Assignment entity)
     {
         if (entity == null) return null!;
@@ -60,7 +57,6 @@ public class AssignmentRepository : IAssignmentRepository
         return assignmentModel.ToDomain()!;
     }
 
-    // Delete operations
     public async Task<bool> DeleteAsync(long id)
     {
 
@@ -68,6 +64,7 @@ public class AssignmentRepository : IAssignmentRepository
         var assignmentToDelete = await GetAsync(id);
         if (assignmentToDelete == null) return false;
 
+        // Remove related UserAssignments first due to foreign key constraints
         List<UserAssignmentModel> userAssignments = await  _context.UserAssignments.Where(ua => ua.AssignmentId == assignmentToDelete.AssignmentId).ToListAsync();
 
         userAssignments.ForEach(ua =>

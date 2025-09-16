@@ -55,7 +55,9 @@ public class UserAssignmentRepository : IUserAssignmentRepository
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
         var userAssignmentModel = await _context.UserAssignments.FindAsync(id.UserId, id.AssignmentId);
+
         if (userAssignmentModel == null) return null;
+        
         else return userAssignmentModel.ToDomain();
     }
 

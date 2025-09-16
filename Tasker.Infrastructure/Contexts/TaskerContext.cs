@@ -25,13 +25,8 @@ public class TaskerContext : DbContext
         modelBuilder.Entity<UserAssignmentModel>()
             .HasKey(ua => new { ua.UserId, ua.AssignmentId });
 
-        modelBuilder.Entity<UserParticipationModel>().HasKey(up => new { up.UserId, up.GroupId });
-
-        // modelBuilder.Entity<UserParticipationModel>().HasOne(up => up.User).WithMany().HasForeignKey(up => up.UserId);
-        // modelBuilder.Entity<UserParticipationModel>().HasOne(up => up.Group).WithMany(g => g.UserParticipations).HasForeignKey(up => up.GroupId);
-
-        // modelBuilder.Entity<UserAssignmentModel>().HasOne(ua => ua.User).WithMany().HasForeignKey(ua => ua.UserId);
-        // modelBuilder.Entity<UserAssignmentModel>().HasOne(ua => ua.Assignment).WithMany().HasForeignKey(ua => ua.AssignmentId);
+        modelBuilder.Entity<UserParticipationModel>()
+            .HasKey(up => new { up.UserId, up.GroupId });
     }
 
 

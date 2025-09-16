@@ -33,6 +33,7 @@ public static partial class AssignmentMappingExtensions
             Description = domain.Description,
             IsCompleted = domain.IsCompleted,
             GroupId = domain.GroupId,
+            //Remove the many-to-many relationship and return only the list of users assigned to the assignment
             Users = domain.UserAssignments.
                 Where(ua => ua.User != null).
                 Select(ua => ua.User!.ToDto()).

@@ -53,7 +53,8 @@ public class GroupsService : IGroupsService
         if (userId == null) return Result.Failure<Group>("Invalid user");
 
         try
-        {
+        {   
+            // The creator of the group is assigned the Admin role
             group.UserParticipations.Add(new UserParticipation() { UserId = userId, Role = GroupRole.Admin });
             var createdGroup = await _groupRepository.AddAsync(group);
 

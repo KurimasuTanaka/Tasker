@@ -14,6 +14,7 @@ public static partial class GroupMappingExtensions
 
         groupToReturn.GroupId = dto.GroupId;
         groupToReturn.Name = dto.Name;
+        //Convert the list of participants to the many-to-many relationship UserParticipations
         groupToReturn.UserParticipations = dto.Participants.Select(p => new UserParticipation
         {
             GroupId = dto.GroupId,
@@ -37,6 +38,7 @@ public static partial class GroupMappingExtensions
         {
             GroupId = domain.GroupId,
             Name = domain.Name,
+            //Remove the many-to-many relationship and return only the list of participants with their roles
             Participants = domain.UserParticipations.Select(up =>
                 {
                     UserDTO? userDTO = up.User!.ToDto();

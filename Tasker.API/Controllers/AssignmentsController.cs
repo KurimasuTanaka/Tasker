@@ -41,6 +41,7 @@ namespace Tasker.API.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        //Get all assignments in the group 
         [HttpGet]
         [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<List<AssignmentDTO>>> GetAllAssignments(long groupId, CancellationToken cancellationToken)

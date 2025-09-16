@@ -51,7 +51,6 @@ public class AuthService : IAuthService
         }
 
 
-        List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsync(user.Id)).ToList();
 
         var claims = new List<Claim>
             {
@@ -60,11 +59,15 @@ public class AuthService : IAuthService
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
 
+
+        //Get the list of users participations in groups and on their basis form the roles claims where role value is in format "groupId:role"
+        List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsync(user.Id)).ToList();
         foreach (var participation in userParticipations)
         {
             claims.Add(new Claim(ClaimTypes.Role, $"{participation.GroupId}:{participation.Role}"));
         }
 
+        //Generate JWT token
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -91,6 +94,8 @@ public class AuthService : IAuthService
             if (result.Succeeded)
             {
                 await _userRepository.AddAsync(new User { UserIdentity = user.Id, FirstName = registerModel.FirstName, LastName = registerModel.LastName });
+
+                // Auto-login after successful registration
                 return await Login(new LoginModel { Email = registerModel.Email, Password = registerModel.Password });
             }
 
