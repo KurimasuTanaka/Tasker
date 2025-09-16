@@ -15,6 +15,6 @@ public class Assignment
 
 	public bool HasThisUserAssigned(string userId)
 	{
-		return UserAssignments.Select(p => p.User).Where(u => u != null).Select(u => u.UserIdentity).Contains(userId);
+		return UserAssignments.Select(p => p.User).Where(u => u != null).Select(u => u!.UserIdentity).Contains(userId);
 	}
 }
