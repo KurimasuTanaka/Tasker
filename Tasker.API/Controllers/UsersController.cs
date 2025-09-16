@@ -10,17 +10,25 @@ namespace Tasker.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         [Authorize]
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserDTO>> GetUserById(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return BadRequest("User ID is required.");
+            _logger.LogTrace($"Requested user details for user ID {userId}");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Get user by ID failed: user ID is null or empty");
+                return BadRequest("User ID is required.");
+            }
 
             var result = await _userService.GetUserById(userId);
             if (result.IsSuccess)

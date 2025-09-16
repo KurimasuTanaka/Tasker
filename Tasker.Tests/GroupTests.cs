@@ -1,4 +1,6 @@
 
+using Microsoft.Extensions.Logging;
+using Moq;
 using Tasker.Application;
 using Tasker.Domain;
 using Tasker.Infrastructure;
@@ -25,7 +27,9 @@ public class GroupTests
         _groupRepository = new GroupRepository(_contextFactory);
         _userParticipationRepository = new UserParticipationRepository(_contextFactory);
         _assignmentRepository = new AssignmentRepository(_contextFactory);
-        _groupsService = new GroupsService(_groupRepository, _userParticipationRepository);
+
+        var groupServiceLoggerMock = new Mock<ILogger<GroupsService>>();
+        _groupsService = new GroupsService(_groupRepository, _userParticipationRepository, groupServiceLoggerMock.Object);
 
 
         await _userRepository.AddAsync(new User()

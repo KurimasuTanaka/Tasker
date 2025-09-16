@@ -8,17 +8,21 @@ namespace Tasker.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
+            _logger = logger;
             _authService = authService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
+            _logger.LogTrace($"Requested registration for {model.Email}");
 
             if (model.Email == null || model.Password == null || model.FirstName == null || model.LastName == null)
             {
+                _logger.LogWarning("User registration failed: all fields are required.");
                 return BadRequest("All fields are required.");
             }
 
@@ -41,8 +45,11 @@ namespace Tasker.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
+            _logger.LogDebug($"Requested login for {model.Email}");
+
             if (model.Email == null || model.Password == null)
             {
+                _logger.LogWarning("User login failed: email and password are required.");
                 return BadRequest("Email and Password are required.");
             }
 

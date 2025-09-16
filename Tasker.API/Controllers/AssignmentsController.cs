@@ -12,18 +12,26 @@ namespace Tasker.API.Controllers
     public class AssignmentController : ControllerBase
     {
         private readonly IAssignmentsService _assignmentsService;
+        private readonly ILogger<AssignmentController> _logger;
 
-        public AssignmentController(IAssignmentsService assignmentsService)
+        public AssignmentController(IAssignmentsService assignmentsService, ILogger<AssignmentController> logger)
         {
             _assignmentsService = assignmentsService;
+            _logger = logger;
         }
 
         [HttpPost]
         [GroupAuthorize(GroupRole.Manager)]
         public async Task<ActionResult<AssignmentDTO>> CreateAssignment(long groupId, [FromBody] AssignmentDTO assignment)
         {
-            if (assignment is null) return BadRequest("Assignment is required.");
+            _logger.LogTrace($"Requested creation of assignment in group {groupId}");
 
+            if (assignment is null)
+            {
+                _logger.LogWarning("Assignment creation failed: assignment is null");
+                return BadRequest("Assignment is required.");
+            }   
+                
 
             var result = await _assignmentsService.CreateAssignment(groupId, assignment.ToDomainObject()!);
             if (result.IsSuccess)
@@ -37,6 +45,8 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<List<AssignmentDTO>>> GetAllAssignments(long groupId, CancellationToken cancellationToken)
         {
+            _logger.LogTrace($"Requested all assignments in group {groupId}");
+
             var result = await _assignmentsService.GetAllAssignments(groupId, cancellationToken);
             if (result.IsSuccess)
             {
@@ -49,6 +59,8 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<AssignmentDTO>> GetAssignment(long groupId, long assignmentId, CancellationToken cancellationToken)
         {
+            _logger.LogTrace($"Requested assignment {assignmentId} in group {groupId}");
+
             var result = await _assignmentsService.GetAssignment(groupId, assignmentId, cancellationToken);
             if (result.IsSuccess)
             {
@@ -61,6 +73,8 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.Manager)]
         public async Task<IActionResult> DeleteAssignment(long groupId, long assignmentId)
         {
+            _logger.LogTrace($"Requested deletion of assignment {assignmentId} in group {groupId}");
+
             var result = await _assignmentsService.DeleteAssignment(groupId, assignmentId);
             if (result.IsSuccess)
             {
@@ -73,12 +87,18 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<AssignmentDTO>> UpdateAssignment(long groupId, long assignmentId, [FromBody] AssignmentDTO updatedAssignment)
         {
-            if (updatedAssignment is null) return BadRequest("Assignment is required.");
+            _logger.LogTrace($"Requested update of assignment {assignmentId} in group {groupId}");
+
+            if (updatedAssignment is null)
+            {
+                _logger.LogWarning("Assignment update failed: assignment is null");
+                return BadRequest("Assignment is required.");
+            }
 
             var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
-                return NoContent();
+                return CreatedAtAction(nameof(GetAssignment), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }

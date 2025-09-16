@@ -1,4 +1,6 @@
 
+using Microsoft.Extensions.Logging;
+using Moq;
 using Tasker.Application;
 using Tasker.Domain;
 using Tasker.Infrastructure;
@@ -22,7 +24,9 @@ public class AssignmentsTests
         _userAssignmentRepository = new UserAssignmentRepository(_contextFactory);
         _userRepository = new UserRepository(_contextFactory);
         _groupRepository = new GroupRepository(_contextFactory);
-        _assignmentsService = new AssignmentsService(_assignmentRepository, _userAssignmentRepository);
+
+        var assignmentsServiceLoggerMock = new Mock<ILogger<AssignmentsService>>();
+        _assignmentsService = new AssignmentsService(_assignmentRepository, _userAssignmentRepository, assignmentsServiceLoggerMock.Object);
 
         await _userRepository.AddAsync(new User()
         {
