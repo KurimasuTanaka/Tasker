@@ -14,28 +14,41 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IUserParticipationRepository _userParticipationRepository;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
         IUserRepository userRepository,
         IUserParticipationRepository userParticipationRepository,
-        IConfiguration configuration)
+        IConfiguration configuration, ILogger<AuthService> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userRepository = userRepository;
         _userParticipationRepository = userParticipationRepository;
+        _logger = logger;
         _configuration = configuration;
     }
 
     public async Task<Result<string>> Login(LoginModel model)
     {
+        _logger.LogInformation($"User {model.Email} attempting to log in");
+
         var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null) return Result.Failure<string>("Invalid login");
+
+        if (user == null)
+        {
+            _logger.LogWarning($"Login failed for {model.Email}: User not found");
+            return Result.Failure<string>("Invalid login");
+        }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-        if (!result.Succeeded) return Result.Failure<string>("Invalid password");
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning($"Login failed for {model.Email}: Invalid password");
+            return Result.Failure<string>("Invalid password");
+        }
 
 
         List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsync(user.Id)).ToList();
@@ -62,11 +75,13 @@ public class AuthService : IAuthService
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds);
 
+        _logger.LogInformation($"User {model.Email} logged in successfully");
         return Result.Success(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
     public async Task<Result<string>> Register(RegisterModel registerModel)
     {
+        _logger.LogInformation($"Registering new user with email {registerModel.Email}");
         var user = new IdentityUser { UserName = registerModel.Email, Email = registerModel.Email, Id = Guid.NewGuid().ToString() };
 
         try
@@ -82,8 +97,11 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Error registering user {registerModel.Email}: {ex.Message}");
             return Result.Failure<string>($"Registration failed: {ex.Message}");
         }
+
+        _logger.LogError($"Registration failed for {registerModel.Email}");
         return Result.Failure<string>("Registration failed");
     }
 }
