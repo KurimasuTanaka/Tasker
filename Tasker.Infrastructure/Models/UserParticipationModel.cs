@@ -10,8 +10,8 @@ public class UserParticipationModel
 {
     public GroupRole Role { get; set; }
     public string UserId { get; set; } = String.Empty;
-    public UserModel User { get; set; } = null!;
+    public UserModel? User { get; set; } 
 
     public long GroupId { get; set; }
-    public GroupModel Group { get; set; } = null!;
+    public GroupModel? Group { get; set; }
 }

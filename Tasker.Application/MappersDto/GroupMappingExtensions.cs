@@ -6,7 +6,7 @@ namespace Tasker.Application;
 
 public static partial class GroupMappingExtensions
 {
-    public static Group? ToDomainObject(this GroupDTO dto)
+    public static Group ToDomainObject(this GroupDTO dto)
     {
         if (dto == null) return new Group();
 
@@ -26,7 +26,7 @@ public static partial class GroupMappingExtensions
         return groupToReturn;
     }
 
-    public static GroupDTO? ToDto(this Group domain)
+    public static GroupDTO ToDto(this Group domain)
     {
         if (domain == null) return new GroupDTO();
 

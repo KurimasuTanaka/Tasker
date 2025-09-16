@@ -5,7 +5,7 @@ namespace Tasker.Application;
 
 public static partial class AssignmentMappingExtensions
 {
-    public static Assignment? ToDomainObject(this AssignmentDTO dto)
+    public static Assignment ToDomainObject(this AssignmentDTO dto)
     {
         if (dto == null) return new Assignment();
         return new Assignment
@@ -23,7 +23,7 @@ public static partial class AssignmentMappingExtensions
         };
     }
 
-    public static AssignmentDTO? ToDto(this Assignment domain)
+    public static AssignmentDTO ToDto(this Assignment domain)
     {
         if (domain == null) return new AssignmentDTO();
         return new AssignmentDTO

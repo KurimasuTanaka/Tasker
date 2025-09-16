@@ -16,7 +16,10 @@ public static partial class AssignmentMappingExtensions
             Description = entity.Description,
             IsCompleted = entity.IsCompleted,
             GroupId = entity.GroupId,
-            UserAssignments = entity.Participants.Select(p => p.ToDomain()).ToList()
+            UserAssignments = entity.Participants.
+                Select(p => p.ToDomain()).
+                Where(x => x != null).Select(x => x!).
+                ToList()
         };
     }
 
@@ -31,7 +34,10 @@ public static partial class AssignmentMappingExtensions
             Description = domain.Description,
             IsCompleted = domain.IsCompleted,
             GroupId = domain.GroupId,
-            Participants = domain.UserAssignments.Select(p => p.ToModel()).ToList()
+            Participants = domain.UserAssignments.
+                Select(p => p.ToModel()).
+                Where(p => p != null).
+                Select(x => x!).ToList()
         };
     }
 }
