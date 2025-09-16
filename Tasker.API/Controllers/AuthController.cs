@@ -16,23 +16,49 @@ namespace Tasker.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var result = await _authService.Register(model);
-            if (result.IsSuccess)
+
+            if (model.Email == null || model.Password == null || model.FirstName == null || model.LastName == null)
             {
-                return Ok(new { Token = result.Value });
+                return BadRequest("All fields are required.");
             }
-            return BadRequest(result.ErrorMessage);
+
+            try
+            {
+                var result = await _authService.Register(model);
+                if (result.IsSuccess)
+                {
+                    return Ok(new { Token = result.Value });
+                }
+                return BadRequest(result.ErrorMessage);
+
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid request payload.");
+            }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var result = await _authService.Login(model);
-            if (result.IsSuccess)
+            if (model.Email == null || model.Password == null)
             {
-                return Ok(new { Token = result.Value });
+                return BadRequest("Email and Password are required.");
             }
-            return BadRequest(result.ErrorMessage);
+
+            try
+            {
+                var result = await _authService.Login(model);
+                if (result.IsSuccess)
+                {
+                    return Ok(new { Token = result.Value });
+                }
+                return BadRequest(result.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid request payload.");
+            }
         }
     }
 }

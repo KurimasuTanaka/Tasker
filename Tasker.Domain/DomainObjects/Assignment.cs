@@ -4,11 +4,11 @@ namespace Tasker.Domain;
 
 public class Assignment
 {
-	public long AssignmentId { get; set; }
-	public string Title { get; set; } = String.Empty;
-	public string Description { get; set; } = String.Empty;
-	public bool IsCompleted { get; set; } = false;
-	public long GroupId { get; set; }
+	public long AssignmentId;
+	public string Title = String.Empty;
+	public string Description = String.Empty;
+	public bool IsCompleted = false;
+	public long GroupId;
 	public List<UserAssignment> UserAssignments = new();
 
 	public Assignment() { }

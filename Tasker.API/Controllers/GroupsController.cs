@@ -37,7 +37,9 @@ namespace Tasker.API.Controllers
             var userId = _userManager.GetUserId(User);
             if (userId == null) return BadRequest("Invalid user");
 
-            Result<Group> createdGroup = await _groupService.CreateGroup(group.ToDomainObject(), userId);
+            if (group is null) return BadRequest("Group is required.");
+
+            Result<Group> createdGroup = await _groupService.CreateGroup(group.ToDomainObject()!, userId);
 
             if (!createdGroup.IsSuccess) return BadRequest(createdGroup.ErrorMessage);
             return CreatedAtAction("CreateGroup", createdGroup.Value.ToDto());
@@ -78,7 +80,9 @@ namespace Tasker.API.Controllers
         [HttpPut("{groupId:long}")]
         public async Task<ActionResult<GroupDTO>> UpdateGroup(long groupId,[FromBody] GroupDTO groupDTO)
         {
-            var result = await _groupService.UpdateGroup(groupDTO.ToDomainObject());
+            if (groupDTO is null) return BadRequest("Group is required.");
+
+            var result = await _groupService.UpdateGroup(groupDTO.ToDomainObject()! );
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
             return Ok(result.Value.ToDto());

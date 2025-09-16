@@ -19,7 +19,8 @@ namespace Tasker.API.Controllers
         [HttpPost]
         public async Task<ActionResult<UserAssignmentDTO>> AssignTaskToUser([FromBody] UserAssignmentDTO userAssignment)
         {
-            var result = await _assignmentsService.AssignTaskToUser(userAssignment.ToDomainObject());
+            if (userAssignment is null) return BadRequest("User assignment is required.");
+            var result = await _assignmentsService.AssignTaskToUser(userAssignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
                 return CreatedAtAction(nameof(AssignTaskToUser), result.Value.ToDto());
@@ -31,10 +32,12 @@ namespace Tasker.API.Controllers
         [HttpDelete]
         public async Task<ActionResult<UserAssignmentDTO>> UnassignTaskFromUser([FromBody] UserAssignmentDTO userAssignment)
         {
-            var result = await _assignmentsService.UnassignTaskFromUser(userAssignment.ToDomainObject());
+            if (userAssignment is null) return BadRequest("User assignment is required.");
+
+            var result = await _assignmentsService.UnassignTaskFromUser(userAssignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(AssignTaskToUser), result.Value.ToDto());
+                return CreatedAtAction(nameof(UnassignTaskFromUser), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }

@@ -20,6 +20,8 @@ namespace Tasker.API.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<UserDTO>> GetUserById(string userId)
         {
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User ID is required.");
+
             var result = await _userService.GetUserById(userId);
             if (result.IsSuccess)
             {

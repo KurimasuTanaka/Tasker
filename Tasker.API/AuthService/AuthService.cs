@@ -13,12 +13,20 @@ public class AuthService : IAuthService
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IUserRepository _userRepository;
     private readonly IUserParticipationRepository _userParticipationRepository;
-    public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IUserRepository userRepository, IUserParticipationRepository userParticipationRepository)
+    private readonly IConfiguration _configuration;
+
+    public AuthService(
+        UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager,
+        IUserRepository userRepository,
+        IUserParticipationRepository userParticipationRepository,
+        IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userRepository = userRepository;
         _userParticipationRepository = userParticipationRepository;
+        _configuration = configuration;
     }
 
     public async Task<Result<string>> Login(LoginModel model)
@@ -34,10 +42,9 @@ public class AuthService : IAuthService
 
         var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName ?? String.Empty),
+                new Claim(ClaimTypes.Email, model.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Role, "User") // Default role
             };
 
         foreach (var participation in userParticipations)
@@ -45,12 +52,12 @@ public class AuthService : IAuthService
             claims.Add(new Claim(ClaimTypes.Role, $"{participation.GroupId}:{participation.Role}"));
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong"));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: "yourapp.com",
-            audience: "yourapp.com",
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
             claims: claims,
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds);
@@ -77,9 +84,6 @@ public class AuthService : IAuthService
         {
             return Result.Failure<string>($"Registration failed: {ex.Message}");
         }
-
-
-
         return Result.Failure<string>("Registration failed");
     }
 }

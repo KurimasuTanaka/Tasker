@@ -2,8 +2,8 @@ namespace Tasker.Domain;
 
 public class Group
 {
-    public long GroupId { get; set; }
-    public string Name { get; set; } = String.Empty;
+    public long GroupId;
+    public string Name = String.Empty;
 
     public List<UserParticipation> UserParticipations = new();
     public List<Assignment> Assignments = new();

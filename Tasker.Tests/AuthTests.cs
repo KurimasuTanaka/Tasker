@@ -1,9 +1,11 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Moq;
@@ -31,43 +33,53 @@ public class AuthTests
         _webApplicationAPIFactory = new WebApplicationFactory<API.Program>()
             .WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
+            builder.ConfigureServices(services =>
+            {
+                var descriptors = services
+                 .Where(d =>
+                     d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
+                     d.ServiceType == typeof(IDbContextFactory<TaskerContext>) ||
+                     d.ServiceType == typeof(IdentityContext) ||
+                     d.ServiceType == typeof(TaskerContext)
+                 )
+                 .ToList();
+
+                foreach (var d in descriptors)
+                    services.Remove(d);
+
+                services.AddDbContext<IdentityContext>(options =>
+                    options.UseSqlite("Data Source=./IdentityTestDb"));
+
+                services.AddDbContextFactory<TaskerContext>(options =>
+                    options.UseSqlite("Data Source=./TaskerTestDb"));
+
+
+                var sp = services.BuildServiceProvider();
+
+                using (var scope = sp.CreateScope())
                 {
-                       var descriptors = services
-                        .Where(d =>
-                            d.ServiceType == typeof(DbContextOptions<IdentityContext>) ||
-                            d.ServiceType == typeof(IDbContextFactory<TaskerContext>) ||
-                            d.ServiceType == typeof(IdentityContext) ||
-                            d.ServiceType == typeof(TaskerContext)
-                        )
-                        .ToList();
+                    var db = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+                    db.Database.EnsureDeleted();
+                    db.Database.EnsureCreated();
+                }
 
-                    foreach (var d in descriptors)
-                        services.Remove(d);
+                using (var scope = sp.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<TaskerContext>();
+                    db.Database.EnsureDeleted();
+                    db.Database.EnsureCreated();
+                }
+            });
 
-                    services.AddDbContext<IdentityContext>(options =>
-                        options.UseSqlite("Data Source=./IdentityTestDb"));
-
-                    services.AddDbContextFactory<TaskerContext>(options =>
-                        options.UseSqlite("Data Source=./TaskerTestDb"));
-
-
-                    var sp = services.BuildServiceProvider();
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var db = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-                        db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
-                    }
-
-                    using (var scope = sp.CreateScope())
-                    {
-                        var db = scope.ServiceProvider.GetRequiredService<TaskerContext>();
-                        db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
-                    }
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    { "Jwt:Key", "ThisIsASecretKeyForJwtTokenDontShare" },
+                    { "Jwt:Issuer", "TaskerAPI" },
+                    { "Jwt:Audience", "TaskerAPIClient" },
                 });
+            });
     });
 
         _client = _webApplicationAPIFactory.CreateClient();

@@ -22,7 +22,10 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.Manager)]
         public async Task<ActionResult<AssignmentDTO>> CreateAssignment(long groupId, [FromBody] AssignmentDTO assignment)
         {
-            var result = await _assignmentsService.CreateAssignment(groupId, assignment.ToDomainObject());
+            if (assignment is null) return BadRequest("Assignment is required.");
+
+
+            var result = await _assignmentsService.CreateAssignment(groupId, assignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
                 return CreatedAtAction(nameof(CreateAssignment), result.Value.ToDto());
@@ -70,7 +73,9 @@ namespace Tasker.API.Controllers
         [GroupAuthorize(GroupRole.User)]
         public async Task<ActionResult<AssignmentDTO>> UpdateAssignment(long groupId, long assignmentId, [FromBody] AssignmentDTO updatedAssignment)
         {
-            var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment.ToDomainObject());
+            if (updatedAssignment is null) return BadRequest("Assignment is required.");
+
+            var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
                 return NoContent();
