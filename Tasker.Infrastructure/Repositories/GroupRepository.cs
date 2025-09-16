@@ -70,6 +70,9 @@ public class GroupRepository : IGroupRepository
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
 
-        return await _context.Groups.Include(g => g.Assignments).Include(g => g.UserParticipations).Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
+        return await _context.Groups.
+            Include(g => g.Assignments).
+            Include(g => g.UserParticipations).ThenInclude(up => up.User).
+            Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
     }
 }

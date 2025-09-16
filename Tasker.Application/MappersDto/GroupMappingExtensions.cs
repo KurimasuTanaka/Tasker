@@ -6,9 +6,9 @@ namespace Tasker.Application;
 
 public static partial class GroupMappingExtensions
 {
-    public static Group ToDomainObject(this GroupDTO dto)
+    public static Group? ToDomainObject(this GroupDTO dto)
     {
-        if (dto == null) return new Group();
+        if (dto == null) return null;
 
         Group groupToReturn = new();
 
@@ -21,26 +21,33 @@ public static partial class GroupMappingExtensions
             UserId = p.UserIdentity,
             Role = p.Role
         }).ToList();
-        groupToReturn.Assignments = dto.Assignments.Select(a => a.ToDomainObject()).ToList();
+        groupToReturn.Assignments = dto.Assignments.
+            Select(a => a.ToDomainObject()).
+            Where(a => a != null).Select(a => a!).
+            ToList();
 
         return groupToReturn;
     }
 
-    public static GroupDTO ToDto(this Group domain)
+    public static GroupDTO? ToDto(this Group domain)
     {
-        if (domain == null) return new GroupDTO();
+        if (domain == null) return null;
 
         return new GroupDTO
         {
             GroupId = domain.GroupId,
             Name = domain.Name,
             Participants = domain.UserParticipations.Select(up =>
-            {
-                UserDTO userDTO = up.User.ToDto();
-                if (userDTO != null) userDTO.Role = up.Role;
-                return userDTO;
-            }).ToList(),
-            Assignments = domain.Assignments.Select(a => a.ToDto()).ToList()
+                {
+                    UserDTO? userDTO = up.User!.ToDto();
+                    if (userDTO != null) userDTO.Role = up.Role;
+                    return userDTO;
+                }).
+                Where(u => u != null).Select(u => u!).
+                ToList(),
+            Assignments = domain.Assignments.Select(a => a.ToDto()).
+                Where(a => a != null).Select(a => a!).
+                ToList()
         };
     }
 }
