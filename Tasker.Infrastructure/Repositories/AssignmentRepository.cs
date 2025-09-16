@@ -29,7 +29,9 @@ public class AssignmentRepository : IAssignmentRepository
     {
 
         using var _context = await _contextFactory.CreateDbContextAsync();
+
         var assignmentModel = await _context.Assignments.FindAsync(id, cancellationToken);
+
         if (assignmentModel == null) return null;
         else return assignmentModel.ToDomain();
     }
@@ -38,6 +40,7 @@ public class AssignmentRepository : IAssignmentRepository
     {
 
         using var _context = await _contextFactory.CreateDbContextAsync();
+
         return await _context.Assignments.
             Select(t => t.ToDomain()!).
             ToListAsync(cancellationToken);
@@ -48,6 +51,7 @@ public class AssignmentRepository : IAssignmentRepository
         if (entity == null) return null!;
 
         using var _context = await _contextFactory.CreateDbContextAsync();
+
         AssignmentModel assignmentModel = entity.ToModel()!;
 
         _context.Assignments.Update(assignmentModel);
@@ -61,7 +65,9 @@ public class AssignmentRepository : IAssignmentRepository
     {
 
         using var _context = await _contextFactory.CreateDbContextAsync();
+
         var assignmentToDelete = await GetAsync(id);
+        
         if (assignmentToDelete == null) return false;
 
         // Remove related UserAssignments first due to foreign key constraints

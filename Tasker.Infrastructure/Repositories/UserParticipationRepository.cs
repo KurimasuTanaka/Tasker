@@ -12,13 +12,12 @@ public class UserParticipationRepository : IUserParticipationRepository
         _contextFactory = contextFactory;
     }
 
-    // Create operations
     public async Task<UserParticipation?> AddAsync(UserParticipation entity)
     {
         if (entity == null) return null;
 
         using var _context = await _contextFactory.CreateDbContextAsync();
-        
+
         UserParticipationModel userParticipationModel = entity.ToModel()!;
         
         await _context.UserParticipations.AddAsync(userParticipationModel);
@@ -27,7 +26,6 @@ public class UserParticipationRepository : IUserParticipationRepository
         return userParticipationModel.ToDomain();
     }
 
-    // Read operations
     public async Task<UserParticipation?> GetAsync((string userId, long groupId) id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
@@ -48,7 +46,6 @@ public class UserParticipationRepository : IUserParticipationRepository
             Where(up => up != null).Select(up => up!);
     }
 
-    // Update operations
     public async Task<UserParticipation?> UpdateAsync(UserParticipation entity)
     {
         if (entity == null) return null;
@@ -63,7 +60,6 @@ public class UserParticipationRepository : IUserParticipationRepository
         return userParticipationModel.ToDomain();
     }
 
-    // Delete operations
     public async Task<bool> DeleteAsync((string userId, long groupId) id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();

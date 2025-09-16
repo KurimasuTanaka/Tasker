@@ -12,7 +12,6 @@ public class NotificationRepository : INotificationRepository
         _contextFactory = contextFactory;
     }
 
-    // Create operations
     public async Task<Notification?> AddAsync(Notification entity)
     {
         if (entity == null) return null;
@@ -26,7 +25,6 @@ public class NotificationRepository : INotificationRepository
         return entity;
     }
 
-    // Read operations
     public async Task<Notification?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
@@ -41,7 +39,6 @@ public class NotificationRepository : INotificationRepository
         return await _context.Notifications.Select(n => n.ToDomain()).ToListAsync(cancellationToken);
     }
 
-    // Update operations
     public async Task<Notification?> UpdateAsync(Notification entity)
     {
         if (entity == null) return null;
@@ -56,7 +53,6 @@ public class NotificationRepository : INotificationRepository
         return notificationModel.ToDomain();
     }
 
-    // Delete operations
     public async Task<bool> DeleteAsync(long id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();

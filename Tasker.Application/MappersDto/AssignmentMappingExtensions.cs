@@ -15,6 +15,7 @@ public static partial class AssignmentMappingExtensions
             Description = dto.Description,
             IsCompleted = dto.IsCompleted,
             GroupId = dto.GroupId,
+            //Convert the list of users assigned to the assignment to the many-to-many relationship UserAssignments
             UserAssignments = dto.Users.Select(u => new UserAssignment
             {
                 UserId = u.UserIdentity,

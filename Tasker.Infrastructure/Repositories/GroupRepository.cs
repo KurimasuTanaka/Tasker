@@ -12,7 +12,6 @@ public class GroupRepository : IGroupRepository
         _contextFactory = contextFactory;
     }
 
-    // Create operations
     public async Task<Group?> AddAsync(Group entity)
     {
         if (entity == null) return null!;
@@ -26,7 +25,6 @@ public class GroupRepository : IGroupRepository
         return groupModel.ToDomain();
     }
 
-    // Read operations
     public async Task<Group?> GetAsync(long id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
@@ -48,7 +46,6 @@ public class GroupRepository : IGroupRepository
             Where(g => g != null).Select(g => g!);
     }
 
-    // Update operations
     public async Task<Group?> UpdateAsync(Group entity)
     {
         if (entity == null) return null!;
@@ -62,7 +59,6 @@ public class GroupRepository : IGroupRepository
         return groupModel.ToDomain();
     }
 
-    // Delete operations
     public async Task<bool> DeleteAsync(long id)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
