@@ -11,6 +11,7 @@ public class GroupTests
     protected TestDbContextFactory _contextFactory;
     protected IGroupRepository _groupRepository;
     protected INotificationRepository _notificationRepository;
+    protected IAssignmentRepository _assignmentRepository;
     protected IUserRepository _userRepository;
     protected IUserAssignmentRepository _userAssignmentRepository;
     protected IUserParticipationRepository _userParticipationRepository;
@@ -23,7 +24,7 @@ public class GroupTests
         _userRepository = new UserRepository(_contextFactory);
         _groupRepository = new GroupRepository(_contextFactory);
         _userParticipationRepository = new UserParticipationRepository(_contextFactory);
-
+        _assignmentRepository = new AssignmentRepository(_contextFactory);
         _groupsService = new GroupsService(_groupRepository, _userParticipationRepository);
 
 
@@ -136,7 +137,7 @@ public class GroupTests
 
         Group group1 = new() { Name = "Test Group 1" };
         Group group2 = new() { Name = "Test Group 2" };
-        
+
         Group firstUserGroup = (await _groupsService.CreateGroup(group1, firstUserId)).Value;
         Group secondUserGroup = (await _groupsService.CreateGroup(group2, secondUser.UserIdentity)).Value;
 
@@ -149,6 +150,53 @@ public class GroupTests
 
         Assert.That(retrievedGroups, Is.Not.Null);
         Assert.That(retrievedGroups.Count, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task DeleteGroup_DeleteGroupWithRelatedData_AllDataSuccessfullyDeleted()
+    {
+        //Arrange
+        string userId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+
+        Group group = new() { Name = "Test Group 1" };
+        group.Assignments.Add(new Assignment() { Title = "Test Assignment 1" });
+        group.Assignments.Add(new Assignment() { Title = "Test Assignment 2" });
+        Group createdGroup = (await _groupsService.CreateGroup(group, userId)).Value;
+
+        //Act
+
+        if ((await _assignmentRepository.GetAllAsync(CancellationToken.None)).Count() != 2)
+            Assert.Fail("Assignments were not created properly");
+        if ((await _userParticipationRepository.GetAllAsync(CancellationToken.None)).Count() != 1)
+            Assert.Fail("User participation was not created properly");
+
+        bool isDeleted = (await _groupsService.DeleteGroup(createdGroup.GroupId)).Value;
+
+        //Assert
+
+        Assert.That(isDeleted, Is.True);
+        Assert.That((await _groupsService.GetGroupById(createdGroup.GroupId, CancellationToken.None)).IsSuccess, Is.False);
+        Assert.That((await _assignmentRepository.GetAllAsync(CancellationToken.None)).Count(), Is.EqualTo(0));
+        Assert.That((await _userParticipationRepository.GetAllAsync(CancellationToken.None)).Count(), Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task UpdateGroup_UpdateGroupName_GroupNameSuccessfullyUpdated()
+    {
+        //Arrange
+        string userId = (await _userRepository.GetAllAsync()).First().UserIdentity;
+
+        Group group = new() { Name = "Test Group 1" };
+        Group createdGroup = (await _groupsService.CreateGroup(group, userId)).Value;
+
+        //Act
+
+        Group updatedGroup = (await _groupsService.UpdateGroup(new Group() { GroupId = createdGroup.GroupId, Name = "Updated Group Name" })).Value;
+
+        //Assert
+
+        Assert.That(updatedGroup, Is.Not.Null);
+        Assert.That(updatedGroup.Name, Is.EqualTo("Updated Group Name"));
     }
 
 }
