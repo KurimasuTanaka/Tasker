@@ -13,10 +13,12 @@ public class GroupRepository : IGroupRepository
     }
 
     // Create operations
-    public async Task<Group> AddAsync(Group entity)
+    public async Task<Group?> AddAsync(Group entity)
     {
+        if (entity == null) return null!;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        GroupModel groupModel = entity.ToModel();
+        GroupModel groupModel = entity.ToModel()!;
 
         await _context.Groups.AddAsync(groupModel);
         await _context.SaveChangesAsync();
@@ -32,6 +34,7 @@ public class GroupRepository : IGroupRepository
             Include(g => g.UserParticipations).ThenInclude(ua => ua.User).
             Include(g => g.Assignments).ThenInclude(a => a.Participants).ThenInclude(ua => ua.User).
             FirstOrDefaultAsync(g => g.GroupId == id, cancellationToken);
+
         if (groupModel == null) return null;
         else return groupModel.ToDomain();
     }
@@ -39,14 +42,19 @@ public class GroupRepository : IGroupRepository
     public async Task<IEnumerable<Group>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.Groups.Include(g => g.Assignments).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
+        return (await _context.Groups.Include(g => g.Assignments).
+            Select(g => g.ToDomain()).
+            ToListAsync(cancellationToken)).
+            Where(g => g != null).Select(g => g!);
     }
 
     // Update operations
-    public async Task<Group> UpdateAsync(Group entity)
+    public async Task<Group?> UpdateAsync(Group entity)
     {
+        if (entity == null) return null!;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        GroupModel groupModel = entity.ToModel();
+        GroupModel groupModel = entity.ToModel()!;
 
         _context.Groups.Update(groupModel);
         await _context.SaveChangesAsync();
@@ -61,7 +69,7 @@ public class GroupRepository : IGroupRepository
         var entity = await GetAsync(id);
         if (entity == null) return false;
 
-        _context.Groups.Remove(entity.ToModel());
+        _context.Groups.Remove(entity.ToModel()!);
         await _context.SaveChangesAsync();
         return true;
     }
@@ -70,9 +78,11 @@ public class GroupRepository : IGroupRepository
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
 
-        return await _context.Groups.
+        return (await _context.Groups.
             Include(g => g.Assignments).
             Include(g => g.UserParticipations).ThenInclude(up => up.User).
-            Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).ToListAsync(cancellationToken);
+            Select(g => g).Where(g => g.UserParticipations.Any(up => up.UserId == userId)).Select(g => g.ToDomain()).
+            ToListAsync(cancellationToken)).
+            Where(g => g != null).Select(g => g!);
     }
 }

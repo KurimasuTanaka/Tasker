@@ -30,7 +30,7 @@ public class AuthService : IAuthService
         if (!result.Succeeded) return Result.Failure<string>("Invalid password");
 
 
-        List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsyc(user.Id)).ToList();
+        List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsync(user.Id)).ToList();
 
         var claims = new List<Claim>
             {

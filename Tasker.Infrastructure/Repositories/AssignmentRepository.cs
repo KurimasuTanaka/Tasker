@@ -12,10 +12,12 @@ public class AssignmentRepository : IAssignmentRepository
     }
 
     // Create operations
-    public async Task<Assignment> AddAsync(Assignment entity)
+    public async Task<Assignment?> AddAsync(Assignment entity)
     {
+        if (entity == null) return null;
+        
         using var _context = await _contextFactory.CreateDbContextAsync();
-        AssignmentModel assignmentModel = entity.ToModel();
+        AssignmentModel assignmentModel = entity.ToModel()!;
 
         await _context.Assignments.AddAsync(assignmentModel);
         await _context.SaveChangesAsync();
@@ -38,21 +40,24 @@ public class AssignmentRepository : IAssignmentRepository
     {
 
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.Assignments.Select(t => t.ToDomain()).ToListAsync(cancellationToken);
+        return await _context.Assignments.
+            Select(t => t.ToDomain()!).
+            ToListAsync(cancellationToken);
     }
 
     // Update operations
-    public async Task<Assignment> UpdateAsync(Assignment entity)
+    public async Task<Assignment?> UpdateAsync(Assignment entity)
     {
+        if (entity == null) return null!;
 
         using var _context = await _contextFactory.CreateDbContextAsync();
-        AssignmentModel assignmentModel = entity.ToModel();
+        AssignmentModel assignmentModel = entity.ToModel()!;
 
         _context.Assignments.Update(assignmentModel);
         await _context.SaveChangesAsync();
         await _context.Entry(assignmentModel).ReloadAsync();
 
-        return assignmentModel.ToDomain();
+        return assignmentModel.ToDomain()!;
     }
 
     // Delete operations
@@ -70,7 +75,7 @@ public class AssignmentRepository : IAssignmentRepository
             _context.UserAssignments.Remove(ua);
         });
 
-        _context.Assignments.Remove(assignmentToDelete.ToModel());
+        _context.Assignments.Remove(assignmentToDelete.ToModel()!);
         await _context.SaveChangesAsync();
         return true;
     }

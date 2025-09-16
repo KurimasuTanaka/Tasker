@@ -13,10 +13,12 @@ public class UserParticipationRepository : IUserParticipationRepository
     }
 
     // Create operations
-    public async Task<UserParticipation> AddAsync(UserParticipation entity)
+    public async Task<UserParticipation?> AddAsync(UserParticipation entity)
     {
+        if (entity == null) return null;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        UserParticipationModel userParticipationModel = entity.ToModel();
+        UserParticipationModel userParticipationModel = entity.ToModel()!;
         
         await _context.UserParticipations.AddAsync(userParticipationModel);
         await _context.SaveChangesAsync();
@@ -36,14 +38,19 @@ public class UserParticipationRepository : IUserParticipationRepository
     public async Task<IEnumerable<UserParticipation>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.UserParticipations.Select(up => up.ToDomain()).ToListAsync(cancellationToken);
+        return (await _context.UserParticipations.
+            Select(up => up.ToDomain()).
+            ToListAsync(cancellationToken)).
+            Where(up => up != null).Select(up => up!);
     }
 
     // Update operations
-    public async Task<UserParticipation> UpdateAsync(UserParticipation entity)
+    public async Task<UserParticipation?> UpdateAsync(UserParticipation entity)
     {
+        if (entity == null) return null;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        UserParticipationModel userParticipationModel = entity.ToModel();
+        UserParticipationModel userParticipationModel = entity.ToModel()!;
         
         _context.UserParticipations.Update(userParticipationModel);
         await _context.SaveChangesAsync();
@@ -59,15 +66,19 @@ public class UserParticipationRepository : IUserParticipationRepository
         var entity = await GetAsync(id);
         if (entity == null) return false;
 
-        _context.UserParticipations.Remove(entity.ToModel());
+        _context.UserParticipations.Remove(entity.ToModel()!);
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<IEnumerable<UserParticipation>> GetUserParticipationsAsyc(string userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserParticipation>> GetUserParticipationsAsync(string userId, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
-        return await _context.UserParticipations.Where(up => up.UserId == userId).Select(up => up.ToDomain()).ToListAsync(cancellationToken);
+        return (await _context.UserParticipations.
+            Where(up => up.UserId == userId).
+            Select(up => up.ToDomain()).
+            ToListAsync(cancellationToken)).
+            Where(up => up != null).Select(up => up!);
 
     }
 }

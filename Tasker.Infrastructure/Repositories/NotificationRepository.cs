@@ -13,8 +13,10 @@ public class NotificationRepository : INotificationRepository
     }
 
     // Create operations
-    public async Task<Notification> AddAsync(Notification entity)
+    public async Task<Notification?> AddAsync(Notification entity)
     {
+        if (entity == null) return null;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
         NotificationModel notificationModel = entity.ToModel();
 
@@ -40,15 +42,17 @@ public class NotificationRepository : INotificationRepository
     }
 
     // Update operations
-    public async Task<Notification> UpdateAsync(Notification entity)
+    public async Task<Notification?> UpdateAsync(Notification entity)
     {
+        if (entity == null) return null;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
         NotificationModel notificationModel = entity.ToModel();
 
         _context.Notifications.Update(notificationModel);
         await _context.SaveChangesAsync();
         await _context.Entry(notificationModel).ReloadAsync();
-        
+
         return notificationModel.ToDomain();
     }
 

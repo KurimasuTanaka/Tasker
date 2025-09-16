@@ -14,10 +14,13 @@ public class UserAssignmentRepository : IUserAssignmentRepository
         _contextFactory = contextFactory;
     }
 
-    public async Task<UserAssignment> AddAsync(UserAssignment entity)
+    public async Task<UserAssignment?> AddAsync(UserAssignment entity)
     {
+        if (entity == null) return null;
+
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        UserAssignmentModel userAssignmentModel = entity.ToModel();
+        UserAssignmentModel userAssignmentModel = entity.ToModel()!;
 
         await _context.UserAssignments.AddAsync(userAssignmentModel);
         await _context.SaveChangesAsync();
@@ -34,6 +37,7 @@ public class UserAssignmentRepository : IUserAssignmentRepository
 
         _context.UserAssignments.Remove(entity);
         await _context.SaveChangesAsync();
+
         return true;
     }
 
@@ -41,26 +45,31 @@ public class UserAssignmentRepository : IUserAssignmentRepository
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
 
-        return await _context.UserAssignments.Select(ua => ua.ToDomain()).ToListAsync(cancellationToken);
+        return (await _context.UserAssignments.
+            Select(ua => ua.ToDomain()).
+            ToListAsync(cancellationToken)).
+            Where(ua => ua != null).Select(ua => ua!);
     }
 
     public async Task<UserAssignment?> GetAsync((string UserId, long AssignmentId) id, CancellationToken cancellationToken = default)
     {
         using var _context = await _contextFactory.CreateDbContextAsync();
         var userAssignmentModel = await _context.UserAssignments.FindAsync(id.UserId, id.AssignmentId);
-        if(userAssignmentModel == null) return null; 
-        else return userAssignmentModel.ToDomain();    
+        if (userAssignmentModel == null) return null;
+        else return userAssignmentModel.ToDomain();
     }
 
-    public async Task<UserAssignment> UpdateAsync(UserAssignment entity)
+    public async Task<UserAssignment?> UpdateAsync(UserAssignment entity)
     {
+        if (entity == null) return null;
+
         using var _context = await _contextFactory.CreateDbContextAsync();
-        UserAssignmentModel userAssignmentModel = entity.ToModel();
-        
+        UserAssignmentModel userAssignmentModel = entity.ToModel()!;
+
         _context.UserAssignments.Update(userAssignmentModel);
         await _context.SaveChangesAsync();
         await _context.Entry(userAssignmentModel).ReloadAsync();
-        
+
         return userAssignmentModel.ToDomain();
     }
 }
