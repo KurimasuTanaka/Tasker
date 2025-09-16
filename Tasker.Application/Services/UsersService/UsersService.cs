@@ -11,11 +11,19 @@ public class UserService : IUserService
     }
     public async Task<Result<User>> GetUserById(string userId)
     {
-        User? user = await _userRepository.GetAsync(userId);
-        if(user == null)
+        try
         {
-            return Result.Failure<User>("No user found with the given ID.");
+            User? user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return Result.Failure<User>("No user found with the given ID.");
+            }
+            return Result.Success(user);
+
         }
-        return Result.Success(user);
+        catch (Exception ex)
+        {
+            return Result.Failure<User>($"Error retrieving user: {ex.Message}");
+        }
     }
 }

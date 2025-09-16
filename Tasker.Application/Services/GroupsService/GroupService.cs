@@ -15,7 +15,6 @@ public class GroupsService : IGroupsService
 
     public async Task<Result<Group>> AddGroupMember(long groupId, string userId)
     {
-        if (userId == null) return Result.Failure<Group>("Invalid user");
         try
         {
             await _userParticipationRepository.AddAsync(new UserParticipation
@@ -43,6 +42,7 @@ public class GroupsService : IGroupsService
         {
             group.UserParticipations.Add(new UserParticipation() { UserId = userId, Role = GroupRole.Admin });
             var createdGroup = await _groupRepository.AddAsync(group);
+            if (createdGroup == null) return Result.Failure<Group>("Failed to create group");
             return Result.Success(createdGroup);
         }
         catch (Exception ex)

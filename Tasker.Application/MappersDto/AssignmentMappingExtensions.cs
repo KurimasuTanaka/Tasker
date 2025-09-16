@@ -33,7 +33,11 @@ public static partial class AssignmentMappingExtensions
             Description = domain.Description,
             IsCompleted = domain.IsCompleted,
             GroupId = domain.GroupId,
-            Users = domain.UserAssignments.Select(ua => ua.User.ToDto()).ToList()
+            Users = domain.UserAssignments.
+                Where(ua => ua.User != null).
+                Select(ua => ua.User!.ToDto()).
+                Where(u => u != null).Select(u => u!).
+                ToList()
         };
     }
 }

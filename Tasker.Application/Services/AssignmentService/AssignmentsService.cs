@@ -15,7 +15,6 @@ public class AssignmentsService : IAssignmentsService
 
     public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignment userAssignment)
     {
-        if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
         {
             UserAssignment? existingAssignment = await _userAssignmentRepository.GetAsync((userAssignment.UserId, userAssignment.AssignmentId));
@@ -40,7 +39,6 @@ public class AssignmentsService : IAssignmentsService
 
     public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)
     {
-        if (userAssignment == null) return Result.Failure<UserAssignment>("UserAssignment cannot be null");
         try
         {
             bool deletedUserAssignment = await _userAssignmentRepository.DeleteAsync((userAssignment.UserId, userAssignment.AssignmentId));
@@ -61,16 +59,18 @@ public class AssignmentsService : IAssignmentsService
 
     public async Task<Result<Assignment>> CreateAssignment(long groupId, Assignment assignment)
     {
-        if (assignment == null) return Result.Failure<Assignment>("Assignment cannot be null");
         try
         {
-            Assignment createdAssignment = await _assignmentRepository.AddAsync(new Assignment
+            Assignment? createdAssignment = await _assignmentRepository.AddAsync(new Assignment
             {
                 Title = assignment.Title,
                 Description = assignment.Description,
                 IsCompleted = assignment.IsCompleted,
                 GroupId = groupId
             });
+
+            if (createdAssignment == null) return Result.Failure<Assignment>("Failed to create assignment");
+
             return Result.Success(createdAssignment);
         }
         catch (Exception ex)
@@ -122,11 +122,9 @@ public class AssignmentsService : IAssignmentsService
 
     public async Task<Result<Assignment>> UpdateAssignment(long groupId, long assignmentId, Assignment updatedAssignment)
     {
-        if (updatedAssignment == null) return Result.Failure<Assignment>("Updated assignment cannot be null");
-
         try
         {
-            Assignment updated = await _assignmentRepository.UpdateAsync(new Assignment
+            Assignment? updated = await _assignmentRepository.UpdateAsync(new Assignment
             {
                 AssignmentId = assignmentId,
                 Title = updatedAssignment.Title,
@@ -134,6 +132,7 @@ public class AssignmentsService : IAssignmentsService
                 IsCompleted = updatedAssignment.IsCompleted,
                 GroupId = groupId
             });
+            if (updated == null) return Result.Failure<Assignment>("Failed to update assignment");
 
             return Result.Success(updated);
         }
