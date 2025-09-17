@@ -19,8 +19,6 @@
     </AuthorizeView>
 </div>
 
-<MudDivider />
-
 @*Add User Button*@
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
@@ -37,6 +35,7 @@
     </Authorized>
 </AuthorizeView>
 
+@*Tabs for group tasks and personal tasks*@
 <MudTabs Elevation="2" PanelClass="pa-6" Outlined="true" Rounded="true" ApplyEffectsToContainer="true">
     <MudTabPanel Text="Group tasks">
 
@@ -70,7 +69,7 @@
 
     private Task OpenUserAdditionDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var dialogParameters = new DialogParameters { { "GroupId", GroupId }
         };
 
@@ -88,7 +87,7 @@
     }
     private async Task OpenTaskDialog()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialogParameters = new DialogParameters { 
             { "GroupId", GroupId }, 
             { "UpdateGroupCallback", EventCallback.Factory.Create<Domain.Assignment>(this, RefreshGroup) } };

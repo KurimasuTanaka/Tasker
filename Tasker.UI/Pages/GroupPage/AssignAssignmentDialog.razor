@@ -2,14 +2,18 @@
 
 <MudDialog>
     <TitleContent>
-        Create new task
+        <MudText Typo="Typo.h6">Assign users to task</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTable T="Domain.User" Items="@(group.UserParticipations.Select(up => up.User))"
-            OnRowClick="AddToSelection">
+        <MudTable 
+            T="Domain.User" 
+            Items="usersList" 
+            SelectedItems="assignedUsers"
+            MultiSelection="true"
+            class="mv-3">
+            
             <HeaderContent>
-                <MudTh>Name</MudTh>
-                <MudTh>Assign</MudTh>
+                <MudTh>Assigned Users</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>@context.FirstName @context.LastName</MudTd>
@@ -17,14 +21,7 @@
         </MudTable>
     </DialogContent>
     <DialogActions>
-        <MudText>To task assigned: </MudText>
-        <MudText>
-            @foreach (User user in usersToAssign)
-            {
-                @user.FirstName@user.LastName
-            }
-        </MudText>
-        <MudButton Color="Color.Primary" OnClick="AssignAssignment">Assign to task</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AssignAssignment">Update assignment</MudButton>
     </DialogActions>
 </MudDialog>
 @code {
@@ -33,17 +30,31 @@
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public EventCallback<Domain.Assignment> UpdateGroupCallback { get; set; }
 
-    List<User> usersToAssign = new();
+    List<User> usersList = new();
+    HashSet<User> assignedUsers = new();
+    List<User> assignedUsersAtStart = new();
+
 
     protected override void OnParametersSet()
     {
-        usersToAssign = assignment.UserAssignments.Select(p => p.User).ToList();
+        usersList = group.UserParticipations.Select(up => up.User).ToList();
+        assignedUsersAtStart = assignment.UserAssignments.Select(p => p.User).ToList();
+        
+        foreach (User user in assignedUsersAtStart)
+        {
+            assignedUsers.Add(usersList.First(u => u.UserIdentity == user.UserIdentity));
+        }
     }
 
     private async Task AssignAssignment()
     {
-        Domain.Assignment? updatedAssignment;
-        foreach (User user in usersToAssign)
+         Domain.Assignment? updatedAssignment;
+        foreach (User user in assignedUsersAtStart.Except(assignedUsers))
+        {
+            await _groupsManager.UnassignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+        }
+
+        foreach (User user in assignedUsers.Except(assignedUsersAtStart))
         {
             updatedAssignment = await _groupsManager.AssignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
         }
@@ -54,13 +65,13 @@
 
     private void AddToSelection(TableRowClickEventArgs<User> args)
     {
-        if (usersToAssign.Select(uta => uta.UserIdentity).Contains(args.Item!.UserIdentity))
+        @* if (usersToAssign.Select(uta => uta.UserIdentity).Contains(args.Item!.UserIdentity))
         {
             usersToAssign.RemoveAll((u) => u.UserIdentity == args.Item.UserIdentity);
         }
         else
         {
             usersToAssign.Add(args.Item);
-        }
+        } *@
     }
 }

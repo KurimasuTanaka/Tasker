@@ -16,29 +16,29 @@ public class AssignmentsService : IAssignmentsService
         _logger = logger;
     }
 
-    public async Task<Result<UserAssignment>> AssignTaskToUser(UserAssignment userAssignment)
+    public async Task<Result<UserAssignment>> AssignTaskToUser(string userId, long assignmentId)
     {
-        _logger.LogInformation($"Assigning task {userAssignment.AssignmentId} to user {userAssignment.UserId}");
+        _logger.LogInformation($"Assigning task {assignmentId} to user {userId}");
 
         try
         {
             // Check if the assignment is already assigned to the user
-            UserAssignment? existingAssignment = await _userAssignmentRepository.GetAsync((userAssignment.UserId, userAssignment.AssignmentId));
+            UserAssignment? existingAssignment = await _userAssignmentRepository.GetAsync((userId, assignmentId));
             if (existingAssignment is null)
             {
                 var createdUserAssignment = await _userAssignmentRepository.AddAsync(new UserAssignment
                 {
-                    UserId = userAssignment.UserId,
-                    AssignmentId = userAssignment.AssignmentId
+                    UserId = userId,
+                    AssignmentId = assignmentId
                 });
 
                 if (createdUserAssignment == null)
                 {
-                    _logger.LogError($"Failed to assign task {userAssignment.AssignmentId} to user {userAssignment.UserId}");
+                    _logger.LogError($"Failed to assign task {assignmentId} to user {userId}");
                     return Result.Failure<UserAssignment>("Failed to assign task to user");
                 }
 
-                _logger.LogInformation($"Successfully assigned task {userAssignment.AssignmentId} to user {userAssignment.UserId}");
+                _logger.LogInformation($"Successfully assigned task {assignmentId} to user {userId}");
                 return Result.Success<UserAssignment>(createdUserAssignment);
             }
             else return Result.Success<UserAssignment>(existingAssignment);
@@ -51,29 +51,25 @@ public class AssignmentsService : IAssignmentsService
 
     }
 
-    public async Task<Result<UserAssignment>> UnassignTaskFromUser(UserAssignment userAssignment)
+    public async Task<Result<bool>> UnassignTaskFromUser(string userId, long assignmentId)
     {
-        _logger.LogInformation($"Unassigning task {userAssignment.AssignmentId} from user {userAssignment.UserId}");
+        _logger.LogInformation($"Unassigning task {assignmentId} from user {userId}");
         try
         {
-            bool deletedUserAssignment = await _userAssignmentRepository.DeleteAsync((userAssignment.UserId, userAssignment.AssignmentId));
+            bool deletedUserAssignment = await _userAssignmentRepository.DeleteAsync((userId, assignmentId));
             if (!deletedUserAssignment)
             {
-                _logger.LogError($"Failed to unassign task {userAssignment.AssignmentId} from user {userAssignment.UserId}");
-                return Result.Failure<UserAssignment>("Failed to unassign task from user");
+                _logger.LogError($"Failed to unassign task {assignmentId} from user {userId}");
+                return Result.Failure<bool>("Failed to unassign task from user");
             }
 
 
-            _logger.LogInformation($"Successfully unassigned task {userAssignment.AssignmentId} from user {userAssignment.UserId}");
-            return Result.Success<UserAssignment>(new UserAssignment
-            {
-                UserId = userAssignment.UserId,
-                AssignmentId = userAssignment.AssignmentId
-            });
+            _logger.LogInformation($"Successfully unassigned task {assignmentId} from user {userId}");
+            return Result.Success<bool>(true);
         }
         catch (Exception ex)
         {
-            return Result.Failure<UserAssignment>($"Error unassigning task from user: {ex.Message}");
+            return Result.Failure<bool>($"Error unassigning task from user: {ex.Message}");
         }
 
     }

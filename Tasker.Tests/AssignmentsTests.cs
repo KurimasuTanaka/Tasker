@@ -147,7 +147,7 @@ public class AssignmentsTests
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment.ToDomainObject())).Value;
 
         // Act
-        var result = await _assignmentsService.AssignTaskToUser(new UserAssignment { UserId = user.UserIdentity, AssignmentId = created.AssignmentId });
+        var result = await _assignmentsService.AssignTaskToUser(user.UserIdentity, created.AssignmentId);
 
         // Assert
         Assert.That(result.IsSuccess, Is.True);
@@ -169,14 +169,13 @@ public class AssignmentsTests
 
         var assignment = new AssignmentDTO { Title = "A1", GroupId = createdGroup.GroupId };
         var created = (await _assignmentsService.CreateAssignment(createdGroup.GroupId, assignment.ToDomainObject())).Value;
-        await _assignmentsService.AssignTaskToUser(new UserAssignment { UserId = user.UserIdentity, AssignmentId = created.AssignmentId });
+        await _assignmentsService.AssignTaskToUser(user.UserIdentity, created.AssignmentId);
 
         // Act
-        var result = await _assignmentsService.UnassignTaskFromUser(new UserAssignment { UserId = user.UserIdentity, AssignmentId = created.AssignmentId });
+        var result = await _assignmentsService.UnassignTaskFromUser(user.UserIdentity, created.AssignmentId);
 
         // Assert
         Assert.That(result.IsSuccess, Is.True);
-        Assert.That(result.Value.UserId, Is.EqualTo(user.UserIdentity));
-        Assert.That(result.Value.AssignmentId, Is.EqualTo(created.AssignmentId));
+        Assert.That((await _userAssignmentRepository.GetAllAsync()), Is.Empty);
     }
 }

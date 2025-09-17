@@ -76,21 +76,22 @@ public class GroupsManager : IGroupsManager
         return createdAssignment.ToDomainObject();
     }
 
-    public async Task<Assignment> AssignTask(long groupId, long assignmentId, string userId, CancellationToken cancellationToken = default)
+    public async Task<Assignment> AssignTask(long groupId, long assignmentId, string userId)
     {
-        UserAssignmentDTO userAssignmentDto = new UserAssignmentDTO
-        {
-            UserId = userId,
-            AssignmentId = assignmentId
-        };
-        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/userassignments", userAssignmentDto);
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/user/{userId}/assignments/{assignmentId}", new { });
         response.EnsureSuccessStatusCode();
 
-        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>(cancellationToken: cancellationToken);
+        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
         if (createdAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
 
         return createdAssignment.ToDomainObject();
 
+    }
+
+    public async Task UnassignTask(long groupId, long assignmentId, string userId)
+    {
+        var response = await _httpClient.DeleteAsync($"api/groups/{groupId}/user/{userId}/assignments/{assignmentId}");
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<Assignment> DeleteAssignment(long groupId, long assignmentId)

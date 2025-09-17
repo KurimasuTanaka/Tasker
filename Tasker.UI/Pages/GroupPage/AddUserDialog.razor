@@ -3,15 +3,13 @@
 
 <MudDialog>
     <TitleContent>
-        Add new member
+        <MudText Typo="Typo.h6">Add new member</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="newUserId" class="form-control" />
-        <MudButton ButtonType="ButtonType.Submit" @onclick="AddMember">Add member</MudButton>
+        <MudTextField Variant="Variant.Outlined" HelperText="Enter user ID" @bind-Value="newUserId" class="form-control mv-2" />
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" @onclick="AddMember">Add member</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -26,6 +24,7 @@
     protected async Task AddMember()
     {
         await _groupsManager.AddMember(GroupId, newUserId);
+        MudDialog.Cancel();
     }
 
 

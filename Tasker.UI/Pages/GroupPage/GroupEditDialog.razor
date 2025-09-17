@@ -3,10 +3,10 @@
 
 <MudDialog>
     <TitleContent>
-        Edit group info
+        <MudText Typo="Typo.h6">Edit group info</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="group.Name" Variant="Variant.Outlined" class="form-control" />
+        <MudTextField @bind-Value="group.Name" Variant="Variant.Outlined" class="form-control mv-2" />
     </DialogContent>
     <DialogActions>
         <MudButton Color="Color.Primary" OnClick="UpdateGroup">Edit group info</MudButton>
