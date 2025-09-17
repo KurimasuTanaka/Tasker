@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http.Json;
+using Tasker.Application;
 using Tasker.Domain;
 
 namespace Tasker.UI.Services.UsersManager;
@@ -17,6 +18,7 @@ public class UsersManager : IUsersManager
     {
         var response = await _httpClient.GetAsync($"api/users/{userId}");
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<User>();
+        UserDTO user = await response.Content.ReadFromJsonAsync<UserDTO>();
+        return user.ToDomainObject();
     }
 }

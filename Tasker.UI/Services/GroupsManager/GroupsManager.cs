@@ -22,7 +22,7 @@ public class GroupsManager : IGroupsManager
 
     public async Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
     {
-        var group = new Group { Name = groupName };
+        var group = new GroupDTO { Name = groupName };
         var response = await _httpClient.PostAsJsonAsync("api/groups", group, cancellationToken);
         response.EnsureSuccessStatusCode();
 
