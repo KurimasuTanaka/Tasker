@@ -16,14 +16,7 @@ public class AssignmentServiceUI : IAssignmentServiceUI
 
     public async Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default)
     {
-        AssignmentDTO assignmentDto = new AssignmentDTO
-        {
-            Title = assignment.Title,
-            Description = assignment.Description,
-            IsCompleted = assignment.IsCompleted,
-            GroupId = groupId
-        };
-        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", assignmentDto);
+        var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", assignment.ToDto());
         response.EnsureSuccessStatusCode();
 
         var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>(cancellationToken: cancellationToken);

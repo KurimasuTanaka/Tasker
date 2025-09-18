@@ -6,6 +6,7 @@ using Tasker.Enums;
 
 namespace Tasker.API;
 
+//Filter to authenticate access to secured endpoints
 public class GroupAuthorizeFilter : IAsyncActionFilter
 {
     private readonly GroupRole _requiredRole;

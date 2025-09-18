@@ -5,6 +5,8 @@ using Tasker.Enums;
 
 namespace Tasker.API;
 
+//Minimal required role to get access to resource.
+//Admin > Manager > User
 public class PermisionRequirement : IAuthorizationRequirement
 {
     public GroupRole minimumRole;

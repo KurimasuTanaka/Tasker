@@ -2,8 +2,8 @@
 
 @attribute [AllowAnonymous]
 
-@inject IAuthService _authService;
-@inject NavigationManager Navigation
+@inject IAuthServiceUI _authServiceUI;
+@inject NavigationManager _navigation
 
 <MudPaper Elevation="3" Outlined="true" Class="pa-10 ma-2">
     <MudText Typo="Typo.h4">Login</MudText>
@@ -34,8 +34,8 @@
 
     async Task HandleLogin()
     {
-        string result = await _authService.Login(loginModel);
-        if (result == "Authorized successfully") Navigation.NavigateTo("/");
+        string result = await _authServiceUI.Login(loginModel);
+        if (result == "Authorized successfully") _navigation.NavigateTo("/");
         else errorMessage = result;
     }
 }

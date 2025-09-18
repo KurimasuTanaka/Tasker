@@ -21,7 +21,7 @@ public class AuthTests
     private WebApplicationFactory<API.Program> _webApplicationAPIFactory = null!;
 
     private CustomAuthStateProvider _authStateProvider = null!;
-    private AuthService _authService = null!;
+    private AuthServiceUI _authService = null!;
     private HttpClient _client = null!;
 
     [SetUp]
@@ -85,7 +85,7 @@ public class AuthTests
         _client = _webApplicationAPIFactory.CreateClient();
 
         _authStateProvider = new(_sessionStorageServiceMoq.Object, _client);
-        _authService = new AuthService(_client, _authStateProvider, _sessionStorageServiceMoq.Object);
+        _authService = new AuthServiceUI(_client, _authStateProvider, _sessionStorageServiceMoq.Object);
     }
 
     [Test]

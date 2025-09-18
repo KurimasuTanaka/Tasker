@@ -1,6 +1,6 @@
 ﻿@page "/register"
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
+@inject IAuthServiceUI _authServiceUI
+@inject NavigationManager _navigation
 
 @attribute [AllowAnonymous]
 
@@ -29,8 +29,8 @@
         registerModel.LastName = registerModel.LastName.Trim();
         registerModel.Email = registerModel.Email.Trim();
 
-        string registrationString = await AuthService.Register(registerModel);
-        if (registrationString is "Authorized successfully") Navigation.NavigateTo("/");   
+        string registrationString = await _authServiceUI.Register(registerModel);
+        if (registrationString is "Authorized successfully") _navigation.NavigateTo("/");   
         else errorMessage = registrationString;
     }
 }

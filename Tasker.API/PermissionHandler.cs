@@ -5,6 +5,7 @@ using Tasker.Domain;
 
 namespace Tasker.API;
 
+//Custom authorization handler that provide different level of access based on group where user is 
 public class PermissionHandler : AuthorizationHandler<PermisionRequirement, long>
 {
     private readonly IUserParticipationRepository _userParticipationRepository;

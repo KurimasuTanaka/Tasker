@@ -61,6 +61,7 @@ public class AuthService : IAuthService
 
 
         //Get the list of users participations in groups and on their basis form the roles claims where role value is in format "groupId:role"
+        //Required for frontend
         List<UserParticipation> userParticipations = (await _userParticipationRepository.GetUserParticipationsAsync(user.Id)).ToList();
         foreach (var participation in userParticipations)
         {

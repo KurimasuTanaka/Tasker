@@ -25,7 +25,7 @@ public partial class Program
         builder.Services.AddAuthorizationCore();
         builder.Services.AddSessionStorageServices();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IAuthServiceUI, AuthServiceUI>();
         builder.Services.AddScoped<IGroupServiceUI, GroupServiceUI>();
         builder.Services.AddScoped<IAssignmentServiceUI, AssignmentServiceUI>();
         builder.Services.AddScoped<IUserServiceUI, UserServiceUI>();
@@ -36,7 +36,6 @@ public partial class Program
         builder.Services.AddScoped((sp) =>
         {
             var configurations = builder.Configuration;
-            string apiUrl = configurations["URL:API"]!;
             return new HttpClient
             {
                 BaseAddress = new Uri(configurations["URL:API"]!)

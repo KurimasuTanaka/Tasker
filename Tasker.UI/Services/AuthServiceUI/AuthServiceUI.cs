@@ -7,14 +7,14 @@ using Tasker.Application;
 
 namespace Tasker.UI.Auth;
 
-public class AuthService : IAuthService
+public class AuthServiceUI : IAuthServiceUI
 {
     private readonly HttpClient _httpClient;
     private readonly AuthenticationStateProvider _authStateProvider;
     private readonly ISessionStorageService _sessionStorageService;
 
 
-    public AuthService(HttpClient http, AuthenticationStateProvider authStateProvider, ISessionStorageService sessionStorageService)
+    public AuthServiceUI(HttpClient http, AuthenticationStateProvider authStateProvider, ISessionStorageService sessionStorageService)
     {
         _httpClient = http;
         _authStateProvider = authStateProvider;
@@ -68,7 +68,6 @@ public class AuthService : IAuthService
 
         if (string.IsNullOrWhiteSpace(token)) return "Invalid token";
 
-        await _sessionStorageService.SetItemAsync("authToken", token);
         await (_authStateProvider as CustomAuthStateProvider)!.NotifyUserAuthentication(token);
 
         return "Authorized successfully";

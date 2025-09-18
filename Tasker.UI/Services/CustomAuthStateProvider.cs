@@ -18,7 +18,9 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         _sessionStorageService = sessionStorageService;
         _httpClient = httpClient;
     }
-
+    
+    //Authorize user by token from sessionStorage 
+    //If storage is empty, create new identity
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = await _sessionStorageService.GetItemAsync<string>("authToken");
