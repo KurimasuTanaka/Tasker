@@ -15,7 +15,8 @@ public partial class Program
 {
     private static async Task Main(string[] args)
     {
-        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -32,8 +33,16 @@ public partial class Program
         builder.Services.AddCascadingAuthenticationState();
 
 
-        builder.Services.AddScoped(sp =>
-            new HttpClient { BaseAddress = new Uri("https://localhost:5000/") });
+        builder.Services.AddScoped((sp) =>
+        {
+            var configurations = builder.Configuration;
+            string apiUrl = configurations["URL:API"]!;
+            return new HttpClient
+            {
+                BaseAddress = new Uri(configurations["URL:API"]!)
+            };
+        });
+
         await builder.Build().RunAsync();
     }
 }

@@ -17,21 +17,32 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add CORS policy
+        
+
         builder.Services.AddCors(options =>
         {
+            var configurations = builder.Configuration;
+
             options.AddPolicy("AllowFrontend",
-                policy => policy.WithOrigins("https://localhost:7001")
+                policy => policy.WithOrigins(configurations["URL:Frontend"]!)
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()
                                 .AllowCredentials());
         });
 
         builder.Services.AddDbContextFactory<TaskerContext>(options =>
-            options.UseSqlite("Data Source=./tasker.db"));
+        {
+            var configurations = builder.Configuration;
+            var connectionString = configurations["ConnectionStrings:TaskerConnection"];
+            options.UseSqlite(connectionString);
+        });
 
         builder.Services.AddDbContext<IdentityContext>(options =>
-            options.UseSqlite("Data Source=./identity.db"));
+        {
+            var configurations = builder.Configuration;
+            var connectionString = configurations["ConnectionStrings:IdentityConnection"];
+            options.UseSqlite(connectionString);
+        });
 
         builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<IdentityContext>()
@@ -45,15 +56,16 @@ public partial class Program
         })
         .AddJwtBearer(options =>
         {
+            var configurations = builder.Configuration;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true, // Проверять issuer
-                ValidateAudience = true, // Проверять audience
-                ValidateLifetime = true, // Проверять срок
-                ValidateIssuerSigningKey = true, // Проверять подпись
-                ValidIssuer = "yourapp.com", // Твой issuer (можно из конфига)
-                ValidAudience = "yourapp.com", // Твой audience
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyAtLeast32CharsLong")) // Секретный ключ, храни в secrets!
+                ValidateIssuer = true, 
+                ValidateAudience = true,
+                ValidateLifetime = true, 
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configurations["Jwt:Issuer"],
+                ValidAudience = configurations["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurations["Jwt:Key"]!))
             };
         });
 
