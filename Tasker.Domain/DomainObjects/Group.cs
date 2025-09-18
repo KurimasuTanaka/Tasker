@@ -13,4 +13,20 @@ public class Group
         int retval = Assignments.Where(a => !a.IsCompleted).Count();
         return retval;
     }
+
+    public List<Assignment> GetUserAssignments(string userId)
+    {
+        try
+        {
+            return Assignments.Where(a => a.UserAssignments.
+                    Select(p => p.User!.UserIdentity).
+                    Contains(userId)).ToList();
+        }
+        catch (Exception)
+        {
+            return new List<Assignment>();
+        }
+    }
+
+    public Group() {}
 }

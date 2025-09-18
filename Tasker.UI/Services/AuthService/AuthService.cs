@@ -75,6 +75,6 @@ public class AuthService : IAuthService
     }
 }
 
-public class TokenResponse { public string Token { get; set; } }
+public class TokenResponse { public string Token { get; set; } = String.Empty; }
 
 

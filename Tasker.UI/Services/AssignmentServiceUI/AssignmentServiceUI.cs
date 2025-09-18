@@ -29,7 +29,7 @@ public class AssignmentServiceUI : IAssignmentServiceUI
         var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>(cancellationToken: cancellationToken);
         if (createdAssignment == null) throw new InvalidOperationException("Failed to create assignment.");
 
-        return createdAssignment.ToDomainObject();
+        return createdAssignment.ToDomainObject()!;
     }
 
     public async Task<Assignment> AssignTask(long groupId, long assignmentId, string userId)
@@ -40,7 +40,7 @@ public class AssignmentServiceUI : IAssignmentServiceUI
         var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
         if (createdAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
 
-        return createdAssignment.ToDomainObject();
+        return createdAssignment.ToDomainObject()!;
 
     }
 
@@ -64,6 +64,6 @@ public class AssignmentServiceUI : IAssignmentServiceUI
         var updatedAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
         if (updatedAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
 
-        return updatedAssignment.ToDomainObject();
+        return updatedAssignment.ToDomainObject()!;
     }
 }

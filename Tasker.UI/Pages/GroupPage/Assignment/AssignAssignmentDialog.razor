@@ -37,8 +37,16 @@
 
     protected override void OnParametersSet()
     {
-        usersList = group.UserParticipations.Select(up => up.User).ToList();
-        assignedUsersAtStart = assignment.UserAssignments.Select(p => p.User).ToList();
+        usersList = group.UserParticipations
+            .Select(up => up.User)
+            .Where(u => u is not null)
+            .Select(u => u!)
+            .ToList();
+            
+        assignedUsersAtStart = assignment.UserAssignments.
+            Select(ua => ua.User).
+            Where(u => u is not null).Select(u => u!).
+            ToList();
         
         foreach (User user in assignedUsersAtStart)
         {

@@ -18,7 +18,9 @@ public class UsersManager : IUsersManager
     {
         var response = await _httpClient.GetAsync($"api/users/{userId}");
         response.EnsureSuccessStatusCode();
-        UserDTO user = await response.Content.ReadFromJsonAsync<UserDTO>();
-        return user.ToDomainObject();
+        var user = await response.Content.ReadFromJsonAsync<UserDTO>();
+        if (user == null) throw new InvalidOperationException("Failed to retrieve user.");
+
+        return user.ToDomainObject()!;
     }
 }

@@ -22,7 +22,7 @@ public class GroupServiceUI : IGroupServiceUI
         var createdGroup = await response.Content.ReadFromJsonAsync<GroupDTO>(cancellationToken: cancellationToken);
         if (createdGroup == null) throw new InvalidOperationException("Failed to add member.");
 
-        return createdGroup.ToDomainObject();
+        return createdGroup.ToDomainObject()!;
     }
 
     public async Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
@@ -34,7 +34,7 @@ public class GroupServiceUI : IGroupServiceUI
         var createdGroup = await response.Content.ReadFromJsonAsync<GroupDTO>(cancellationToken: cancellationToken);
         if (createdGroup == null) throw new InvalidOperationException("Failed to create group.");
 
-        return createdGroup.ToDomainObject();
+        return createdGroup.ToDomainObject()!;
     }
 
     public async Task DeleteGroup(long groupId, CancellationToken cancellationToken = default)
@@ -49,7 +49,10 @@ public class GroupServiceUI : IGroupServiceUI
         response.EnsureSuccessStatusCode();
 
         var groups = await response.Content.ReadFromJsonAsync<List<GroupDTO>>(cancellationToken: cancellationToken);
-        return groups?.Select(g => g.ToDomainObject()).ToList() ?? new List<Group>();
+
+        if (groups == null) throw new InvalidOperationException("Failed to retrieve groups.");
+
+        return groups.Select(g => g.ToDomainObject()!).ToList();
     }
 
     public async Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default)
@@ -57,10 +60,10 @@ public class GroupServiceUI : IGroupServiceUI
         var response = await _httpClient.GetAsync($"api/groups/{groupId}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        GroupDTO group = await response.Content.ReadFromJsonAsync<GroupDTO>(cancellationToken: cancellationToken);
+        var group = await response.Content.ReadFromJsonAsync<GroupDTO>(cancellationToken: cancellationToken);
         if (group == null) throw new InvalidOperationException("Failed to retrieve group.");
 
-        return group.ToDomainObject();
+        return group.ToDomainObject()!;
     }
 
     public async Task<Group> UpdateGroup(Group groupToUpdate)
@@ -71,7 +74,7 @@ public class GroupServiceUI : IGroupServiceUI
         var group = await response.Content.ReadFromJsonAsync<GroupDTO>();
         if (group is null) throw new InvalidOperationException("Failed to update group.");
 
-        return group.ToDomainObject();
+        return group.ToDomainObject()!;
 
     }
 }

@@ -45,9 +45,7 @@
     </MudTabPanel>
     <MudTabPanel Text="My tasks">
 
-        @foreach (Domain.Assignment task in group.Assignments.Where(a => a.UserAssignments.
-                Select(p => p.User.UserIdentity).
-                Contains(CurrentUser.UserIdentity)))
+        @foreach (Domain.Assignment task in group.GetUserAssignments(newUserId))
         {
             <Assignment assignment="task" group="group" OnAssignmentDeleted="RefreshGroupOnAssignmentDeleted" />
         }
