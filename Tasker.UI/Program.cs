@@ -25,7 +25,7 @@ public partial class Program
         builder.Services.AddSessionStorageServices();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
         builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<IGroupsManager, GroupsManager>();
+        builder.Services.AddScoped<IGroupServiceUI, GroupServiceUI>();
         builder.Services.AddScoped<IAssignmentServiceUI, AssignmentServiceUI>();
         builder.Services.AddScoped<IUsersManager, UsersManager>();
         builder.Services.AddMudServices();

@@ -1,4 +1,4 @@
-﻿@inject IGroupsManager _groupsManager
+﻿@inject IGroupServiceUI _groupServiceUI
 
 
 <MudDialog>
@@ -21,7 +21,7 @@
 
     protected async Task UpdateGroup()
     {
-        group = await _groupsManager.UpdateGroup(group);
+        group = await _groupServiceUI.UpdateGroup(group);
         await OnGroupUpdated.InvokeAsync(group);
         MudDialog.Close(DialogResult.Ok(group));
     }

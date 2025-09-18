@@ -1,4 +1,4 @@
-﻿@inject IGroupsManager _groupsManager
+﻿@inject IGroupServiceUI _groupServiceUI
 
 
 <MudDialog>
@@ -22,7 +22,7 @@
 
     protected async Task AddMember()
     {
-        Group updatedGroup = await _groupsManager.AddMember(GroupId, newUserId);
+        Group updatedGroup = await _groupServiceUI.AddMember(GroupId, newUserId);
         await OnUserAdded.InvokeAsync(updatedGroup);
         MudDialog.Cancel();
     }

@@ -3,7 +3,7 @@
 @using Tasker.UI.Pages.Dashboard
 @using Tasker.UI.Pages.GroupPage.Assignment
 
-@inject IGroupsManager _groupsManager
+@inject IGroupServiceUI _groupServiceUI
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IUsersManager _usersManager
 
@@ -78,7 +78,7 @@
         CurrentUser = await _usersManager.GetUserById(userId);
 
 
-        group = await _groupsManager.GetGroupById(GroupId);
+        group = await _groupServiceUI.GetGroupById(GroupId);
     }
     private async Task OpenTaskDialog()
     {

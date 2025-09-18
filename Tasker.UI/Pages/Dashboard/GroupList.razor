@@ -1,5 +1,5 @@
 ﻿@using Tasker.UI.Services
-@inject IGroupsManager _groupsManager
+@inject IGroupServiceUI _groupServiceUI
 @inject NavigationManager NavigationManager
 
 <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="CreateGroup">Create Group</MudButton>
@@ -28,12 +28,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _groups = await _groupsManager.GetAllGroups();
+        _groups = await _groupServiceUI.GetAllGroups();
     }
     private async Task CreateGroup(MouseEventArgs args)
     {
-        await _groupsManager.CreateGroup("New Group" + (_groups.Count + 1).ToString());
-        _groups = await _groupsManager.GetAllGroups();
+        await _groupServiceUI.CreateGroup("New Group" + (_groups.Count + 1).ToString());
+        _groups = await _groupServiceUI.GetAllGroups();
 
         StateHasChanged();
     }
@@ -44,7 +44,7 @@
 
     private async Task DeleteGroup(long groupId)
     {
-        await _groupsManager.DeleteGroup(groupId);
+        await _groupServiceUI.DeleteGroup(groupId);
         _groups.RemoveAll(g => g.GroupId == groupId);
         StateHasChanged();
     }
