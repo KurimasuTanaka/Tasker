@@ -14,12 +14,14 @@
         <MudTextField Variant="Variant.Outlined" HelperText="Email" @bind-Value="registerModel.Email" />
         <MudTextField Variant="Variant.Outlined" HelperText="Password" type="password"
             @bind-Value="registerModel.Password" />
+        <MudText Color="Color.Error">@errorMessage</MudText>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="submit" @onclick="HandleRegistration">Register</MudButton>
     </MudForm>
 </MudPaper>
 
 @code {
     RegisterModel registerModel = new RegisterModel();
+    string errorMessage = string.Empty;
 
     async Task HandleRegistration()
     {
@@ -27,7 +29,8 @@
         registerModel.LastName = registerModel.LastName.Trim();
         registerModel.Email = registerModel.Email.Trim();
 
-        string success = await AuthService.Register(registerModel);
-        if (success is not null) Navigation.NavigateTo("/");
+        string registrationString = await AuthService.Register(registerModel);
+        if (registrationString is "Authorized successfully") Navigation.NavigateTo("/");   
+        else errorMessage = registrationString;
     }
 }

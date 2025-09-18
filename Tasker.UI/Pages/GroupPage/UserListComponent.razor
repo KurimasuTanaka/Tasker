@@ -3,7 +3,7 @@
     <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap" Justify="Justify.FlexStart">
         @foreach (var member in Users)
         {
-            <MudPaper Class="pa-1">@member.FirstName @member.LastName</MudPaper>
+            <MudChip T="string">@member.FirstName @member.LastName</MudChip>
         }
     </MudStack>
 

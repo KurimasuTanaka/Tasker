@@ -12,12 +12,18 @@
         <MudTextField Variant="Variant.Outlined" HelperText="Email"  Required="true" @bind-Value="loginModel.Email" />
         <MudTextField Variant="Variant.Outlined" HelperText="Password" Required="true" type="password"
             @bind-Value="loginModel.Password" />
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudText Color="Color.Error">@errorMessage</MudText>
+        }
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="HandleLogin">Login</MudButton>
     </MudForm>
 </MudPaper>
 
 @code {
     LoginModel loginModel = new LoginModel();
+
+    string errorMessage = string.Empty;
 
     //DELETE
     protected override void OnParametersSet()
@@ -30,5 +36,6 @@
     {
         string result = await _authService.Login(loginModel);
         if (result == "Authorized successfully") Navigation.NavigateTo("/");
+        else errorMessage = result;
     }
 }

@@ -85,7 +85,7 @@
             { "GroupId", GroupId }, 
             { "OnTaskCreated", EventCallback.Factory.Create<Domain.Assignment>(this, RefreshGroup) } };
 
-        await DialogService.ShowAsync<CreateTaskDialog>("Simple Dialog", dialogParameters, options);
+        await DialogService.ShowAsync<CreateAssignmentDialog>("Simple Dialog", dialogParameters, options);
     }
 
     public void RefreshGroup(Domain.Assignment newAssignment)
