@@ -1,4 +1,5 @@
 using Tasker.Domain;
+using Tasker.Enums;
 namespace Tasker.Application;
 
 public interface IGroupsService
@@ -8,5 +9,6 @@ public interface IGroupsService
     Task<Result<Group>> UpdateGroup(Group group);
     Task<Result<Group>> GetGroupById(long groupId, CancellationToken cancellationToken);
     Task<Result<Group>> AddGroupMember(long groupId, string userId);
+    Task<Result<bool>> ChangeUserRole(long groupId, string userId, GroupRole newRole);
     Task<Result<bool>> DeleteGroup(long groupId);
 }

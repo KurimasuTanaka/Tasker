@@ -47,6 +47,33 @@ public class GroupsService : IGroupsService
         }
     }
 
+    public async Task<Result<bool>> ChangeUserRole(long groupId, string userId, GroupRole newRole)
+    {
+        _logger.LogInformation($"Changing role of user {userId} in group {groupId} to {newRole}");
+
+        try
+        {
+            var participation = await _userParticipationRepository.GetAsync((userId, groupId));
+            if (participation == null)
+            {
+                _logger.LogError($"User {userId} is not a member of group {groupId}");
+                return Result.Failure<bool>("User is not a member of the group");
+            }
+            
+
+            participation.Role = newRole;
+            await _userParticipationRepository.UpdateAsync(participation);
+
+            _logger.LogInformation($"Successfully changed role of user {userId} in group {groupId} to {newRole}");
+            return Result.Success(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error changing user role: {ex.Message}");
+            return Result.Failure<bool>($"Error changing user role: {ex.Message}");
+        }
+    }
+
     public async Task<Result<Group>> CreateGroup(Group group, string userId)
     {
         _logger.LogInformation($"Creating group {group.Name} for user {userId}");

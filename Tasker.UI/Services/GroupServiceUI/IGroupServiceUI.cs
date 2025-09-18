@@ -1,6 +1,7 @@
 using System;
 using Tasker.Application;
 using Tasker.Domain;
+using Tasker.Enums;
 
 namespace Tasker.UI.Services;
 
@@ -12,5 +13,6 @@ public interface IGroupServiceUI
     Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default);
     Task<Group> GetGroupById(long groupId, CancellationToken cancellationToken = default);
     Task<Group> AddMember(long groupId, string userId, CancellationToken cancellationToken = default);
+    Task ChangeUserRole(long groupId, string userId, GroupRole newRole);
 
 }

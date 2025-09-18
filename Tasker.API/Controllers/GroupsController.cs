@@ -88,6 +88,18 @@ namespace Tasker.API.Controllers
             return Ok(result.Value.ToDto());
         }
 
+        [HttpPut("{groupId:long}/members/{userId}/role")]
+        [GroupAuthorize(GroupRole.Admin)]
+        public async Task<IActionResult> ChangeUserRole(long groupId, string userId, [FromBody] GroupRole newRole)
+        {
+            _logger.LogTrace($"Requested changing role of user {userId} in group {groupId} by user {_userManager.GetUserId(User)}");
+
+            var result = await _groupService.ChangeUserRole(groupId, userId, newRole);
+            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
+
+            return Ok();
+        }
+
         [GroupAuthorize(GroupRole.Admin)]
         [HttpDelete("{groupId:long}")]
         public async Task<IActionResult> DeleteGroup(long groupId)

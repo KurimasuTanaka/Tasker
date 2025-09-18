@@ -1,0 +1,57 @@
+﻿@using Tasker.Enums
+@inject IGroupServiceUI _groupServiceUI
+
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Raise user to manager</MudText>
+    </TitleContent>
+    <DialogContent>
+
+        <MudSelect T="string" @bind-Value="newUserId" Label="Select user" Variant="Variant.Outlined" Class="form-control mv-2">
+            @foreach (var member in Group.GetGroupMembers())
+            {
+                <MudSelectItem Value="@member.UserIdentity">@member.FirstName @member.LastName</MudSelectItem>
+            }
+
+        </MudSelect>
+
+        <MudSelect @bind-Value="newRole" Variant="Variant.Outlined" Label="Select new role" Class="form-control mv-2">
+            <MudSelectItem Value="GroupRole.User">User</MudSelectItem>
+            <MudSelectItem Value="GroupRole.Manager">Manager</MudSelectItem>
+        </MudSelect>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton ButtonType="ButtonType.Submit" @onclick="ChangeUserRole">Raise user role</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public Group Group { get; set; } = default!;
+    [Parameter] public EventCallback<Group> OnUserAdded { get; set; }
+
+    string newUserId = string.Empty;
+    GroupRole newRole = GroupRole.Admin;
+
+    protected async Task ChangeUserRole()
+    {
+        if (string.IsNullOrEmpty(newUserId) || newRole == GroupRole.Admin)
+        {
+            Snackbar.Add("Please select a user and a role.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            await _groupServiceUI.ChangeUserRole(Group.GroupId, newUserId, newRole);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        MudDialog.Cancel();
+    }
+
+}

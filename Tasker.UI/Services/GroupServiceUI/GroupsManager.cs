@@ -2,6 +2,7 @@ using System;
 using System.Net.Http.Json;
 using Tasker.Application;
 using Tasker.Domain;
+using Tasker.Enums;
 
 namespace Tasker.UI.Services;
 
@@ -64,6 +65,12 @@ public class GroupServiceUI : IGroupServiceUI
         if (group == null) throw new InvalidOperationException("Failed to retrieve group.");
 
         return group.ToDomainObject()!;
+    }
+
+    public async Task ChangeUserRole(long groupId, string userId, GroupRole newRole)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupId}/members/{userId}/role", newRole);
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<Group> UpdateGroup(Group groupToUpdate)

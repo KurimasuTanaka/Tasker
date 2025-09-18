@@ -18,11 +18,13 @@
     </AuthorizeView>
 </div>
 
-@*Add User Button*@
+@*User buttons*@
 <AuthorizeView Roles="@($"{GroupId}:Admin")">
     <Authorized>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenUserAdditionDialog" class="ma-3">Add User
         </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenChangeUserRoleDialog" class="ma-3">Change
+            User Role</MudButton>
     </Authorized>
 </AuthorizeView>
 
@@ -129,5 +131,15 @@
 
         await DialogService.ShowAsync<GroupEditDialog>("Edit group", dialogParameters, options);
 
+    }
+    private async Task OpenChangeUserRoleDialog(MouseEventArgs args)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters {
+{ "Group", group },
+
+};
+
+        await DialogService.ShowAsync<ChangeUserRoleDialog>("Change user role", dialogParameters, options);
     }
 }

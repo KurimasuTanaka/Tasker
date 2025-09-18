@@ -14,6 +14,18 @@ public class Group
         return retval;
     }
 
+    public List<User> GetGroupMembers()
+    {
+        try
+        {
+            return UserParticipations.Select(up => up.User!).ToList();
+        }
+        catch (Exception)
+        {
+            return new List<User>();
+        }
+    }
+
     public List<Assignment> GetUserAssignments(string userId)
     {
         try
