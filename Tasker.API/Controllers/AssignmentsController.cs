@@ -99,7 +99,7 @@ namespace Tasker.API.Controllers
             var result = await _assignmentsService.UpdateAssignment(groupId, assignmentId, updatedAssignment.ToDomainObject()!);
             if (result.IsSuccess)
             {
-                return CreatedAtAction(nameof(GetAssignment), result.Value.ToDto());
+                return CreatedAtAction(nameof(UpdateAssignment), result.Value.ToDto());
             }
             return BadRequest(result.ErrorMessage);
         }

@@ -17,12 +17,12 @@
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public Group group { get; set; } = new();
-    [Parameter] public EventCallback<Group> UpdateGroupCallback { get; set; }
+    [Parameter] public EventCallback<Group> OnGroupUpdated { get; set; }
 
     protected async Task UpdateGroup()
     {
         group = await _groupsManager.UpdateGroup(group);
-        await UpdateGroupCallback.InvokeAsync(group);
+        await OnGroupUpdated.InvokeAsync(group);
         MudDialog.Close(DialogResult.Ok(group));
     }
 

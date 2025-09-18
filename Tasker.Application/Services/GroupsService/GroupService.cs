@@ -146,6 +146,12 @@ public class GroupsService : IGroupsService
     {
         _logger.LogInformation($"Updating group {group.GroupId}");
 
+        // To avoid db update issues with circular references
+        foreach (var assignment in group.Assignments)
+        {
+            assignment.UserAssignments.Clear();
+        }
+
         try
         {
             var updatedGroup = await _groupRepository.UpdateAsync(group);

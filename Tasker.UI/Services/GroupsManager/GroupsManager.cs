@@ -14,10 +14,15 @@ public class GroupsManager : IGroupsManager
         _httpClient = httpClient;
     }
 
-    public async Task AddMember(long groupId, string userId, CancellationToken cancellationToken = default)
+    public async Task<Group> AddMember(long groupId, string userId, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/members", userId, cancellationToken);
         response.EnsureSuccessStatusCode();
+
+        var createdGroup = await response.Content.ReadFromJsonAsync<GroupDTO>(cancellationToken: cancellationToken);
+        if (createdGroup == null) throw new InvalidOperationException("Failed to add member.");
+
+        return createdGroup.ToDomainObject();
     }
 
     public async Task<Group> CreateGroup(string groupName, CancellationToken cancellationToken = default)
@@ -94,20 +99,15 @@ public class GroupsManager : IGroupsManager
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<Assignment> DeleteAssignment(long groupId, long assignmentId)
+    public async Task DeleteAssignment(long groupId, long assignmentId)
     {
         var response = await _httpClient.DeleteAsync($"api/groups/{groupId}/assignments/{assignmentId}");
         response.EnsureSuccessStatusCode();
-
-        var deletedAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
-        if (deletedAssignment == null) throw new InvalidOperationException("Failed to delete assignment.");
-
-        return deletedAssignment.ToDomainObject();
     }
 
-    public async Task<Assignment> UpdateAssignment(long groupId, AssignmentDTO assignmentToUpdate)
+    public async Task<Assignment> UpdateAssignment(long groupId, Assignment assignmentToUpdate)
     {
-        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupId}/assignments/{assignmentToUpdate.AssignmentId}", assignmentToUpdate);
+        var response = await _httpClient.PutAsJsonAsync($"api/groups/{groupId}/assignments/{assignmentToUpdate.AssignmentId}", assignmentToUpdate.ToDto());
         response.EnsureSuccessStatusCode();
 
         var updatedAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
