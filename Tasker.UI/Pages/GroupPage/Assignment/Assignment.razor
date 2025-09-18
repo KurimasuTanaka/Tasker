@@ -1,0 +1,97 @@
+﻿@using System.Security.Claims
+@using Tasker.UI.Services.AssignmentServiceUI
+@inject IAssignmentServiceUI _assignmentServiceUI;
+@inject AuthenticationStateProvider _authenticationStateProvider;
+
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <div class="d-flex align-center">
+            <MudText Typo="Typo.h6">@assignment.Title</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Info" @onclick="OpenEditAssignmentDialog" />
+        </div>
+        <MudText Typo="Typo.body1">@assignment.Description</MudText>
+        <UserListComponent Users="assignment.UserAssignments.Select(ua => ua.User).ToList()" Title="Working: " />
+    </MudCardContent>
+    <MudCardActions>
+        <AuthorizeView Roles="@($"{group.GroupId}:Manager,{group.GroupId}:Admin")">
+            <Authorized>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="OpenAssignmentDialog">Assign
+                </MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="DeleteAssignment">Delete</MudButton>
+            </Authorized>
+        </AuthorizeView>
+        @if (assignment.HasThisUserAssigned(userId))
+        {
+
+            @if (@assignment.IsCompleted)
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Success" @onclick="MarkAsIncomplete">Mark as incomplete
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Text" Color="Color.Warning" @onclick="MarkAsComplete">Mark as completed</MudButton>
+            }
+        }
+    </MudCardActions>
+
+</MudCard>
+
+
+@code {
+    [Parameter] public Domain.Assignment assignment { get; set; } = new();
+    [Parameter] public Domain.Group group { get; set; } = new();
+    [Parameter] public EventCallback<long> OnAssignmentDeleted { get; set; }
+
+    string participants = string.Empty;
+
+    string userId = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        participants = "";
+        foreach (Domain.User user in assignment.UserAssignments.Select(ua => ua.User))
+        {
+            participants += ($"{user!.FirstName} {user!.LastName}");
+
+            ClaimsPrincipal? u = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
+            userId = u.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
+
+        }
+    }
+    public async Task OpenAssignmentDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "assignment", assignment }, { "group", group } };
+
+        await DialogService.ShowAsync<AssignAssignmentDialog>("Assignment", dialogParameters, options);
+    }
+
+    public async Task OpenEditAssignmentDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, };
+        var dialogParameters = new DialogParameters { { "Assignment", assignment } };
+
+        var dialog = await DialogService.ShowAsync<UpdateAssignmentDialog>("Edit Task", dialogParameters, options);
+        var result = await dialog.Result;
+    }
+
+    private async Task DeleteAssignment()
+    {
+        await _assignmentServiceUI.DeleteAssignment(group.GroupId, assignment.AssignmentId);
+        await OnAssignmentDeleted.InvokeAsync(assignment.AssignmentId);
+    }
+
+    private async Task MarkAsComplete()
+    {
+        assignment.IsCompleted = true;
+        await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
+    }
+    private async Task MarkAsIncomplete()
+    {
+        assignment.IsCompleted = false;
+        await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
+
+    }
+}

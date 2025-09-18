@@ -1,0 +1,30 @@
+﻿@inject IAssignmentServiceUI _assignmentServiceUI;
+
+
+<MudDialog>
+    <TitleContent>
+        Update task
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="assignment.Title" Variant="Variant.Outlined" class="form-control" />
+        <MudTextField @bind-Value="assignment.Description" Variant="Variant.Outlined" class="form-control" Lines="4" />
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="UpdateAssignment">Edit task</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public Domain.Assignment assignment { get; set; } = new();
+
+    protected async Task UpdateAssignment()
+    {
+        assignment = await _assignmentServiceUI.UpdateAssignment(assignment.GroupId, assignment);
+        MudDialog.Close(DialogResult.Ok(assignment));
+
+
+    }
+}
