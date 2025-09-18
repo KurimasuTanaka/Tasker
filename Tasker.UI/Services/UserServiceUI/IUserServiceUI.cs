@@ -2,7 +2,7 @@ using Tasker.Domain;
 
 namespace Tasker.UI.Services;
 
-public interface IUsersManager
+public interface IUserServiceUI
 {
     public Task<User> GetUserById(string userId);
 }

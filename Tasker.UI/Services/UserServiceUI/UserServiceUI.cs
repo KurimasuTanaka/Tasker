@@ -5,11 +5,11 @@ using Tasker.Domain;
 
 namespace Tasker.UI.Services.UsersManager;
 
-public class UsersManager : IUsersManager
+public class UserServiceUI : IUserServiceUI
 {
     private readonly HttpClient _httpClient;
 
-    public UsersManager(HttpClient httpClient)
+    public UserServiceUI(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }

@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims
-@inject IUsersManager _usersManager
+@inject IUserServiceUI _userServiceUI
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 <MudDialog>
@@ -27,6 +27,6 @@
             MudDialog.Close();
             return;
         }
-        user = await _usersManager.GetUserById(userId);
+        user = await _userServiceUI.GetUserById(userId);
     }
 }

@@ -27,7 +27,7 @@ public partial class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupServiceUI, GroupServiceUI>();
         builder.Services.AddScoped<IAssignmentServiceUI, AssignmentServiceUI>();
-        builder.Services.AddScoped<IUsersManager, UsersManager>();
+        builder.Services.AddScoped<IUserServiceUI, UserServiceUI>();
         builder.Services.AddMudServices();
         builder.Services.AddCascadingAuthenticationState();
 

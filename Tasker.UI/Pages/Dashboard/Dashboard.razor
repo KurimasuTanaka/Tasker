@@ -3,7 +3,7 @@
 @attribute [Authorize]
 
 @inject AuthenticationStateProvider _authenticationStateProvider
-@inject IUsersManager _usersManager
+@inject IUserServiceUI _userServiceUI
 
 <PageTitle>Dashboard</PageTitle>
 @if (CurrentUser is not null)
@@ -20,6 +20,6 @@
         ClaimsPrincipal? user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
         string userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
 
-        CurrentUser = await _usersManager.GetUserById(userId);
+        CurrentUser = await _userServiceUI.GetUserById(userId);
     }
 }
