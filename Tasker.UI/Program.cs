@@ -6,6 +6,7 @@ using MudBlazor.Services;
 using Tasker.UI;
 using Tasker.UI.Auth;
 using Tasker.UI.Services;
+using Tasker.UI.Services.AssignmentServiceUI;
 using Tasker.UI.Services.UsersManager;
 
 namespace Tasker.UI;
@@ -25,6 +26,7 @@ public partial class Program
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IGroupsManager, GroupsManager>();
+        builder.Services.AddScoped<IAssignmentServiceUI, AssignmentServiceUI>();
         builder.Services.AddScoped<IUsersManager, UsersManager>();
         builder.Services.AddMudServices();
         builder.Services.AddCascadingAuthenticationState();

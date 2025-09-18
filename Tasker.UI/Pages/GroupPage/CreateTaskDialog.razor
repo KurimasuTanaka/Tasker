@@ -1,4 +1,4 @@
-﻿@inject IGroupsManager _groupsManager
+﻿@inject IAssignmentServiceUI _assignmentServiceUI
 
 
 <MudDialog>
@@ -26,7 +26,7 @@
     Domain.Assignment assignment = new();
     protected async Task CreateAssignment()
     {
-        Domain.Assignment createdAssignment = await _groupsManager.CreateAssignment(GroupId, assignment);
+        Domain.Assignment createdAssignment = await _assignmentServiceUI.CreateAssignment(GroupId, assignment);
         await OnTaskCreated.InvokeAsync(createdAssignment);
         MudDialog.Close(DialogResult.Ok(createdAssignment));
     }
