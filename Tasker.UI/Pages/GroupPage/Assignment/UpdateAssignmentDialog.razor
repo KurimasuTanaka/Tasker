@@ -1,6 +1,5 @@
 ﻿@inject IAssignmentServiceUI _assignmentServiceUI;
 
-
 <MudDialog>
     <TitleContent>
         Update task
@@ -22,9 +21,15 @@
 
     protected async Task UpdateAssignment()
     {
-        assignment = await _assignmentServiceUI.UpdateAssignment(assignment.GroupId, assignment);
+        try
+        {
+            assignment = await _assignmentServiceUI.UpdateAssignment(assignment.GroupId, assignment);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        
         MudDialog.Close(DialogResult.Ok(assignment));
-
-
     }
 }

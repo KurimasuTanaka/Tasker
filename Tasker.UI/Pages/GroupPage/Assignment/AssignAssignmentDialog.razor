@@ -5,13 +5,8 @@
         <MudText Typo="Typo.h6">Assign users to task</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTable 
-            T="Domain.User" 
-            Items="usersList" 
-            SelectedItems="assignedUsers"
-            MultiSelection="true"
-            class="mv-3">
-            
+        <MudTable T="Domain.User" Items="usersList" SelectedItems="assignedUsers" MultiSelection="true" class="mv-3">
+
             <HeaderContent>
                 <MudTh>Assigned Users</MudTh>
             </HeaderContent>
@@ -38,36 +33,59 @@
     protected override void OnParametersSet()
     {
         usersList = group.UserParticipations
-            .Select(up => up.User)
-            .Where(u => u is not null)
-            .Select(u => u!)
-            .ToList();
-            
+        .Select(up => up.User)
+        .Where(u => u is not null)
+        .Select(u => u!)
+        .ToList();
+
         assignedUsersAtStart = assignment.UserAssignments.
-            Select(ua => ua.User).
-            Where(u => u is not null).Select(u => u!).
-            ToList();
-        
+        Select(ua => ua.User).
+        Where(u => u is not null).Select(u => u!).
+        ToList();
+
         foreach (User user in assignedUsersAtStart)
         {
-            assignedUsers.Add(usersList.First(u => u.UserIdentity == user.UserIdentity));
+            try
+            {
+                assignedUsers.Add(usersList.First(u => u.UserIdentity == user.UserIdentity));
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
         }
     }
 
     private async Task AssignAssignment()
     {
-         Domain.Assignment? updatedAssignment;
+        Domain.Assignment? updatedAssignment;
         foreach (User user in assignedUsersAtStart.Except(assignedUsers))
         {
-            await _assignmentServiceUI.UnassignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+            try
+            {
+                await _assignmentServiceUI.UnassignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
         }
 
         foreach (User user in assignedUsers.Except(assignedUsersAtStart))
         {
-            updatedAssignment = await _assignmentServiceUI.AssignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+            try
+            {
+                updatedAssignment = await _assignmentServiceUI.AssignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
         }
 
         await UpdateGroupCallback.InvokeAsync(assignment);
         MudDialog.Close(DialogResult.Ok(true));
     }
+
+
 }

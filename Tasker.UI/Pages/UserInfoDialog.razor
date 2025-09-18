@@ -22,11 +22,20 @@
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         string? userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        if (userId is null) 
+        if (userId is null)
         {
             MudDialog.Close();
             return;
         }
-        user = await _userServiceUI.GetUserById(userId);
+
+        try
+        {
+            user = await _userServiceUI.GetUserById(userId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            user = new User { FirstName = "Failed", LastName = "Load" };
+        }
     }
 }

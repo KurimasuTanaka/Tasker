@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IUserServiceUI _userServiceUI
 
+
 <PageTitle>Dashboard</PageTitle>
 @if (CurrentUser is not null)
 {
@@ -20,6 +21,14 @@
         ClaimsPrincipal? user = (await _authenticationStateProvider.GetAuthenticationStateAsync()).User;
         string userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value!;
 
-        CurrentUser = await _userServiceUI.GetUserById(userId);
+        try 
+        {
+            CurrentUser = await _userServiceUI.GetUserById(userId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            CurrentUser = new User { FirstName = "Failed", LastName = "Authorization" };
+        }
     }
 }

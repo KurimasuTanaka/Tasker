@@ -3,7 +3,6 @@
 @inject IAssignmentServiceUI _assignmentServiceUI;
 @inject AuthenticationStateProvider _authenticationStateProvider;
 
-
 <MudCard Outlined="true">
     <MudCardContent>
         <div class="d-flex align-center">
@@ -73,19 +72,42 @@
 
     private async Task DeleteAssignment()
     {
-        await _assignmentServiceUI.DeleteAssignment(group.GroupId, assignment.AssignmentId);
+        try
+        {
+            await _assignmentServiceUI.DeleteAssignment(group.GroupId, assignment.AssignmentId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
         await OnAssignmentDeleted.InvokeAsync(assignment.AssignmentId);
     }
 
     private async Task MarkAsComplete()
     {
         assignment.IsCompleted = true;
-        await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
+
+        try
+        {
+            await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
     private async Task MarkAsIncomplete()
     {
         assignment.IsCompleted = false;
-        await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
 
+        try
+        {
+            await _assignmentServiceUI.UpdateAssignment(group.GroupId, assignment);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
+
 }

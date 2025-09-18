@@ -28,14 +28,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _groups = await _groupServiceUI.GetAllGroups();
+        try
+        {
+            _groups = await _groupServiceUI.GetAllGroups();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
     private async Task CreateGroup(MouseEventArgs args)
     {
-        await _groupServiceUI.CreateGroup("New Group" + (_groups.Count + 1).ToString());
-        _groups = await _groupServiceUI.GetAllGroups();
+        try
+        {
 
-        StateHasChanged();
+            await _groupServiceUI.CreateGroup("New Group" + (_groups.Count + 1).ToString());
+            _groups = await _groupServiceUI.GetAllGroups();
+            StateHasChanged();
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
     }
     private void OpenGroup(long groupId)
     {
@@ -44,8 +60,15 @@
 
     private async Task DeleteGroup(long groupId)
     {
-        await _groupServiceUI.DeleteGroup(groupId);
-        _groups.RemoveAll(g => g.GroupId == groupId);
-        StateHasChanged();
+        try
+        {
+            await _groupServiceUI.DeleteGroup(groupId);
+            _groups.RemoveAll(g => g.GroupId == groupId);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
 }

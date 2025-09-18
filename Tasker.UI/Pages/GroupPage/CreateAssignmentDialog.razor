@@ -6,8 +6,10 @@
         <MudText Typo="Typo.h6">Create new task</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="assignment.Title" Variant="Variant.Outlined" HelperText="Enter task title" class="form-control mv-2" />
-        <MudTextField @bind-Value="assignment.Description" Variant="Variant.Outlined" HelperText="Enter task description" class="form-control mv-2" Lines="3" />
+        <MudTextField @bind-Value="assignment.Title" Variant="Variant.Outlined" HelperText="Enter task title"
+            class="form-control mv-2" />
+        <MudTextField @bind-Value="assignment.Description" Variant="Variant.Outlined"
+            HelperText="Enter task description" class="form-control mv-2" Lines="3" />
 
     </DialogContent>
     <DialogActions>
@@ -26,9 +28,18 @@
     Domain.Assignment assignment = new();
     protected async Task CreateAssignment()
     {
-        Domain.Assignment createdAssignment = await _assignmentServiceUI.CreateAssignment(GroupId, assignment);
-        await OnTaskCreated.InvokeAsync(createdAssignment);
-        MudDialog.Close(DialogResult.Ok(createdAssignment));
-    }
+        try
+        {
+
+            Domain.Assignment createdAssignment = await _assignmentServiceUI.CreateAssignment(GroupId, assignment);
+            await OnTaskCreated.InvokeAsync(createdAssignment);
+            MudDialog.Close(DialogResult.Ok(createdAssignment));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            MudDialog.Close();
+        }
+}
 
 }

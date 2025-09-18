@@ -21,9 +21,17 @@
 
     protected async Task UpdateGroup()
     {
-        group = await _groupServiceUI.UpdateGroup(group);
-        await OnGroupUpdated.InvokeAsync(group);
-        MudDialog.Close(DialogResult.Ok(group));
-    }
+        try
+        {
+            group = await _groupServiceUI.UpdateGroup(group);
+            await OnGroupUpdated.InvokeAsync(group);
+            MudDialog.Close(DialogResult.Ok(group));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            MudDialog.Close();
+        }
+}
 
 }
