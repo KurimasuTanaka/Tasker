@@ -14,9 +14,8 @@ namespace Tasker.UI.Services.AssignmentServiceUI
     /// </summary>
     /// <param name="groupId">The unique identifier of the group.</param>
     /// <param name="assignment">The assignment entity to create.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The created <see cref="Assignment"/>.</returns>
-    Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default);
+    Task<Assignment> CreateAssignment(long groupId, Assignment assignment);
 
 
     /// <summary>

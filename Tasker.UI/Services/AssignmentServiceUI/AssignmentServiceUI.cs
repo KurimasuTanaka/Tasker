@@ -14,12 +14,12 @@ public class AssignmentServiceUI : IAssignmentServiceUI
         _httpClient = httpClient;
     }
 
-    public async Task<Assignment> CreateAssignment(long groupId, Assignment assignment, CancellationToken cancellationToken = default)
+    public async Task<Assignment> CreateAssignment(long groupId, Assignment assignment)
     {
         var response = await _httpClient.PostAsJsonAsync($"api/groups/{groupId}/assignments", assignment.ToDto());
         response.EnsureSuccessStatusCode();
 
-        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>(cancellationToken: cancellationToken);
+        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
         if (createdAssignment == null) throw new InvalidOperationException("Failed to create assignment.");
 
         return createdAssignment.ToDomainObject()!;
