@@ -8,7 +8,6 @@ public class TaskerContext : DbContext
     public DbSet<UserModel> Users { get; set; } = null!;
     public DbSet<GroupModel> Groups { get; set; } = null!;
     public DbSet<AssignmentModel> Assignments { get; set; } = null!;
-    public DbSet<NotificationModel> Notifications { get; set; } = null!;
     public DbSet<UserParticipationModel> UserParticipations { get; set; } = null!;
     public DbSet<UserAssignmentModel> UserAssignments { get; set; } = null!;
 

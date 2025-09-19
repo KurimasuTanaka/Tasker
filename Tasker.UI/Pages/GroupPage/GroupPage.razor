@@ -44,7 +44,10 @@
 
         @foreach (Domain.Assignment task in group.Assignments)
         {
-            <Assignment assignment="task" group="group" OnAssignmentDeleted="RefreshGroupOnAssignmentDeleted" />
+            <Assignment assignment="task" group="group" 
+                OnAssignmentDeleted="RefreshGroupOnAssignmentDeleted" 
+                OnAssignmentUpdated="RefreshGroupOnAssignmentOnUpdate"
+                />
         }
     </MudTabPanel>
     <MudTabPanel Text="My tasks">
@@ -119,7 +122,16 @@
             StateHasChanged();
         }
     }
-
+    public void RefreshGroupOnAssignmentOnUpdate(Domain.Assignment updatedAssignment)
+    {
+        var assignment = group.Assignments.FirstOrDefault(a => a.AssignmentId == updatedAssignment.AssignmentId);
+        if (assignment != null)
+        {
+            group.Assignments.Remove(assignment);
+            group.Assignments.Add(updatedAssignment);
+            StateHasChanged();
+        }
+    }
 
     private async Task OpenGroupEditDialog()
     {

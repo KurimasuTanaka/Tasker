@@ -25,13 +25,6 @@
 
     string errorMessage = string.Empty;
 
-    //DELETE
-    protected override void OnParametersSet()
-    {
-        loginModel.Email = "obama2@gmail.com";
-        loginModel.Password = "WarLord_13";
-    }
-
     async Task HandleLogin()
     {
         string result = await _authServiceUI.Login(loginModel);

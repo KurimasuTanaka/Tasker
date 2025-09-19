@@ -30,6 +30,8 @@ public partial class Program
                                 .AllowCredentials());
         });
 
+        builder.Services.AddSignalR();
+
         builder.Services.AddDbContextFactory<TaskerContext>(options =>
         {
             var configurations = builder.Configuration;
@@ -104,6 +106,8 @@ public partial class Program
         app.UseSwaggerUI();
         app.UseSwagger();
         app.MapControllers();
+        app.MapHub<NotificationHub>("/notificationsHub");
+
         app.Run();
     }
 }

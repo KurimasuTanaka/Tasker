@@ -58,12 +58,12 @@
 
     private async Task AssignAssignment()
     {
-        Domain.Assignment? updatedAssignment;
-        foreach (User user in assignedUsersAtStart.Except(assignedUsers))
+        Domain.Assignment? updatedAssignment = assignment;
+        foreach (User user in assignedUsersAtStart.Except(assignedUsers, new UserComparison()))
         {
             try
             {
-                await _assignmentServiceUI.UnassignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
+                updatedAssignment = await _assignmentServiceUI.UnassignTask(group.GroupId, assignment.AssignmentId, user.UserIdentity);
             }
             catch (Exception ex)
             {
@@ -71,7 +71,7 @@
             }
         }
 
-        foreach (User user in assignedUsers.Except(assignedUsersAtStart))
+        foreach (User user in assignedUsers.Except(assignedUsersAtStart, new UserComparison()))
         {
             try
             {
@@ -83,7 +83,7 @@
             }
         }
 
-        await UpdateGroupCallback.InvokeAsync(assignment);
+        await UpdateGroupCallback.InvokeAsync(updatedAssignment);
         MudDialog.Close(DialogResult.Ok(true));
     }
 

@@ -43,6 +43,7 @@
     [Parameter] public Domain.Assignment assignment { get; set; } = new();
     [Parameter] public Domain.Group group { get; set; } = new();
     [Parameter] public EventCallback<long> OnAssignmentDeleted { get; set; }
+    [Parameter] public EventCallback<Domain.Assignment> OnAssignmentUpdated { get; set; }
 
     string participants = string.Empty;
 
@@ -56,7 +57,11 @@
     public async Task OpenAssignmentDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, };
-        var dialogParameters = new DialogParameters { { "assignment", assignment }, { "group", group } };
+        var dialogParameters = new DialogParameters {
+            { "assignment", assignment },
+            { "group", group },
+            { "UpdateGroupCallback", EventCallback.Factory.Create<Domain.Assignment>(this, (assignment) => OnAssignmentUpdated.InvokeAsync(assignment)) }
+        };
 
         await DialogService.ShowAsync<AssignAssignmentDialog>("Assignment", dialogParameters, options);
     }

@@ -30,7 +30,7 @@ public class AssignmentRepository : IAssignmentRepository
 
         using var _context = await _contextFactory.CreateDbContextAsync();
 
-        var assignmentModel = await _context.Assignments.FindAsync(id, cancellationToken);
+        var assignmentModel = await _context.Assignments.Include(a => a.Participants).ThenInclude(ua => ua.User).FirstAsync(a => a.AssignmentId == id, cancellationToken);
 
         if (assignmentModel == null) return null;
         else return assignmentModel.ToDomain();

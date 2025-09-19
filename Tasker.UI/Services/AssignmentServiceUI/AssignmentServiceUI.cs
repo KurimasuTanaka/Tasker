@@ -37,11 +37,18 @@ public class AssignmentServiceUI : IAssignmentServiceUI
 
     }
 
-    public async Task UnassignTask(long groupId, long assignmentId, string userId)
+    public async Task<Assignment> UnassignTask(long groupId, long assignmentId, string userId)
     {
         var response = await _httpClient.DeleteAsync($"api/groups/{groupId}/user/{userId}/assignments/{assignmentId}");
         response.EnsureSuccessStatusCode();
+
+        var createdAssignment = await response.Content.ReadFromJsonAsync<AssignmentDTO>();
+        if (createdAssignment == null) throw new InvalidOperationException("Failed to update assignment.");
+
+        return createdAssignment.ToDomainObject()!;
+
     }
+
 
     public async Task DeleteAssignment(long groupId, long assignmentId)
     {

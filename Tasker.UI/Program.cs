@@ -32,6 +32,7 @@ public partial class Program
         builder.Services.AddMudServices();
         builder.Services.AddCascadingAuthenticationState();
 
+        
 
         builder.Services.AddScoped((sp) =>
         {

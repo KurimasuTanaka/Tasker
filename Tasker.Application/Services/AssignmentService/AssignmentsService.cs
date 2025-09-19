@@ -16,7 +16,7 @@ public class AssignmentsService : IAssignmentsService
         _logger = logger;
     }
 
-    public async Task<Result<UserAssignment>> AssignTaskToUser(string userId, long assignmentId)
+    public async Task<Result<Assignment>> AssignTaskToUser(string userId, long assignmentId)
     {
         _logger.LogInformation($"Assigning task {assignmentId} to user {userId}");
 
@@ -35,23 +35,30 @@ public class AssignmentsService : IAssignmentsService
                 if (createdUserAssignment == null)
                 {
                     _logger.LogError($"Failed to assign task {assignmentId} to user {userId}");
-                    return Result.Failure<UserAssignment>("Failed to assign task to user");
+                    return Result.Failure<Assignment>("Failed to assign task to user");
                 }
 
+                Assignment updatedAssignment = (await _assignmentRepository.GetAsync(assignmentId))!;
+
+
                 _logger.LogInformation($"Successfully assigned task {assignmentId} to user {userId}");
-                return Result.Success<UserAssignment>(createdUserAssignment);
+                return Result.Success<Assignment>(updatedAssignment);
             }
-            else return Result.Success<UserAssignment>(existingAssignment);
+            else 
+            {
+                _logger.LogWarning($"Task {assignmentId} is already assigned to user {userId}");
+                return Result.Failure<Assignment>("Task is already assigned to user");
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error assigning task to user: {ex.Message}");
-            return Result.Failure<UserAssignment>($"Error assigning task to user: {ex.Message}");
+            return Result.Failure<Assignment>($"Error assigning task to user: {ex.Message}");
         }
 
     }
 
-    public async Task<Result<bool>> UnassignTaskFromUser(string userId, long assignmentId)
+    public async Task<Result<Assignment>> UnassignTaskFromUser(string userId, long assignmentId)
     {
         _logger.LogInformation($"Unassigning task {assignmentId} from user {userId}");
         try
@@ -60,16 +67,17 @@ public class AssignmentsService : IAssignmentsService
             if (!deletedUserAssignment)
             {
                 _logger.LogError($"Failed to unassign task {assignmentId} from user {userId}");
-                return Result.Failure<bool>("Failed to unassign task from user");
+                return Result.Failure<Assignment>("Failed to unassign task from user");
             }
 
-
             _logger.LogInformation($"Successfully unassigned task {assignmentId} from user {userId}");
-            return Result.Success<bool>(true);
+
+            Assignment updatedAssignment = (await _assignmentRepository.GetAsync(assignmentId))!;
+            return Result.Success(updatedAssignment);
         }
         catch (Exception ex)
         {
-            return Result.Failure<bool>($"Error unassigning task from user: {ex.Message}");
+            return Result.Failure<Assignment>($"Error unassigning task from user: {ex.Message}");
         }
 
     }
