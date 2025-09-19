@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager _navigation
+@inject IConfiguration _configurations
+@inject ISessionStorageService _sessionStorageService;
+
+<div class="d-flex">
+    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Variant="Variant.Filled" Color="Color.Info"
+        OnClick="TogglePopover" />
+
+    <MudPopover Open="_isPopoverOpen" OnOpenChanged="TogglePopover" AnchorOrigin="Origin.BottomLeft"
+        TransformOrigin="Origin.TopRight">
+        <ChildContent>
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6">Notifications</MudText>
+                <MudDivider Class="my-2" />
+                @foreach (var message in messages)
+                {
+                    <MudPaper Class="my-2 pa-2" Elevation="1">
+                        <MudText>@message</MudText>
+                    </MudPaper>
+                }
+            </MudPaper>
+        </ChildContent>
+    </MudPopover>
+</div>
+
+
+
+@code
+{
+    private HubConnection? hubConnection;
+    private List<string> messages = new();
+
+    private bool _isPopoverOpen = false;
+    private void TogglePopover()
+    {
+        _isPopoverOpen = !_isPopoverOpen;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(_navigation.ToAbsoluteUri($"{_configurations.GetValue<string>("URL:API")}notificationsHub"), options =>
+        {
+            options.AccessTokenProvider = async () =>
+    {
+            return await _sessionStorageService.GetItemAsync<string>("authToken");
+        };
+        })
+        .Build();
+
+        hubConnection.On<string>("ReceiveNotification", (message) =>
+        {
+            messages.Add(message);
+            Snackbar.Add(message, Severity.Info);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+}
